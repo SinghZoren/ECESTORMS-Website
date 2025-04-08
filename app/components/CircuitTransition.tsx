@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function CircuitTransition({ children }: { children: React.ReactNode }) {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [currentContent, setCurrentContent] = useState(children);
+  const pathname = usePathname();
 
   useEffect(() => {
     setIsTransitioning(true);
@@ -13,7 +15,7 @@ export default function CircuitTransition({ children }: { children: React.ReactN
       setIsTransitioning(false);
     }, 1000);
     return () => clearTimeout(timer);
-  }, [children]);
+  }, [children, pathname]);
 
   return (
     <div className="relative">

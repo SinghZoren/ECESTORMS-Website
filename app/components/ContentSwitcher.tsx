@@ -1,6 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
 import Home from '../pages/home';
 import About from '../pages/about';
 import Calendar from '../pages/calendar';
@@ -9,29 +10,28 @@ import Conference from '../pages/conference';
 import Resources from '../pages/resources';
 import Shop from '../pages/shop';
 import Contact from '../pages/contact';
+import Footer from './Footer';
 
-interface ContentSwitcherProps {
-  activeSection: string;
-}
-
-export default function ContentSwitcher({ activeSection }: ContentSwitcherProps) {
+export default function ContentSwitcher() {
+  const pathname = usePathname();
+  
   const getContent = (): ReactNode => {
-    switch (activeSection) {
-      case 'home':
+    switch (pathname) {
+      case '/':
         return <Home />;
-      case 'about':
+      case '/about':
         return <About />;
-      case 'calendar':
+      case '/calendar':
         return <Calendar />;
-      case 'events':
+      case '/events':
         return <Events />;
-      case 'conference':
+      case '/conference':
         return <Conference />;
-      case 'resources':
+      case '/resources':
         return <Resources />;
-      case 'shop':
+      case '/shop':
         return <Shop />;
-      case 'contact':
+      case '/contact':
         return <Contact />;
       default:
         return <Home />;
@@ -39,8 +39,11 @@ export default function ContentSwitcher({ activeSection }: ContentSwitcherProps)
   };
 
   return (
-    <div className="pt-16">
-      {getContent()}
+    <div className="flex flex-col min-h-screen">
+      <div className="flex-grow">
+        {getContent()}
+      </div>
+      <Footer />
     </div>
   );
 } 
