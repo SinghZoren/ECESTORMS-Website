@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Cookies from 'js-cookie';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -17,17 +16,14 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Get credentials from environment variables
-    const adminUsername = process.env.NEXT_PUBLIC_ADMIN_USERNAME;
-    const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
-    
-    // Check credentials
-    if (username === adminUsername && password === adminPassword) {
-      // Set cookie with authentication token
-      Cookies.set('isAdmin', 'true', { expires: 1 }); // Expires in 1 day
+    // Check credentials (in a real app, this would be an API call)
+    if (username === 'admin' && password === 'admin') {
+      // Set login state in localStorage
+      localStorage.setItem('isLoggedIn', 'true');
       onLoginSuccess();
+      onClose();
     } else {
-      setError('Invalid credentials');
+      setError('Invalid username or password');
     }
   };
 
@@ -35,12 +31,18 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
-        <h2 className="text-2xl font-bold mb-6 text-gray-900">Admin Login</h2>
+      <div className="bg-white rounded-lg p-8 max-w-md w-full">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Admin Login</h2>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+        {error && (
+          <div className="bg-red-50 text-red-500 p-3 rounded-md mb-4">
+            {error}
+          </div>
+        )}
+        
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
               Username
             </label>
             <input
@@ -48,12 +50,13 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#931cf5]"
+              required
             />
           </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+          
+          <div className="mb-6">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Password
             </label>
             <input
@@ -61,25 +64,22 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginMod
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#931cf5]"
+              required
             />
           </div>
-
-          {error && (
-            <p className="text-red-500 text-sm">{error}</p>
-          )}
-
-          <div className="flex justify-end space-x-3">
+          
+          <div className="flex justify-end space-x-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+              className="px-4 py-2 text-gray-700 hover:text-gray-900"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+              className="px-4 py-2 bg-[#931cf5] text-white rounded-md hover:bg-[#7b17cc] transition-colors"
             >
               Login
             </button>

@@ -37,3 +37,4 @@ next-env.d.ts
 #large files
 *.mp4
 public/images/drone.mp4
+.vercel

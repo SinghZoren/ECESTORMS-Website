@@ -3,14 +3,16 @@
 import { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import Home from '../pages/home';
-import About from '../pages/about';
 import Calendar from '../pages/calendar';
 import Events from '../pages/events';
 import Conference from '../pages/conference';
 import Resources from '../pages/resources';
 import Shop from '../pages/shop';
 import Contact from '../pages/contact';
-import Footer from './Footer';
+import OurTeam from '../pages/our-team'
+import OfficeHours from '../pages/office-hours'
+import Partners from '../pages/partners'
+import Admin from '../pages/admin'
 
 export default function ContentSwitcher() {
   const pathname = usePathname();
@@ -19,8 +21,6 @@ export default function ContentSwitcher() {
     switch (pathname) {
       case '/':
         return <Home />;
-      case '/about':
-        return <About />;
       case '/calendar':
         return <Calendar />;
       case '/events':
@@ -33,17 +33,22 @@ export default function ContentSwitcher() {
         return <Shop />;
       case '/contact':
         return <Contact />;
+      case '/our-team':
+        return <OurTeam />;
+      case '/office-hours':
+        return <OfficeHours />;
+      case '/partners':
+        return <Partners />;
+      case '/admin':
+        return <Admin />;
       default:
         return <Home />;
     }
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <div className="flex-grow">
-        {getContent()}
-      </div>
-      <Footer />
+    <div className="flex-grow">
+      {getContent()}
     </div>
   );
 } 

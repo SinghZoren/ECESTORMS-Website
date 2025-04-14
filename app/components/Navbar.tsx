@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { IoChevronDown } from 'react-icons/io5';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isAboutHovered, setIsAboutHovered] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const isHomePage = pathname === '/';
@@ -31,7 +33,7 @@ export default function Navbar() {
     <nav 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled || !isHomePage 
-          ? 'bg-white shadow-md' 
+          ? 'bg-white/80 backdrop-blur-sm shadow-lg shadow-md' 
           : 'bg-transparent'
       }`}
     >
@@ -53,42 +55,94 @@ export default function Navbar() {
                 pathname === '/' 
                   ? isHomePage && !isScrolled 
                     ? 'text-white' 
-                    : 'text-blue-600' 
+                    : 'text-[#931cf5]' 
                   : isHomePage && !isScrolled 
                     ? 'text-white hover:text-gray-200' 
-                    : 'text-gray-700 hover:text-blue-600'
+                    : 'text-gray-700 hover:text-[#931cf5]'
               }`}
               onClick={() => handleNavClick('/')}
             >
               Home
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#931cf5] transition-all duration-500 group-hover:w-full"></span>
             </Link>
-            <Link 
-              href="/about" 
-              className={`px-3 py-2 text-sm font-bold relative group ${
-                pathname === '/about' 
-                  ? isHomePage && !isScrolled 
-                    ? 'text-white' 
-                    : 'text-blue-600' 
-                  : isHomePage && !isScrolled 
-                    ? 'text-white hover:text-gray-200' 
-                    : 'text-gray-700 hover:text-blue-600'
-              }`}
-              onClick={() => handleNavClick('/about')}
+            <div 
+              className="relative"
+              onMouseEnter={() => setIsAboutHovered(true)}
+              onMouseLeave={() => setIsAboutHovered(false)}
             >
-              About
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#931cf5] transition-all duration-500 group-hover:w-full"></span>
-            </Link>
+              <button
+                className={`px-3 py-2 text-sm font-bold relative group flex items-center ${
+                  pathname.startsWith('/about') 
+                    ? isHomePage && !isScrolled 
+                      ? 'text-white' 
+                      : 'text-[#931cf5]' 
+                    : isHomePage && !isScrolled 
+                      ? 'text-white hover:text-gray-200' 
+                      : 'text-gray-700 hover:text-[#931cf5]'
+                }`}
+              >
+                About
+                <IoChevronDown className={`ml-1 transition-transform duration-200 ${isAboutHovered ? 'rotate-180' : ''}`} />
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#931cf5] transition-all duration-500 group-hover:w-full"></span>
+              </button>
+              {isAboutHovered && (
+                <div 
+                  className="absolute top-full left-0 w-48 z-50"
+                  onMouseEnter={() => setIsAboutHovered(true)}
+                  onMouseLeave={() => setIsAboutHovered(false)}
+                >
+                  <div className="h-1 bg-transparent"></div>
+                  <div className="bg-white bg-white/80 backdrop-blur-sm shadow-lg shadow-xl shadow-lg py-2">
+                    <Link
+                      href="/our-team"
+                      className={`block px-4 py-2 text-sm relative group ${
+                        pathname === '/our-team'
+                          ? 'text-[#931cf5]'
+                          : 'text-gray-700 hover:text-[#931cf5]'
+                      }`}
+                      onClick={() => handleNavClick('/our-team')}
+                    >
+                      Our Team
+                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#931cf5] transition-all duration-500 group-hover:w-full"></span>
+                    </Link>
+                    <Link
+                      href="/office-hours"
+                      className={`block px-4 py-2 text-sm relative group ${
+                        pathname === '/office-hours'
+                          ? 'text-[#931cf5]'
+                          : 'text-gray-700 hover:text-[#931cf5]'
+                      }`}
+                      onClick={() => handleNavClick('/office-hours')}
+                    >
+                      Office Hours
+                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#931cf5] transition-all duration-500 group-hover:w-full"></span>
+                    </Link>
+                    <Link
+                      href="/partners"
+                      className={`block px-4 py-2 text-sm relative group ${
+                        pathname === '/partners'
+                          ? 'text-[#931cf5]'
+                          : 'text-gray-700 hover:text-[#931cf5]'
+                      }`}
+                      onClick={() => handleNavClick('/partners')}
+                    >
+                      Partners
+                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#931cf5] transition-all duration-500 group-hover:w-full"></span>
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
             <Link 
               href="/calendar" 
               className={`px-3 py-2 text-sm font-bold relative group ${
                 pathname === '/calendar' 
                   ? isHomePage && !isScrolled 
                     ? 'text-white' 
-                    : 'text-blue-600' 
+                    : 'text-[#931cf5]' 
                   : isHomePage && !isScrolled 
                     ? 'text-white hover:text-gray-200' 
-                    : 'text-gray-700 hover:text-blue-600'
+                    : 'text-gray-700 hover:text-[#931cf5]'
               }`}
               onClick={() => handleNavClick('/calendar')}
             >
@@ -101,10 +155,10 @@ export default function Navbar() {
                 pathname === '/events' 
                   ? isHomePage && !isScrolled 
                     ? 'text-white' 
-                    : 'text-blue-600' 
+                    : 'text-[#931cf5]' 
                   : isHomePage && !isScrolled 
                     ? 'text-white hover:text-gray-200' 
-                    : 'text-gray-700 hover:text-blue-600'
+                    : 'text-gray-700 hover:text-[#931cf5]'
               }`}
               onClick={() => handleNavClick('/events')}
             >
@@ -117,10 +171,10 @@ export default function Navbar() {
                 pathname === '/conference' 
                   ? isHomePage && !isScrolled 
                     ? 'text-white' 
-                    : 'text-blue-600' 
+                    : 'text-[#931cf5]' 
                   : isHomePage && !isScrolled 
                     ? 'text-white hover:text-gray-200' 
-                    : 'text-gray-700 hover:text-blue-600'
+                    : 'text-gray-700 hover:text-[#931cf5]'
               }`}
               onClick={() => handleNavClick('/conference')}
             >
@@ -133,10 +187,10 @@ export default function Navbar() {
                 pathname === '/resources' 
                   ? isHomePage && !isScrolled 
                     ? 'text-white' 
-                    : 'text-blue-600' 
+                    : 'text-[#931cf5]' 
                   : isHomePage && !isScrolled 
                     ? 'text-white hover:text-gray-200' 
-                    : 'text-gray-700 hover:text-blue-600'
+                    : 'text-gray-700 hover:text-[#931cf5]'
               }`}
               onClick={() => handleNavClick('/resources')}
             >
@@ -149,10 +203,10 @@ export default function Navbar() {
                 pathname === '/shop' 
                   ? isHomePage && !isScrolled 
                     ? 'text-white' 
-                    : 'text-blue-600' 
+                    : 'text-[#931cf5]' 
                   : isHomePage && !isScrolled 
                     ? 'text-white hover:text-gray-200' 
-                    : 'text-gray-700 hover:text-blue-600'
+                    : 'text-gray-700 hover:text-[#931cf5]'
               }`}
               onClick={() => handleNavClick('/shop')}
             >
@@ -165,10 +219,10 @@ export default function Navbar() {
                 pathname === '/contact' 
                   ? isHomePage && !isScrolled 
                     ? 'text-white' 
-                    : 'text-blue-600' 
+                    : 'text-[#931cf5]' 
                   : isHomePage && !isScrolled 
                     ? 'text-white hover:text-gray-200' 
-                    : 'text-gray-700 hover:text-blue-600'
+                    : 'text-gray-700 hover:text-[#931cf5]'
               }`}
               onClick={() => handleNavClick('/contact')}
             >
