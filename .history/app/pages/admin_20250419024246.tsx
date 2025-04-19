@@ -236,7 +236,7 @@ export default function Admin() {
   };
 
   return (
-    <div className="min-h-screen bg-[#441949] text-white py-7 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[441949]">
       {isLoggedIn ? (
         <>
           {/* Header with Logout */}

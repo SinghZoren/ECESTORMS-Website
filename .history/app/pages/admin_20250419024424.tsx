@@ -236,7 +236,7 @@ export default function Admin() {
   };
 
   return (
-    <div className="min-h-screen bg-[#441949] text-white py-7 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#441949] text-white py-24 px-4 sm:px-6 lg:px-8">
       {isLoggedIn ? (
         <>
           {/* Header with Logout */}
@@ -258,7 +258,7 @@ export default function Admin() {
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16 pt-28">
             <div className="bg-white shadow rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4 text-gray-800">Website Management</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols- gap-4">
                 <button
                   onClick={handleOpenOfficeHoursModal}
                   className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
