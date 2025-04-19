@@ -94,7 +94,7 @@ export default function Calendar() {
   const eventContent = (eventInfo: EventContentArg) => {
     return (
       <div
-        className="cursor-pointer p-1.5 h-full flex items-center"
+        className="cursor-pointer"
         onClick={(e) => handleEventClick(eventInfo, e)}
       >
         <div className="text-sm font-medium">{eventInfo.event.title}</div>
@@ -186,17 +186,11 @@ export default function Calendar() {
                 minute: '2-digit',
                 meridiem: 'short',
               }}
-              eventClassNames="bg-[#931cf5] hover:bg-[#7a16d4] border-[#931cf5] !h-[30px] min-h-[30px] flex items-center"
+              eventClassNames="bg-[#931cf5] hover:bg-[#7a16d4] border-[#931cf5]"
               eventDidMount={(info) => {
                 info.el.style.setProperty('--fc-event-bg-color', '#931cf5');
                 info.el.style.setProperty('--fc-event-border-color', '#931cf5');
                 info.el.style.setProperty('--fc-event-text-color', '#ffffff');
-                info.el.style.setProperty('padding-top', '0px');
-                info.el.style.setProperty('padding-bottom', '0px');
-                info.el.style.setProperty('margin-bottom', '2px');
-                info.el.style.setProperty('min-height', '30px');
-                info.el.style.setProperty('display', 'flex');
-                info.el.style.setProperty('align-items', 'center');
               }}
             />
           </div>

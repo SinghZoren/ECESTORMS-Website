@@ -10,8 +10,8 @@ import CalendarModal from '../components/CalendarModal';
 interface CalendarEvent {
   id: string;
   title: string;
-  start: string;
-  end: string;
+  start: Date;
+  end: Date;
   allDay: boolean;
   description?: string;
 }
@@ -214,7 +214,7 @@ export default function Admin() {
           </header>
 
           {/* Main Content */}
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16 pt-28">
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16 pt-24">
             <div className="bg-white shadow rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4 text-gray-800">Website Management</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

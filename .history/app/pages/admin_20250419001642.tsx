@@ -7,15 +7,6 @@ import OfficeHoursModal from '../components/OfficeHoursModal';
 import TeamMembersModal from '../components/TeamMembersModal';
 import CalendarModal from '../components/CalendarModal';
 
-interface CalendarEvent {
-  id: string;
-  title: string;
-  start: string;
-  end: string;
-  allDay: boolean;
-  description?: string;
-}
-
 export default function Admin() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
@@ -172,7 +163,7 @@ export default function Admin() {
     }
   };
 
-  const handleSaveCalendar = async (events: CalendarEvent[]) => {
+  const handleSaveCalendar = async (events: any[]) => {
     try {
       // Send calendar events to backend
       const response = await fetch('/api/updateCalendar', {
@@ -199,7 +190,7 @@ export default function Admin() {
       {isLoggedIn ? (
         <>
           {/* Header with Logout */}
-          <header className="bg-white shadow fixed top-0 left-0 right-0 z-10 pt-24">
+          <header className="bg-white shadow fixed top-0 left-0 right-0 z-10">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
               <h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1>
               <div className="flex items-center space-x-4">
@@ -214,7 +205,7 @@ export default function Admin() {
           </header>
 
           {/* Main Content */}
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16 pt-28">
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16">
             <div className="bg-white shadow rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4 text-gray-800">Website Management</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

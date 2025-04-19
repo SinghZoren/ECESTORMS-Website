@@ -9,7 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fullcalendar/daygrid": "^6.1.17",
+    "@fullcalendar/interaction": "^6.1.17",
+    "@fullcalendar/react": "^6.1.17",
+    "@fullcalendar/timegrid": "^6.1.17",
     "@types/js-cookie": "^3.0.6",
+    "date-fns": "^4.1.0",
     "framer-motion": "^12.6.3",
     "js-cookie": "^3.0.5",
     "next": "15.2.4",

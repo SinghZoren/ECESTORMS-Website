@@ -94,7 +94,7 @@ export default function Calendar() {
   const eventContent = (eventInfo: EventContentArg) => {
     return (
       <div
-        className="cursor-pointer p-1.5 h-full flex items-center"
+        className="cursor-pointer"
         onClick={(e) => handleEventClick(eventInfo, e)}
       >
         <div className="text-sm font-medium">{eventInfo.event.title}</div>
@@ -103,40 +103,9 @@ export default function Calendar() {
   };
 
   const upcomingEvents = events
-    .filter(event => {
-      const eventDate = new Date(event.start);
-      const now = new Date();
-      // Reset the time part of now to start of day for proper date comparison
-      now.setHours(0, 0, 0, 0);
-      return eventDate >= now;
-    })
+    .filter(event => new Date(event.start) >= new Date())
     .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
     .slice(0, 5);
-
-  // Format date for display
-  const formatEventDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    
-    // Reset time parts for comparison
-    today.setHours(0, 0, 0, 0);
-    tomorrow.setHours(0, 0, 0, 0);
-    date.setHours(0, 0, 0, 0);
-
-    if (date.getTime() === today.getTime()) {
-      return 'Today';
-    } else if (date.getTime() === tomorrow.getTime()) {
-      return 'Tomorrow';
-    } else {
-      return date.toLocaleDateString('en-US', { 
-        weekday: 'long', 
-        month: 'short', 
-        day: 'numeric' 
-      });
-    }
-  };
 
   if (isLoading) {
     return (
@@ -186,18 +155,6 @@ export default function Calendar() {
                 minute: '2-digit',
                 meridiem: 'short',
               }}
-              eventClassNames="bg-[#931cf5] hover:bg-[#7a16d4] border-[#931cf5] !h-[30px] min-h-[30px] flex items-center"
-              eventDidMount={(info) => {
-                info.el.style.setProperty('--fc-event-bg-color', '#931cf5');
-                info.el.style.setProperty('--fc-event-border-color', '#931cf5');
-                info.el.style.setProperty('--fc-event-text-color', '#ffffff');
-                info.el.style.setProperty('padding-top', '0px');
-                info.el.style.setProperty('padding-bottom', '0px');
-                info.el.style.setProperty('margin-bottom', '2px');
-                info.el.style.setProperty('min-height', '30px');
-                info.el.style.setProperty('display', 'flex');
-                info.el.style.setProperty('align-items', 'center');
-              }}
             />
           </div>
 
@@ -209,9 +166,6 @@ export default function Calendar() {
               <div className="space-y-4">
                 {upcomingEvents.map(event => (
                   <div key={event.id} className="border-l-4 border-[#931cf5] pl-4">
-                    <p className="text-sm text-[#931cf5] font-medium mb-1">
-                      {formatEventDate(event.start)}
-                    </p>
                     <h3 className="font-semibold text-lg">{event.title}</h3>
                     <p className="text-gray-600">{event.time}</p>
                     <p className="text-gray-600">📍 {event.location}</p>

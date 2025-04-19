@@ -10,8 +10,8 @@ import CalendarModal from '../components/CalendarModal';
 interface CalendarEvent {
   id: string;
   title: string;
-  start: string;
-  end: string;
+  start: Date;
+  end: Date;
   allDay: boolean;
   description?: string;
 }
