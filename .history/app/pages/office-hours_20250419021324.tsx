@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { daysOfWeek, timeSlots, TimeSlotInfo } from '../data/officeHours';
 import Footer from '../components/Footer';
 
@@ -106,7 +107,7 @@ export default function OfficeHours() {
     return (
       <div className="flex flex-col min-h-screen relative">
         <div className="flex-grow flex items-center justify-center relative z-10">
-          <div className="text-white text-xl bg-red-500/80 p-4 ">
+          <div className="text-white text-xl bg-red-500/80 p-4 rounded-lg">
             {error}
           </div>
         </div>
@@ -130,7 +131,7 @@ export default function OfficeHours() {
                 </p>
               </div>
 
-              <div className="bg-white shadow-lg overflow-hidden ">
+              <div className="bg-white shadow-lg overflow-hidden rounded-lg">
                 <div className="text-center py-3 border-b border-gray-200">
                   <h2 className="text-lg font-semibold text-[#4A154B]">Location</h2>
                   <div className="flex items-center justify-center gap-2 mt-1">

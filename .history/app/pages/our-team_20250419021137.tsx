@@ -40,7 +40,7 @@ const TeamMemberCard = ({ member }: { member: TeamMember }) => {
 const TeamSection = ({ title, members }: { title: string, members: TeamMember[] }) => {
   return (
     <div className="mb-12 w-full">
-      <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 border-b-2 border-[#f7ce46] pb-2 text-center">
+      <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 border-b-2 border-[#931cf5] pb-2 text-center">
         {title}
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

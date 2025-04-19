@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { daysOfWeek, timeSlots, TimeSlotInfo } from '../data/officeHours';
 import Footer from '../components/Footer';
 
@@ -106,7 +107,7 @@ export default function OfficeHours() {
     return (
       <div className="flex flex-col min-h-screen relative">
         <div className="flex-grow flex items-center justify-center relative z-10">
-          <div className="text-white text-xl bg-red-500/80 p-4 ">
+          <div className="text-white text-xl bg-red-500/80 p-4 rounded-lg">
             {error}
           </div>
         </div>
@@ -115,29 +116,42 @@ export default function OfficeHours() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#4A154B]">
+    <div className="flex flex-col min-h-screen relative">
+      {/* Background image with overlay */}
+      <div className="fixed inset-0 z-0">
+        <Image
+          src="/images/campus2.jpg"
+          alt="Campus Background"
+          fill
+          className="object-cover"
+          priority
+        />
+        {/* Purple overlay */}
+        <div className="absolute inset-0 bg-[#931cf5] opacity-[0.2]"></div>
+      </div>
+
       {/* Content */}
-      <div className="flex-grow">
+      <div className="flex-grow relative z-10">
         <div className="pt-20 pb-32">
           <div className={`transition-all duration-500 ease-in-out transform ${showMap ? 'translate-x-[-12%]' : 'translate-x-0'}`}>
             <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
               <div className="text-center mb-6">
-                <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl drop-shadow-lg">
                   Office Hours
                 </h1>
-                <p className="mt-2 text-sm leading-6 text-white">
+                <p className="mt-2 text-sm leading-6 text-white drop-shadow-lg">
                   Visit us during our office hours for assistance and support.
                 </p>
               </div>
 
-              <div className="bg-white shadow-lg overflow-hidden ">
+              <div className="bg-white/90 backdrop-blur-sm shadow-lg shadow-xl overflow-hidden">
                 <div className="text-center py-3 border-b border-gray-200">
                   <h2 className="text-lg font-semibold text-[#4A154B]">Location</h2>
                   <div className="flex items-center justify-center gap-2 mt-1">
                     <p className="text-sm text-gray-700">{currentLocation}</p>
                     <button
                       onClick={() => setShowMap(!showMap)}
-                      className="w-5 h-5 bg-[#931cf5] text-white flex items-center justify-center text-xs hover:bg-[#7b17cc] transition-colors"
+                      className="w-5 h-5  bg-[#931cf5] text-white flex items-center justify-center text-xs hover:bg-[#7b17cc] transition-colors"
                       title="Toggle Map View"
                     >
                       ?

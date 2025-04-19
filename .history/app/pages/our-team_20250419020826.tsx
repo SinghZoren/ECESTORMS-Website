@@ -7,7 +7,7 @@ import { TeamMember } from '../data/teamMembers';
 // Team member card component
 const TeamMemberCard = ({ member }: { member: TeamMember }) => {
   return (
-    <div className="bg-white shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 w-full">
+    <div className="min-h-screen bg-[#4A154B] shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1 w-full">
       <div className="relative w-full aspect-square bg-gray-200">
         {member.imageUrl && (
           <Image
@@ -40,7 +40,7 @@ const TeamMemberCard = ({ member }: { member: TeamMember }) => {
 const TeamSection = ({ title, members }: { title: string, members: TeamMember[] }) => {
   return (
     <div className="mb-12 w-full">
-      <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 border-b-2 border-[#f7ce46] pb-2 text-center">
+      <h2 className="text-2xl md:text-3xl font-bold text-[#4A154B] mb-4 border-b-2 border-[#931cf5] pb-2 text-center">
         {title}
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -85,9 +85,9 @@ export default function OurTeam() {
 
   if (loading) {
     return (
-      <div className="flex flex-col min-h-screen bg-[#4A154B]">
+      <div className="flex flex-col min-h-screen">
         <div className="flex-grow flex items-center justify-center">
-          <div className="text-white text-xl">Loading team members...</div>
+          <div className="text-[#931cf5] text-xl">Loading team members...</div>
         </div>
       </div>
     );
@@ -95,7 +95,7 @@ export default function OurTeam() {
 
   if (error) {
     return (
-      <div className="flex flex-col min-h-screen bg-[#4A154B]">
+      <div className="flex flex-col min-h-screen">
         <div className="flex-grow flex items-center justify-center">
           <div className="text-white text-xl bg-red-500/80 p-4 rounded-lg">
             {error}
@@ -106,10 +106,10 @@ export default function OurTeam() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#4A154B]">
-      <div className="flex-grow pt-[1%]">
+    <div className="flex flex-col min-h-screen">
+      <div className="flex-grow bg-gradient-to-b from-white to-gray-100 pt-[1%]">
         <main className="container mx-auto px-[4%] py-[5%]">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-[4%] text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-[#931cf5] mb-[4%] text-center">
             Our Team
           </h1>
           <div className="max-w-[90%] mx-auto flex flex-col items-center">

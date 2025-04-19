@@ -162,7 +162,7 @@ export default function Calendar() {
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 bg-white shadow-lg p-4">
+          <div className="lg:col-span-2 bg-white rounded-lg shadow-lg p-4">
             <FullCalendar
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
               initialView="dayGridMonth"
@@ -228,7 +228,7 @@ export default function Calendar() {
 
       {tooltipData.event && (
         <div
-          className="fixed z-[9999] bg-white p-4 shadow-lg border border-gray-200 w-[250px]"
+          className="fixed z-[9999] bg-white p-4 rounded-lg shadow-lg border border-gray-200 w-[250px]"
           style={{
             top: tooltipData.top,
             left: tooltipData.left,

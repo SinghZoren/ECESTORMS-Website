@@ -28,6 +28,7 @@ export default function Partners() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#931cf5]"></div>
       </div>
     );
   }
@@ -41,6 +42,8 @@ export default function Partners() {
         </p>
         
         <p className="text-center mb-16">
+          Thank you to our partners below for helping our society reach new heights. Click their logo to be
+          redirected to their webpages to learn more about them!
         </p>
 
         {/* University Partners Section */}
@@ -55,7 +58,7 @@ export default function Partners() {
                   href={sponsor.websiteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-white p-6 flex items-center justify-center transform hover:scale-105 transition-transform duration-200"
+                  className="bg-white rounded-lg p-6 flex items-center justify-center transform hover:scale-105 transition-transform duration-200"
                 >
                   <div className="relative w-full h-40">
                     <Image
@@ -82,7 +85,7 @@ export default function Partners() {
                   href={sponsor.websiteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-white p-6 flex items-center justify-center transform hover:scale-105 transition-transform duration-200"
+                  className="bg-white rounded-lg p-6 flex items-center justify-center transform hover:scale-105 transition-transform duration-200"
                 >
                   <div className="relative w-full h-32">
                     <Image

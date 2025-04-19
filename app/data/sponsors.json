@@ -1,0 +1,23 @@
+[
+  {
+    "id": "1745044402303",
+    "name": "Toronto Metropolitan University",
+    "imageUrl": "/images/partners/1745044402286-TMU-rgb.png",
+    "websiteUrl": "https://www.torontomu.ca/",
+    "category": "university"
+  },
+  {
+    "id": "1745044435880",
+    "name": "Faculty Of Engineering And Architectural Sciences",
+    "imageUrl": "/images/partners/1745044435876-TMU-FEAS-rgb-(1).png",
+    "websiteUrl": "https://www.torontomu.ca/engineering-architectural-science/",
+    "category": "university"
+  },
+  {
+    "id": "1745044465884",
+    "name": "Metropolitan Undergraduate Engineering Society ",
+    "imageUrl": "/images/partners/1745044465880-MUES_Horizontal_Purple.png",
+    "websiteUrl": "https://mues.ca/",
+    "category": "university"
+  }
+]

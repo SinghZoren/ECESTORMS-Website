@@ -25,12 +25,7 @@ export default function Partners() {
     fetchSponsors();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-      </div>
-    );
-  }
+
 
   return (
     <div className="min-h-screen bg-[#441949] text-white py-24 px-4 sm:px-6 lg:px-8">

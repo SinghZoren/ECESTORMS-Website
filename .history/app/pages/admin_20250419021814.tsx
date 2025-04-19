@@ -6,7 +6,6 @@ import { teamMembers as defaultTeamMembers } from '../data/teamMembers';
 import OfficeHoursModal from '../components/OfficeHoursModal';
 import TeamMembersModal from '../components/TeamMembersModal';
 import CalendarModal from '../components/CalendarModal';
-import SponsorsModal, { Sponsor } from '../components/SponsorsModal';
 
 interface CalendarEvent {
   id: string;
@@ -25,12 +24,10 @@ export default function Admin() {
   const [isOfficeHoursModalOpen, setIsOfficeHoursModalOpen] = useState(false);
   const [isTeamMembersModalOpen, setIsTeamMembersModalOpen] = useState(false);
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
-  const [isSponsorsModalOpen, setIsSponsorsModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [currentHours, setCurrentHours] = useState(defaultOfficeHoursData);
   const [currentLocation, setCurrentLocation] = useState(defaultLocation);
   const [currentTeamMembers, setCurrentTeamMembers] = useState(defaultTeamMembers);
-  const [currentSponsors, setCurrentSponsors] = useState<Sponsor[]>([]);
 
   useEffect(() => {
     setMounted(true);
@@ -70,22 +67,6 @@ export default function Admin() {
     } catch (error) {
       console.error('Error fetching team members:', error);
       alert('Failed to load current team members. Please try again.');
-    }
-  };
-
-  // Fetch current sponsors when opening the modal
-  const handleOpenSponsorsModal = async () => {
-    try {
-      const response = await fetch('/api/getSponsors');
-      if (!response.ok) {
-        throw new Error('Failed to fetch sponsors');
-      }
-      const data = await response.json();
-      setCurrentSponsors(data.sponsors);
-      setIsSponsorsModalOpen(true);
-    } catch (error) {
-      console.error('Error fetching sponsors:', error);
-      alert('Failed to load current sponsors. Please try again.');
     }
   };
 
@@ -213,28 +194,6 @@ export default function Admin() {
     }
   };
 
-  const handleSaveSponsors = async (sponsors: Sponsor[]) => {
-    try {
-      const response = await fetch('/api/updateSponsors', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ sponsors }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update sponsors');
-      }
-
-      setCurrentSponsors(sponsors);
-      alert('Sponsors updated successfully!');
-    } catch (error) {
-      console.error('Error updating sponsors:', error);
-      alert('Failed to update sponsors. Please try again.');
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       {isLoggedIn ? (
@@ -258,37 +217,24 @@ export default function Admin() {
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16 pt-28">
             <div className="bg-white shadow rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4 text-gray-800">Website Management</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <button
                   onClick={handleOpenOfficeHoursModal}
-                  className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+                  className="bg-[#931cf5] text-white px-4 py-3 rounded-md hover:bg-[#7b17cc] transition-colors w-full text-left"
                 >
-                  <h3 className="text-lg font-medium text-gray-900">Office Hours</h3>
-                  <p className="mt-1 text-sm text-gray-500">Manage office hours schedule</p>
+                  Edit Office Hours
                 </button>
-
                 <button
                   onClick={handleOpenTeamMembersModal}
-                  className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+                  className="bg-[#931cf5] text-white px-4 py-3 rounded-md hover:bg-[#7b17cc] transition-colors w-full text-left"
                 >
-                  <h3 className="text-lg font-medium text-gray-900">Team Members</h3>
-                  <p className="mt-1 text-sm text-gray-500">Update team member information</p>
+                  Edit Team Members
                 </button>
-
                 <button
                   onClick={() => setIsCalendarModalOpen(true)}
-                  className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+                  className="bg-[#931cf5] text-white px-4 py-3 rounded-md hover:bg-[#7b17cc] transition-colors w-full text-left"
                 >
-                  <h3 className="text-lg font-medium text-gray-900">Calendar</h3>
-                  <p className="mt-1 text-sm text-gray-500">Manage calendar events</p>
-                </button>
-
-                <button
-                  onClick={handleOpenSponsorsModal}
-                  className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
-                >
-                  <h3 className="text-lg font-medium text-gray-900">Sponsors</h3>
-                  <p className="mt-1 text-sm text-gray-500">Manage sponsors and partners</p>
+                  Edit Calendar Events
                 </button>
               </div>
             </div>
@@ -302,24 +248,16 @@ export default function Admin() {
             currentHours={currentHours}
             currentLocation={currentLocation}
           />
-          {isTeamMembersModalOpen && (
-            <TeamMembersModal
-              isOpen={isTeamMembersModalOpen}
-              onClose={() => setIsTeamMembersModalOpen(false)}
-              onSave={handleSaveTeamMembers}
-              currentMembers={currentTeamMembers}
-            />
-          )}
+          <TeamMembersModal
+            isOpen={isTeamMembersModalOpen}
+            onClose={() => setIsTeamMembersModalOpen(false)}
+            onSave={handleSaveTeamMembers}
+            currentMembers={currentTeamMembers}
+          />
           <CalendarModal
             isOpen={isCalendarModalOpen}
             onClose={() => setIsCalendarModalOpen(false)}
             onSave={handleSaveCalendar}
-          />
-          <SponsorsModal
-            isOpen={isSponsorsModalOpen}
-            onClose={() => setIsSponsorsModalOpen(false)}
-            onSave={handleSaveSponsors}
-            currentSponsors={currentSponsors}
           />
         </>
       ) : (

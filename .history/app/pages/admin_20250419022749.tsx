@@ -302,14 +302,12 @@ export default function Admin() {
             currentHours={currentHours}
             currentLocation={currentLocation}
           />
-          {isTeamMembersModalOpen && (
-            <TeamMembersModal
-              isOpen={isTeamMembersModalOpen}
-              onClose={() => setIsTeamMembersModalOpen(false)}
-              onSave={handleSaveTeamMembers}
-              currentMembers={currentTeamMembers}
-            />
-          )}
+          <TeamMembersModal
+            isOpen={isTeamMembersModalOpen}
+            onClose={() => setIsTeamMembersModalOpen(false)}
+            onSave={handleSaveTeamMembers}
+            currentTeamMembers={currentTeamMembers}
+          />
           <CalendarModal
             isOpen={isCalendarModalOpen}
             onClose={() => setIsCalendarModalOpen(false)}
