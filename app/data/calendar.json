@@ -1,0 +1,14 @@
+{
+  "events": [
+    {
+      "id": "1746119854403",
+      "title": "Test Event",
+      "start": "2025-05-01",
+      "end": "2025-05-02",
+      "allDay": true,
+      "description": "na\n",
+      "location": "undefined",
+      "time": "undefined"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "id": "1745291473508",
+    "name": "Toronto Metropolitan University",
+    "imageUrl": "/images/partners/1745291473484-tmu-logo-full-colour.jpg",
+    "websiteUrl": "https://www.torontomu.ca/",
+    "category": "university"
+  },
+  {
+    "id": "1745291511378",
+    "name": "Toronto Metropolitan University FEAS",
+    "imageUrl": "/images/partners/1745291511373-TMU-FEAS-rgb-(1).png",
+    "websiteUrl": "https://www.torontomu.ca/engineering-architectural-science/",
+    "category": "university"
+  },
+  {
+    "id": "1745291574906",
+    "name": "MUES",
+    "imageUrl": "/images/partners/1745291574902-MUES_Horizontal_Purple.png",
+    "websiteUrl": "https://mues.ca/",
+    "category": "university"
+  }
+]
