@@ -6,6 +6,7 @@ import ContentSwitcher from './components/ContentSwitcher';
 import CircuitTransition from './components/CircuitTransition';
 import Footer from './components/Footer';
 import SocialSidebar from './components/SocialSidebar';
+import { Analytics } from '@vercel/analytics/next';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -42,6 +43,7 @@ export default function RootLayout() {
           </main>
           <Footer />
         </div>
+        <Analytics />
       </body>
     </html>
   );
