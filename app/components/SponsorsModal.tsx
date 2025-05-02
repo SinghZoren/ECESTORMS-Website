@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 export interface Sponsor {
@@ -29,6 +29,10 @@ export default function SponsorsModal({
     websiteUrl: '',
     category: 'corporate'
   });
+
+  useEffect(() => {
+    setSponsors(currentSponsors);
+  }, [currentSponsors]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {

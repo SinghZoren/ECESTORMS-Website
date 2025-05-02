@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react';
 import { bebasNeue } from '../fonts';
-import { IoClose } from 'react-icons/io5';
-import { IoDocumentText } from 'react-icons/io5';
+import { IoDocumentText, IoClose } from 'react-icons/io5';
 import { HiAcademicCap } from 'react-icons/hi';
 import Image from 'next/image';
+import ExamBankModal from '../components/ExamBankModal';
 
 interface TutorialEvent {
   id: string;
@@ -20,39 +20,11 @@ interface TutorialEvent {
   additionalResources?: string[];
 }
 
-interface ExamBankYear {
-  year: string;
-  courses: {
-    code: string;
-    name: string;
-    resources: {
-      name: string;
-      link: string;
-    }[];
-  }[];
-}
-
 export default function Resources() {
   const [isExamBankOpen, setIsExamBankOpen] = useState(false);
   const [isTutorialsOpen, setIsTutorialsOpen] = useState(false);
   const [hoveredSection, setHoveredSection] = useState<'exam' | 'tutorial' | null>(null);
-
-  // Sample data - replace with actual data from your backend
-  const examBankYears: ExamBankYear[] = [
-    {
-      year: '2023-2024',
-      courses: [
-        {
-          code: 'ELE302',
-          name: 'Electric Networks',
-          resources: [
-            { name: 'Midterm 2023', link: '/exams/ele302-midterm-2023.pdf' },
-            { name: 'Final 2023', link: '/exams/ele302-final-2023.pdf' },
-          ]
-        },
-      ]
-    },
-  ];
+  const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
 
   const tutorialEvents: TutorialEvent[] = [
     {
@@ -66,14 +38,17 @@ export default function Resources() {
       willRecord: true,
       willPostNotes: true,
       additionalResources: ['Practice Problems', 'Solution Guide']
-    },
+    }
   ];
 
   return (
     <div className="min-h-screen bg-[#4A154B] flex flex-col md:flex-row relative overflow-hidden">
       {/* Exam Bank Section */}
       <button 
-        onClick={() => setIsExamBankOpen(true)}
+        onClick={() => {
+          setSelectedCourse('ELEC2501'); // Default course for now
+          setIsExamBankOpen(true);
+        }}
         onMouseEnter={() => setHoveredSection('exam')}
         onMouseLeave={() => setHoveredSection(null)}
         className="flex-1 flex items-center justify-center p-8 hover:bg-[#3a1039] transition-all duration-500 relative z-10 group overflow-hidden"
@@ -141,51 +116,14 @@ export default function Resources() {
       </button>
 
       {/* Exam Bank Modal */}
-      {isExamBankOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center backdrop-blur-sm">
-          <div className="bg-white rounded-lg w-[95%] h-[90vh] p-8 relative flex flex-col">
-            <button
-              onClick={() => setIsExamBankOpen(false)}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors"
-            >
-              <IoClose size={24} />
-            </button>
-
-            <h2 className={`${bebasNeue.className} text-4xl text-[#4A154B] mb-8`}>Exam Bank</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-auto">
-              {examBankYears.map((yearData) => (
-                <div key={yearData.year} className="bg-gray-50 rounded-lg p-6">
-                  <h3 className={`${bebasNeue.className} text-2xl text-[#931cf5] mb-4`}>
-                    {yearData.year}
-                  </h3>
-                  <div className="space-y-4">
-                    {yearData.courses.map((course) => (
-                      <div key={course.code} className="bg-white rounded-lg p-4 shadow-sm">
-                        <h4 className="font-semibold text-lg mb-2">{course.code}</h4>
-                        <p className="text-gray-600 mb-3">{course.name}</p>
-                        <div className="space-y-2">
-                          {course.resources.map((resource, idx) => (
-                            <a
-                              key={idx}
-                              href={resource.link}
-                              className="block text-[#931cf5] hover:underline"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              {resource.name}
-                            </a>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      <ExamBankModal
+        isOpen={isExamBankOpen}
+        onClose={() => {
+          setIsExamBankOpen(false);
+          setSelectedCourse(null);
+        }}
+        courseCode={selectedCourse || ''}
+      />
 
       {/* Tutorials Modal */}
       {isTutorialsOpen && (
@@ -314,4 +252,4 @@ export default function Resources() {
       )}
     </div>
   );
-} 
+}

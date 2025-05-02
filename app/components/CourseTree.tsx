@@ -14,6 +14,7 @@ interface CourseTreeProps {
   year: number | null;
   stream: 'electrical' | 'computer' | null;
   isSoftwareSpecialization: boolean;
+  onCourseClick?: (courseCode: string) => void;
 }
 
 // Common First Year
@@ -690,7 +691,7 @@ const requiredGroup1Courses: CourseNodeProps[] = [
   },
 ];
 
-export default function CourseTree({ year, stream, isSoftwareSpecialization }: CourseTreeProps) {
+export default function CourseTree({ year, stream, isSoftwareSpecialization, onCourseClick }: CourseTreeProps) {
   const renderCourseNode = (course: CourseNodeProps) => {
     const courseUrl = course.url || (course.code.includes('ELE') || course.code.includes('COE') || course.code.includes('CEN') ? 
       `https://www.torontomu.ca/calendar/2025-2026/courses/${course.code.split(' ')[0].toLowerCase()}-engineering/${course.code.split(' ')[0]}/${course.code.split(' ')[1]}/` : 
@@ -721,18 +722,30 @@ export default function CourseTree({ year, stream, isSoftwareSpecialization }: C
       </>
     );
 
+    const handleClick = (e: React.MouseEvent) => {
+      if (onCourseClick) {
+        e.preventDefault();
+        onCourseClick(course.code);
+      }
+    };
+
     return courseUrl ? (
       <a 
         key={course.code}
         href={courseUrl}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={handleClick}
         className="block bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border border-[#931cf5]/20 hover:border-[#931cf5]/40"
       >
         {content}
       </a>
     ) : (
-      <div key={course.code} className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border border-[#931cf5]/20">
+      <div 
+        key={course.code} 
+        onClick={handleClick}
+        className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border border-[#931cf5]/20 cursor-pointer"
+      >
         {content}
       </div>
     );

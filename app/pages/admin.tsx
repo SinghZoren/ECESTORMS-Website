@@ -7,6 +7,7 @@ import OfficeHoursModal from '../components/OfficeHoursModal';
 import TeamMembersModal from '../components/TeamMembersModal';
 import CalendarModal from '../components/CalendarModal';
 import SponsorsModal, { Sponsor } from '../components/SponsorsModal';
+import ResourceManagerModal from '../components/ResourceManagerModal';
 
 interface CalendarEvent {
   id: string;
@@ -26,6 +27,7 @@ export default function Admin() {
   const [isTeamMembersModalOpen, setIsTeamMembersModalOpen] = useState(false);
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
   const [isSponsorsModalOpen, setIsSponsorsModalOpen] = useState(false);
+  const [isResourceManagerModalOpen, setIsResourceManagerModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [currentHours, setCurrentHours] = useState(defaultOfficeHoursData);
   const [currentLocation, setCurrentLocation] = useState(defaultLocation);
@@ -337,6 +339,14 @@ export default function Admin() {
                   <h3 className="text-lg font-medium text-gray-900">Sponsors</h3>
                   <p className="mt-1 text-sm text-gray-500">Manage sponsors and partners</p>
                 </button>
+
+                <button
+                  onClick={() => setIsResourceManagerModalOpen(true)}
+                  className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+                >
+                  <h3 className="text-lg font-medium text-gray-900">Resource Manager</h3>
+                  <p className="mt-1 text-sm text-gray-500">Manage exam bank resources and files</p>
+                </button>
               </div>
             </div>
           </main>
@@ -367,6 +377,10 @@ export default function Admin() {
             onClose={() => setIsSponsorsModalOpen(false)}
             onSave={handleSaveSponsors}
             currentSponsors={currentSponsors}
+          />
+          <ResourceManagerModal
+            isOpen={isResourceManagerModalOpen}
+            onClose={() => setIsResourceManagerModalOpen(false)}
           />
         </>
       ) : (
