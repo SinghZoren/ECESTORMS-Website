@@ -12,6 +12,14 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'ECESTORMS - Electrical And Computer Course Union',
   description: 'Electrical and Computer Engineering Course Union for Toronto Metropolitan Students',
+  icons: {
+    icon: [
+      {
+        url: '/favicon.ico?v=2',
+        sizes: 'any',
+      },
+    ],
+  },
 };
 
 export default function RootLayout() {
