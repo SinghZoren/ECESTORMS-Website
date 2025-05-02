@@ -15,10 +15,16 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: '/favicon.ico?v=2',
+        url: '/favicon.ico?v=3',
         sizes: 'any',
       },
+      {
+        url: 'favicon.ico?v=3',
+        sizes: 'any',
+      }
     ],
+    shortcut: ['/favicon.ico?v=3'],
+    apple: ['/favicon.ico?v=3'],
   },
 };
 
