@@ -133,8 +133,8 @@ export default function Admin() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const correctUsername = process.env.NEXT_PUBLIC_ADMIN_USERNAME || 'admin';
-    const correctPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin';
+    const correctUsername = process.env.NEXT_PUBLIC_ADMIN_USERNAME;
+    const correctPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
     
     if (username === correctUsername && password === correctPassword) {
       localStorage.setItem('isLoggedIn', 'true');

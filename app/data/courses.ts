@@ -1,1157 +1,275 @@
-export interface Course {
+export interface CourseInfo {
   code: string;
   name: string;
   year: 1 | 2 | 3 | 4;
-  program: 'Electrical' | 'Computer' | 'Common';
-  specialization?: 'Software' | 'Hardware';
-  semester?: 1 | 2;
-  description?: string;
+  folder: string;
 }
 
-export interface CourseGroup {
-  name: string;
-  courses: Course[];
-}
+// Master dictionary of all unique courses
+export const allCourses: { [code: string]: CourseInfo } = {
+  // First Year
+  'CEN 100': { code: 'CEN 100', name: 'Introduction to Engineering', year: 1, folder: 'CEN 100' },
+  'CHY 102': { code: 'CHY 102', name: 'General Chemistry', year: 1, folder: 'CHY 102' },
+  'MTH 140': { code: 'MTH 140', name: 'Calculus I', year: 1, folder: 'MTH 140' },
+  'MTH 141': { code: 'MTH 141', name: 'Linear Algebra', year: 1, folder: 'MTH 141' },
+  'PCS 211': { code: 'PCS 211', name: 'Physics: Mechanics', year: 1, folder: 'PCS 211' },
+  'CPS 188': { code: 'CPS 188', name: 'Computer Programming Fundamentals', year: 1, folder: 'CPS 188' },
+  'ECN 801': { code: 'ECN 801', name: 'Principles of Engineering Economics', year: 1, folder: 'ECN 801' },
+  'ELE 202': { code: 'ELE 202', name: 'Electric Circuit Analysis', year: 1, folder: 'ELE 202' },
+  'MTH 240': { code: 'MTH 240', name: 'Calculus II', year: 1, folder: 'MTH 240' },
+  'PCS 125': { code: 'PCS 125', name: 'Physics: Waves and Fields', year: 1, folder: 'PCS 125' },
 
-export const courseGroups: CourseGroup[] = [
-  {
-    name: 'First Year',
-    courses: [
-      // Fall Semester (Semester 1)
-      { 
-        code: 'CEN 100',
-        name: 'Introduction to Engineering',
-        year: 1,
-        program: 'Common',
-        semester: 1
-      },
-      { 
-        code: 'CHY 102',
-        name: 'General Chemistry',
-        year: 1,
-        program: 'Common',
-        semester: 1
-      },
-      { 
-        code: 'MTH 140',
-        name: 'Calculus I',
-        year: 1,
-        program: 'Common',
-        semester: 1
-      },
-      { 
-        code: 'MTH 141',
-        name: 'Linear Algebra',
-        year: 1,
-        program: 'Common',
-        semester: 1
-      },
-      { 
-        code: 'PCS 211',
-        name: 'Physics: Mechanics',
-        year: 1,
-        program: 'Common',
-        semester: 1
-      },
+  // Second Year
+  'COE 318': { code: 'COE 318', name: 'Software Systems', year: 2, folder: 'COE 318' },
+  'COE 328': { code: 'COE 328', name: 'Digital Systems', year: 2, folder: 'COE 328' },
+  'ELE 302': { code: 'ELE 302', name: 'Electric Networks', year: 2, folder: 'ELE 302' },
+  'MTH 425': { code: 'MTH 425', name: 'Differential Equations and Vector Calculus', year: 2, folder: 'MTH 425' },
+  'PCS 224': { code: 'PCS 224', name: 'Solid State Physics', year: 2, folder: 'PCS 224' },
+  'CMN 432': { code: 'CMN 432', name: 'Communication in the Engineering Professions', year: 2, folder: 'CMN 432' },
+  'COE 428': { code: 'COE 428', name: 'Engineering Algorithms and Data Structures', year: 2, folder: 'COE 428' },
+  'ELE 401': { code: 'ELE 401', name: 'Electric and Magnetic Fields', year: 2, folder: 'ELE 401' },
+  'ELE 404': { code: 'ELE 404', name: 'Electronic Circuits I', year: 2, folder: 'ELE 404' },
+  'MTH 314': { code: 'MTH 314', name: 'Discrete Mathematics for Engineers', year: 2, folder: 'MTH 314' },
+  'COE 528': { code: 'COE 528', name: 'Object Oriented Eng Analysis and Design', year: 2, folder: 'COE 528' },
 
-      // Winter Semester (Semester 2)
-      { 
-        code: 'CPS 188',
-        name: 'Computer Programming Fundamentals',
-        year: 1,
-        program: 'Common',
-        semester: 2
-      },
-      { 
-        code: 'ECN 801',
-        name: 'Principles of Engineering Economics',
-        year: 1,
-        program: 'Common',
-        semester: 2
-      },
-      { 
-        code: 'ELE 202',
-        name: 'Electric Circuit Analysis',
-        year: 1,
-        program: 'Common',
-        semester: 2
-      },
-      { 
-        code: 'MTH 240',
-        name: 'Calculus II',
-        year: 1,
-        program: 'Common',
-        semester: 2
-      },
-      { 
-        code: 'PCS 125',
-        name: 'Physics: Waves and Fields',
-        year: 1,
-        program: 'Common',
-        semester: 2
-      }
-    ]
-  },
-  {
-    name: 'Electrical Engineering',
-    courses: [
-      // Second Year - Fall Semester
-      { 
-        code: 'COE 318',
-        name: 'Software Systems',
-        year: 2,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'COE 328',
-        name: 'Digital Systems',
-        year: 2,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 302',
-        name: 'Electric Networks',
-        year: 2,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'MTH 425',
-        name: 'Differential Equations and Vector Calculus',
-        year: 2,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'PCS 224',
-        name: 'Solid State Physics',
-        year: 2,
-        program: 'Electrical',
-        semester: 1
-      },
+  // Third Year
+  'COE 501': { code: 'COE 501', name: 'Electromagnetism', year: 3, folder: 'COE 501' },
+  'COE 538': { code: 'COE 538', name: 'Microprocessor Systems', year: 3, folder: 'COE 538' },
+  'ELE 504': { code: 'ELE 504', name: 'Electronic Circuits II', year: 3, folder: 'ELE 504' },
+  'ELE 531': { code: 'ELE 531', name: 'Electromagnetics', year: 3, folder: 'ELE 531' },
+  'ELE 532': { code: 'ELE 532', name: 'Signals and Systems I', year: 3, folder: 'ELE 532' },
+  'MTH 514': { code: 'MTH 514', name: 'Probability and Stochastic Processes', year: 3, folder: 'MTH 514' },
+  'ELE 632': { code: 'ELE 632', name: 'Signals and Systems II', year: 3, folder: 'ELE 632' },
+  'ELE 635': { code: 'ELE 635', name: 'Communication Systems', year: 3, folder: 'ELE 635' },
+  'ELE 637': { code: 'ELE 637', name: 'Energy Conservation', year: 3, folder: 'ELE 637' },
+  'ELE 639': { code: 'ELE 639', name: 'Control Systems', year: 3, folder: 'ELE 639' },
+  'MEC 511': { code: 'MEC 511', name: 'Thermodynamics and Fluids', year: 3, folder: 'MEC 511' },
+  'CPS 688': { code: 'CPS 688', name: 'Advanced Algorithms', year: 3, folder: 'CPS 688' },
+  'CPS 510': { code: 'CPS 510', name: 'Database Systems I', year: 3, folder: 'CPS 510' },
+  'COE 691': { code: 'COE 691', name: 'Software Requirement Analysis and SPEC', year: 3, folder: 'COE 691' },
+  'COE 692': { code: 'COE 692', name: 'Software Design and Architecture', year: 3, folder: 'COE 692' },
 
-      // Second Year - Winter Semester
-      { 
-        code: 'CMN 432',
-        name: 'Communication in the Engineering Professions',
-        year: 2,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'COE 428',
-        name: 'Engineering Algorithms and Data Structures',
-        year: 2,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'ELE 401',
-        name: 'Electric and Magnetic Fields',
-        year: 2,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'ELE 404',
-        name: 'Electronic Circuits I',
-        year: 2,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'MTH 314',
-        name: 'Discrete Mathematics for Engineers',
-        year: 2,
-        program: 'Electrical',
-        semester: 2
-      },
-
-      // Third Year - Fall Semester
-      { 
-        code: 'COE 538',
-        name: 'Microprocessor Systems',
-        year: 3,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 504',
-        name: 'Electronic Circuits II',
-        year: 3,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 531',
-        name: 'Electromagnetics',
-        year: 3,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 532',
-        name: 'Signals and Systems I',
-        year: 3,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'MTH 514',
-        name: 'Probability and Stochastic Processes',
-        year: 3,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 632',
-        name: 'Signals and Systems II',
-        year: 3,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 635',
-        name: 'Communication Systems',
-        year: 3,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 637',
-        name: 'Energy Conservation',
-        year: 3,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 639',
-        name: 'Control Systems',
-        year: 3,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'MEC 511',
-        name: 'Thermodynamics and Fluids',
-        year: 3,
-        program: 'Electrical',
-        semester: 1
-      },
-
-      // Fourth Year - Fall Semester
-      { 
-        code: 'ELE 70A/B*',
-        name: 'Electrical Engineering Capstone Design',
-        year: 4,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'CEN 800',
-        name: 'Law and Ethics in Engineering Practice',
-        year: 4,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'COE 718',
-        name: 'Embedded Systems Design',
-        year: 4,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'COE 768',
-        name: 'Computer Networks',
-        year: 4,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 707',
-        name: 'Sensors and Measurements',
-        year: 4,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 714',
-        name: 'System Testing and Design-for-Testability',
-        year: 4,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 719',
-        name: 'Fundamentals of Robotics',
-        year: 4,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 727',
-        name: 'CMOS Analog Integrated Circuits',
-        year: 4,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 734',
-        name: 'Low Power Digital Integrated Circuits',
-        year: 4,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 745',
-        name: 'Digital Communication Systems',
-        year: 4,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 746',
-        name: 'Power Systems Analysis',
-        year: 4,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 747',
-        name: 'Advanced Electric Drives',
-        year: 4,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 754',
-        name: 'Power Electronics',
-        year: 4,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 792',
-        name: 'Digital Signal Processing',
-        year: 4,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 809',
-        name: 'Digital Control System Design',
-        year: 4,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 829',
-        name: 'System Models and Identification',
-        year: 4,
-        program: 'Electrical',
-        semester: 1
-      },
-      { 
-        code: 'ELE 861',
-        name: 'Microwave Engineering',
-        year: 4,
-        program: 'Electrical',
-        semester: 1
-      },
-
-      // Fourth Year - Winter Semester
-      { 
-        code: 'CEN 810',
-        name: 'Selected Topics in Engineering',
-        year: 4,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'COE 528',
-        name: 'Object Oriented Eng Analysis and Design',
-        year: 4,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'COE 608',
-        name: 'Computer Organization and Architecture',
-        year: 4,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'COE 628',
-        name: 'Operating Systems',
-        year: 4,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'COE 838',
-        name: 'Systems-on-Chip Design',
-        year: 4,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'COE 865',
-        name: 'Advanced Computer Networks',
-        year: 4,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'ELE 709',
-        name: 'Real-Time Computer Control Systems',
-        year: 4,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'ELE 801',
-        name: 'Electric Vehicles',
-        year: 4,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'ELE 804',
-        name: 'Radio-Frequency Circuits and Systems',
-        year: 4,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'ELE 806',
-        name: 'Alternative Energy Systems',
-        year: 4,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'ELE 815',
-        name: 'Wireless Communications',
-        year: 4,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'ELE 819',
-        name: 'Control of Robotic Manipulators',
-        year: 4,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'ELE 827',
-        name: 'CMOS Mixed-Signal Circuits and Systems',
-        year: 4,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'ELE 846',
-        name: 'Power Systems Protection and Control',
-        year: 4,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'ELE 863',
-        name: 'VLSI Circuits for Data Communications',
-        year: 4,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'ELE 882',
-        name: 'Intro to Digital Image Processing',
-        year: 4,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'ELE 884',
-        name: 'Photonics',
-        year: 4,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'ELE 885',
-        name: 'Optical Communication Systems',
-        year: 4,
-        program: 'Electrical',
-        semester: 2
-      },
-      { 
-        code: 'ELE 888',
-        name: 'Intelligent Systems',
-        year: 4,
-        program: 'Electrical',
-        semester: 2
-      }
-    ]
-  },
-  {
-    name: 'Computer Engineering',
-    courses: [
-      // Second Year - Fall Semester
-      { 
-        code: 'COE 318',
-        name: 'Software Systems',
-        year: 2,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'COE 328',
-        name: 'Digital Systems',
-        year: 2,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'ELE 302',
-        name: 'Electric Networks',
-        year: 2,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'MTH 425',
-        name: 'Differential Equations and Vector Calculus',
-        year: 2,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'PCS 224',
-        name: 'Solid State Physics',
-        year: 2,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Hardware'
-      },
-
-      // Third Year - Fall Semester
-      { 
-        code: 'COE 501',
-        name: 'Electromagnetism',
-        year: 3,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'COE 538',
-        name: 'Microprocessor Systems',
-        year: 3,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'ELE 532',
-        name: 'Signals and Systems I',
-        year: 3,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'MEC 511',
-        name: 'Thermodynamics and Fluids',
-        year: 3,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'MTH 514',
-        name: 'Probability and Stochastic Processes',
-        year: 3,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Hardware'
-      },
-
-      // Third Year - Winter Semester
-      { 
-        code: 'COE 608',
-        name: 'Computer Organization and Architecture',
-        year: 3,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'COE 628',
-        name: 'Operating Systems',
-        year: 3,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'ELE 632',
-        name: 'Signals and Systems II',
-        year: 3,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'ELE 635',
-        name: 'Communication Systems',
-        year: 3,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'ELE 639',
-        name: 'Control Systems',
-        year: 3,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'CPS 688',
-        name: 'Advanced Algorithms',
-        year: 3,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Hardware'
-      },
-
-      // Fourth Year - Fall Semester
-      { 
-        code: 'COE 70A/B*',
-        name: 'Computer Engineering Capstone Design',
-        year: 4,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'COE 758',
-        name: 'Digital Systems Engineering',
-        year: 4,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'COE 768',
-        name: 'Computer Networks',
-        year: 4,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'CEN 800',
-        name: 'Law and Ethics in Engineering Practice',
-        year: 4,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'COE 718',
-        name: 'Embedded Systems Design',
-        year: 4,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'CPS 710',
-        name: 'Compilers and Interpreters',
-        year: 4,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'CPS 843',
-        name: 'Introduction to Computer Vision',
-        year: 4,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'ELE 734',
-        name: 'Low Power Digital Integrated Circuits',
-        year: 4,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Hardware'
-      },
-
-      // Fourth Year - Winter Semester
-      { 
-        code: 'COE 817',
-        name: 'Network Security',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'COE 818',
-        name: 'Advanced Computer Architecture',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'COE 838',
-        name: 'Systems-on-Chip Design',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'COE 848',
-        name: 'Fundamentals of Data Engineering',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'COE 865',
-        name: 'Advanced Computer Networks',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'CPS 888',
-        name: 'Software Engineering',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'COE 892',
-        name: 'Distributed and Cloud Computing',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'CEN 810',
-        name: 'Selected Topics in Engineering',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'ELE 709',
-        name: 'Real-Time Computer Control Systems',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'ELE 815',
-        name: 'Wireless Communications',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'ELE 863',
-        name: 'VLSI Circuits for Data Communications',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'ELE 882',
-        name: 'Intro to Digital Image Processing',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'ELE 885',
-        name: 'Optical Communication Systems',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Hardware'
-      },
-      { 
-        code: 'ELE 888',
-        name: 'Intelligent Systems',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Hardware'
-      }
-    ]
-  },
-  {
-    name: 'Computer Engineering (Software)',
-    courses: [
-      // Second Year - Fall Semester
-      { 
-        code: 'COE 318',
-        name: 'Software Systems',
-        year: 2,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-      { 
-        code: 'COE 328',
-        name: 'Digital Systems',
-        year: 2,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-      { 
-        code: 'ELE 302',
-        name: 'Electric Networks',
-        year: 2,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-      { 
-        code: 'MTH 425',
-        name: 'Differential Equations and Vector Calculus',
-        year: 2,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-      { 
-        code: 'PCS 224',
-        name: 'Solid State Physics',
-        year: 2,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-
-      // Second Year - Winter Semester
-      { 
-        code: 'CMN 432',
-        name: 'Communication in the Engineering Professions',
-        year: 2,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Software'
-      },
-      { 
-        code: 'COE 428',
-        name: 'Engineering Algorithms and Data Structures',
-        year: 2,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Software'
-      },
-      { 
-        code: 'COE 528',
-        name: 'Object Oriented Eng Analysis and Design',
-        year: 2,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Software'
-      },
-      { 
-        code: 'ELE 404',
-        name: 'Electronic Circuits I',
-        year: 2,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Software'
-      },
-      { 
-        code: 'MTH 314',
-        name: 'Discrete Mathematics for Engineers',
-        year: 2,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Software'
-      },
-      // Third Year - Fall Semester
-      { 
-        code: 'CPS 510',
-        name: 'Database Systems I',
-        year: 3,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-      { 
-        code: 'COE 538',
-        name: 'Microprocessor Systems',
-        year: 3,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-      { 
-        code: 'ELE 532',
-        name: 'Signals and Systems I',
-        year: 3,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-      { 
-        code: 'MEC 511',
-        name: 'Thermodynamics and Fluids',
-        year: 3,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-      { 
-        code: 'MTH 514',
-        name: 'Probability and Stochastic Processes',
-        year: 3,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-
-      // Third Year - Winter Semester
-      { 
-        code: 'COE 608',
-        name: 'Computer Organization and Architecture',
-        year: 3,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Software'
-      },
-      { 
-        code: 'COE 628',
-        name: 'Operating Systems',
-        year: 3,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Software'
-      },
-      { 
-        code: 'CPS 688',
-        name: 'Advanced Algorithms',
-        year: 3,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Software'
-      },
-      { 
-        code: 'COE 691',
-        name: 'Software Requirement Analysis and SPEC',
-        year: 3,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Software'
-      },
-      { 
-        code: 'COE 692',
-        name: 'Software Design and Architecture',
-        year: 3,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Software'
-      },
-
-      // Fourth Year - Fall Semester
-      { 
-        code: 'COE 70A/B*',
-        name: 'Computer Engineering Capstone Design',
-        year: 4,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-      { 
-        code: 'COE 768',
-        name: 'Computer Networks',
-        year: 4,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-      { 
-        code: 'CPS 714',
-        name: 'Software Project Management',
-        year: 4,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-      { 
-        code: 'CEN 800',
-        name: 'Law and Ethics in Engineering Practice',
-        year: 4,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-      { 
-        code: 'COE 891',
-        name: 'Software Testing and Quality Assurance',
-        year: 4,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-      { 
-        code: 'COE 892',
-        name: 'Distributed & Cloud Computing',
-        year: 4,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-      { 
-        code: 'COE 718',
-        name: 'Embedded Systems Design',
-        year: 4,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-      { 
-        code: 'COE 758',
-        name: 'Digital Systems Engineering',
-        year: 4,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-      { 
-        code: 'CPS 710',
-        name: 'Compilers and Interpreters',
-        year: 4,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-      { 
-        code: 'CPS 843',
-        name: 'Introduction to Computer Vision',
-        year: 4,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-      { 
-        code: 'ELE 734',
-        name: 'Low Power Digital Integrated Circuits',
-        year: 4,
-        program: 'Computer',
-        semester: 1,
-        specialization: 'Software'
-      },
-
-      // Fourth Year - Winter Semester
-      { 
-        code: 'COE 817',
-        name: 'Network Security',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Software'
-      },
-      { 
-        code: 'COE 838',
-        name: 'Systems-on-Chip Design',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Software'
-      },
-      { 
-        code: 'COE 865',
-        name: 'Advanced Computer Networks',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Software'
-      },
-      { 
-        code: 'CEN 810',
-        name: 'Selected Topics in Engineering',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Software'
-      },
-      { 
-        code: 'ELE 632',
-        name: 'Signal and Systems II',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Software'
-      },
-      { 
-        code: 'ELE 635',
-        name: 'Communication Systems',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Software'
-      },
-      { 
-        code: 'ELE 639',
-        name: 'Control Systems',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Software'
-      },
-      { 
-        code: 'ELE 888',
-        name: 'Intelligent Systems',
-        year: 4,
-        program: 'Computer',
-        semester: 2,
-        specialization: 'Software'
-      }
-    ]
-  }
-];
-
-// Helper function to get all courses
-export const getAllCourses = (): Course[] => {
-  return courseGroups.flatMap(group => group.courses);
+  // Fourth Year
+  'COE 70A/B*': { code: 'COE 70A/B*', name: 'Computer Engineering Capstone Design', year: 4, folder: 'COE 70A-B' },
+  'ELE 70A/B*': { code: 'ELE 70A/B*', name: 'Electrical Engineering Capstone Design', year: 4, folder: 'ELE 70A-B' },
+  'COE 758': { code: 'COE 758', name: 'Digital Systems Engineering', year: 4, folder: 'COE 758' },
+  'COE 768': { code: 'COE 768', name: 'Computer Networks', year: 4, folder: 'COE 768' },
+  'CEN 800': { code: 'CEN 800', name: 'Law and Ethics in Engineering Practice', year: 4, folder: 'CEN 800' },
+  'COE 817': { code: 'COE 817', name: 'Network Security', year: 4, folder: 'COE 817' },
+  'COE 818': { code: 'COE 818', name: 'Advanced Computer Architecture', year: 4, folder: 'COE 818' },
+  'COE 838': { code: 'COE 838', name: 'Systems-on-Chip Design', year: 4, folder: 'COE 838' },
+  'COE 848': { code: 'COE 848', name: 'Fundamentals of Data Engineering', year: 4, folder: 'COE 848' },
+  'COE 865': { code: 'COE 865', name: 'Advanced Computer Networks', year: 4, folder: 'COE 865' },
+  'CPS 888': { code: 'CPS 888', name: 'Software Engineering', year: 4, folder: 'CPS 888' },
+  'COE 892': { code: 'COE 892', name: 'Distributed and Cloud Computing', year: 4, folder: 'COE 892' },
+  'CEN 810': { code: 'CEN 810', name: 'Selected Topics in Engineering', year: 4, folder: 'CEN 810' },
+  'ELE 709': { code: 'ELE 709', name: 'Real-Time Computer Control Systems', year: 4, folder: 'ELE 709' },
+  'ELE 815': { code: 'ELE 815', name: 'Wireless Communications', year: 4, folder: 'ELE 815' },
+  'ELE 863': { code: 'ELE 863', name: 'VLSI Circuits for Data Communications', year: 4, folder: 'ELE 863' },
+  'ELE 882': { code: 'ELE 882', name: 'Intro to Digital Image Processing', year: 4, folder: 'ELE 882' },
+  'ELE 885': { code: 'ELE 885', name: 'Optical Communication Systems', year: 4, folder: 'ELE 885' },
+  'ELE 888': { code: 'ELE 888', name: 'Intelligent Systems', year: 4, folder: 'ELE 888' },
+  'COE 718': { code: 'COE 718', name: 'Embedded Systems Design', year: 4, folder: 'COE 718' },
+  'CPS 710': { code: 'CPS 710', name: 'Compilers and Interpreters', year: 4, folder: 'CPS 710' },
+  'CPS 843': { code: 'CPS 843', name: 'Introduction to Computer Vision', year: 4, folder: 'CPS 843' },
+  'ELE 707': { code: 'ELE 707', name: 'Sensors and Measurement', year: 4, folder: 'ELE 707' },
+  'ELE 724': { code: 'ELE 724', name: 'CMOS Mixed-Mode Circuits and Systems', year: 4, folder: 'ELE 724' },
+  'ELE 734': { code: 'ELE 734', name: 'Low Power Digital Integrated Circuits', year: 4, folder: 'ELE 734' },
+  'ELE 745': { code: 'ELE 745', name: 'Digital Communication Systems', year: 4, folder: 'ELE 745' },
+  'ELE 792': { code: 'ELE 792', name: 'Digital Signal Processing', year: 4, folder: 'ELE 792' },
+  'ELE 809': { code: 'ELE 809', name: 'Digital Control System Design', year: 4, folder: 'ELE 809' },
+  'ELE 829': { code: 'ELE 829', name: 'System Models and Identification', year: 4, folder: 'ELE 829' },
+  'COE 891': { code: 'COE 891', name: 'Software Testing and Quality Assurance', year: 4, folder: 'COE 891' },
+  'CPS 714': { code: 'CPS 714', name: 'Software Project Management', year: 4, folder: 'CPS 714' },
+  'ELE 714': { code: 'ELE 714', name: 'System Testing and Design-for-Testability', year: 4, folder: 'ELE 714' },
+  'ELE 719': { code: 'ELE 719', name: 'Fundamentals of Robotics', year: 4, folder: 'ELE 719' },
+  'ELE 727': { code: 'ELE 727', name: 'CMOS Analog Integrated Circuits', year: 4, folder: 'ELE 727' },
+  'ELE 746': { code: 'ELE 746', name: 'Power Systems Analysis', year: 4, folder: 'ELE 746' },
+  'ELE 747': { code: 'ELE 747', name: 'Advanced Electric Drives', year: 4, folder: 'ELE 747' },
+  'ELE 754': { code: 'ELE 754', name: 'Power Electronics', year: 4, folder: 'ELE 754' },
+  'ELE 861': { code: 'ELE 861', name: 'Microwave Engineering', year: 4, folder: 'ELE 861' },
+  'ELE 801': { code: 'ELE 801', name: 'Electric Vehicles', year: 4, folder: 'ELE 801' },
+  'ELE 804': { code: 'ELE 804', name: 'Radio-Frequency Circuits and Systems', year: 4, folder: 'ELE 804' },
+  'ELE 806': { code: 'ELE 806', name: 'Alternative Energy Systems', year: 4, folder: 'ELE 806' },
+  'ELE 819': { code: 'ELE 819', name: 'Control of Robotic Manipulators', year: 4, folder: 'ELE 819' },
+  'ELE 827': { code: 'ELE 827', name: 'CMOS Mixed-Signal Circuits and Systems', year: 4, folder: 'ELE 827' },
+  'ELE 846': { code: 'ELE 846', name: 'Power Systems Protection and Control', year: 4, folder: 'ELE 846' },
+  'ELE 884': { code: 'ELE 884', name: 'Photonics', year: 4, folder: 'ELE 884' },
 };
 
-// Helper function to get courses by group
-export const getCoursesByGroup = (groupName: string): Course[] => {
-  const group = courseGroups.find(g => g.name === groupName);
-  return group ? group.courses : [];
-}; 
+// Electrical Engineering course list
+export const electricalCourses: { code: string; year: number }[] = [
+  // Second Year
+  { code: 'COE 318', year: 2 },
+  { code: 'COE 328', year: 2 },
+  { code: 'ELE 302', year: 2 },
+  { code: 'MTH 425', year: 2 },
+  { code: 'PCS 224', year: 2 },
+  { code: 'CMN 432', year: 2 },
+  { code: 'COE 428', year: 2 },
+  { code: 'ELE 401', year: 2 },
+  { code: 'ELE 404', year: 2 },
+  { code: 'MTH 314', year: 2 },
+  // Third Year
+  { code: 'COE 538', year: 3 },
+  { code: 'ELE 504', year: 3 },
+  { code: 'ELE 531', year: 3 },
+  { code: 'ELE 532', year: 3 },
+  { code: 'MTH 514', year: 3 },
+  { code: 'ELE 632', year: 3 },
+  { code: 'ELE 635', year: 3 },
+  { code: 'ELE 637', year: 3 },
+  { code: 'ELE 639', year: 3 },
+  { code: 'MEC 511', year: 3 },
+  // Fourth Year
+  { code: 'ELE 70A/B*', year: 4 },
+  { code: 'CEN 800', year: 4 },
+  { code: 'COE 718', year: 4 },
+  { code: 'COE 768', year: 4 },
+  { code: 'ELE 707', year: 4 },
+  { code: 'ELE 714', year: 4 },
+  { code: 'ELE 719', year: 4 },
+  { code: 'ELE 727', year: 4 },
+  { code: 'ELE 734', year: 4 },
+  { code: 'ELE 745', year: 4 },
+  { code: 'ELE 746', year: 4 },
+  { code: 'ELE 747', year: 4 },
+  { code: 'ELE 754', year: 4 },
+  { code: 'ELE 792', year: 4 },
+  { code: 'ELE 809', year: 4 },
+  { code: 'ELE 829', year: 4 },
+  { code: 'ELE 861', year: 4 },
+  { code: 'CEN 810', year: 4 },
+  { code: 'COE 528', year: 4 },
+  { code: 'COE 608', year: 4 },
+  { code: 'COE 628', year: 4 },
+  { code: 'COE 838', year: 4 },
+  { code: 'COE 865', year: 4 },
+  { code: 'ELE 709', year: 4 },
+  { code: 'ELE 801', year: 4 },
+  { code: 'ELE 804', year: 4 },
+  { code: 'ELE 806', year: 4 },
+  { code: 'ELE 815', year: 4 },
+  { code: 'ELE 819', year: 4 },
+  { code: 'ELE 827', year: 4 },
+  { code: 'ELE 846', year: 4 },
+  { code: 'ELE 863', year: 4 },
+  { code: 'ELE 882', year: 4 },
+  { code: 'ELE 884', year: 4 },
+  { code: 'ELE 885', year: 4 },
+  { code: 'ELE 888', year: 4 },
+];
+
+// Computer Engineering (Hardware) course list
+export const computerHardwareCourses: { code: string; year: number }[] = [
+  // Second Year
+  { code: 'COE 318', year: 2 },
+  { code: 'COE 328', year: 2 },
+  { code: 'ELE 302', year: 2 },
+  { code: 'MTH 425', year: 2 },
+  { code: 'PCS 224', year: 2 },
+  { code: 'CMN 432', year: 2 },
+  { code: 'COE 428', year: 2 },
+  { code: 'COE 528', year: 2 },
+  { code: 'ELE 404', year: 2 },
+  { code: 'MTH 314', year: 2 },
+  // Third Year
+  { code: 'COE 501', year: 3 },
+  { code: 'COE 538', year: 3 },
+  { code: 'ELE 532', year: 3 },
+  { code: 'MEC 511', year: 3 },
+  { code: 'MTH 514', year: 3 },
+  { code: 'COE 608', year: 3 },
+  { code: 'COE 628', year: 3 },
+  { code: 'ELE 632', year: 3 },
+  { code: 'ELE 635', year: 3 },
+  { code: 'ELE 639', year: 3 },
+  { code: 'CPS 688', year: 3 },
+  // Fourth Year
+  { code: 'COE 70A/B*', year: 4 },
+  { code: 'COE 758', year: 4 },
+  { code: 'COE 768', year: 4 },
+  { code: 'CEN 800', year: 4 },
+  { code: 'COE 817', year: 4 },
+  { code: 'COE 818', year: 4 },
+  { code: 'COE 838', year: 4 },
+  { code: 'COE 848', year: 4 },
+  { code: 'COE 865', year: 4 },
+  { code: 'CPS 888', year: 4 },
+  { code: 'COE 892', year: 4 },
+  { code: 'CEN 810', year: 4 },
+  { code: 'ELE 709', year: 4 },
+  { code: 'ELE 815', year: 4 },
+  { code: 'ELE 863', year: 4 },
+  { code: 'ELE 882', year: 4 },
+  { code: 'ELE 885', year: 4 },
+  { code: 'ELE 888', year: 4 },
+  { code: 'COE 718', year: 4 },
+  { code: 'CPS 710', year: 4 },
+  { code: 'CPS 843', year: 4 },
+  { code: 'ELE 531', year: 4 },
+  { code: 'ELE 707', year: 4 },
+  { code: 'ELE 724', year: 4 },
+  { code: 'ELE 734', year: 4 },
+  { code: 'ELE 745', year: 4 },
+  { code: 'ELE 792', year: 4 },
+  { code: 'ELE 809', year: 4 },
+  { code: 'ELE 829', year: 4 },
+];
+
+// Computer Engineering (Software) course list
+export const computerSoftwareCourses: { code: string; year: number }[] = [
+  // Second Year (same as hardware)
+  { code: 'COE 318', year: 2 },
+  { code: 'COE 328', year: 2 },
+  { code: 'ELE 302', year: 2 },
+  { code: 'MTH 425', year: 2 },
+  { code: 'PCS 224', year: 2 },
+  { code: 'CMN 432', year: 2 },
+  { code: 'COE 428', year: 2 },
+  { code: 'COE 528', year: 2 },
+  { code: 'ELE 404', year: 2 },
+  { code: 'MTH 314', year: 2 },
+  // Third Year (core + software unique)
+  { code: 'COE 501', year: 3 },
+  { code: 'COE 538', year: 3 },
+  { code: 'ELE 532', year: 3 },
+  { code: 'MEC 511', year: 3 },
+  { code: 'MTH 514', year: 3 },
+  { code: 'COE 608', year: 3 },
+  { code: 'COE 628', year: 3 },
+  { code: 'CPS 688', year: 3 },
+  { code: 'CPS 510', year: 3 },
+  { code: 'COE 691', year: 3 },
+  { code: 'COE 692', year: 3 },
+  // Fourth Year (core + software unique)
+  { code: 'COE 70A/B*', year: 4 },
+  { code: 'COE 768', year: 4 },
+  { code: 'CPS 714', year: 4 },
+  { code: 'CEN 800', year: 4 },
+  { code: 'COE 891', year: 4 },
+  { code: 'COE 892', year: 4 },
+  { code: 'COE 718', year: 4 },
+  { code: 'COE 758', year: 4 },
+  { code: 'CPS 710', year: 4 },
+  { code: 'CPS 843', year: 4 },
+  { code: 'ELE 734', year: 4 },
+  { code: 'COE 817', year: 4 },
+  { code: 'COE 838', year: 4 },
+  { code: 'COE 865', year: 4 },
+  { code: 'CEN 810', year: 4 },
+  { code: 'ELE 632', year: 4 },
+  { code: 'ELE 635', year: 4 },
+  { code: 'ELE 639', year: 4 },
+  { code: 'ELE 888', year: 4 },
+];
+
+// Helper functions
+export const getCoursesByProgram = (program: 'Electrical' | 'Computer-Hardware' | 'Computer-Software') => {
+  if (program === 'Electrical') return electricalCourses;
+  if (program === 'Computer-Hardware') return computerHardwareCourses;
+  if (program === 'Computer-Software') return computerSoftwareCourses;
+  return [];
+};
+
+export const getCourseInfo = (code: string) => allCourses[code]; 

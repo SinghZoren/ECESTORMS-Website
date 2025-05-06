@@ -51,7 +51,7 @@ export default function Resources() {
         }}
         onMouseEnter={() => setHoveredSection('exam')}
         onMouseLeave={() => setHoveredSection(null)}
-        className="flex-1 flex items-center justify-center p-8 hover:bg-[#3a1039] transition-all duration-500 relative z-10 group overflow-hidden"
+        className={`flex-1 flex items-center justify-center p-8 hover:bg-[#3a1039] transition-all duration-[600ms] relative z-10 group overflow-hidden ${hoveredSection === 'tutorial' ? 'grayscale blur-sm' : ''}`}
         style={{
           clipPath: 'polygon(0 0, 100% 0, 85% 100%, 0 100%)',
           width: '50%'
@@ -63,14 +63,14 @@ export default function Resources() {
             src="/images/exam-bank-bg.jpg"
             alt="Exam Bank Background"
             fill
-            className="object-cover"
+            className={`object-cover transition-all duration-[600ms] ${hoveredSection === 'tutorial' ? 'grayscale blur-sm' : ''}`}
             priority
           />
           {/* Overlay */}
-          <div className={`absolute inset-0 bg-[#4A154B]/60 transition-opacity duration-500 ${hoveredSection === 'exam' ? 'opacity-40' : 'opacity-60'}`} />
+          <div className={`absolute inset-0 bg-[#4A154B]/60 transition-opacity duration-[600ms] ${hoveredSection === 'exam' ? 'opacity-40' : 'opacity-60'}`} />
         </div>
 
-        <div className="text-center relative z-10">
+        <div className={`text-center relative z-10 transition-all duration-[600ms] ${hoveredSection === 'tutorial' ? 'grayscale blur-sm' : ''}`}>
           <div className="flex justify-center mb-6">
             <IoDocumentText className="w-20 h-20 text-white opacity-80" />
           </div>
@@ -85,7 +85,7 @@ export default function Resources() {
         onClick={() => setIsTutorialsOpen(true)}
         onMouseEnter={() => setHoveredSection('tutorial')}
         onMouseLeave={() => setHoveredSection(null)}
-        className="flex-1 flex items-center justify-center p-8 hover:bg-[#3a1039] transition-all duration-500 relative group overflow-hidden"
+        className={`flex-1 flex items-center justify-center p-8 hover:bg-[#3a1039] transition-all duration-[600ms] relative group overflow-hidden ${hoveredSection === 'exam' ? 'grayscale blur-sm' : ''}`}
         style={{
           clipPath: 'polygon(15% 0, 100% 0, 100% 100%, 0 100%)',
           marginLeft: '-8%',
@@ -98,14 +98,14 @@ export default function Resources() {
             src="/images/tutorials-bg.jpg"
             alt="Tutorials Background"
             fill
-            className={`object-cover transition-all duration-500 ${hoveredSection === 'exam' ? 'grayscale blur-sm' : ''}`}
+            className={`object-cover transition-all duration-[600ms] ${hoveredSection === 'exam' ? 'grayscale blur-sm' : ''}`}
             priority
           />
           {/* Overlay */}
-          <div className={`absolute inset-0 bg-[#4A154B]/60 transition-opacity duration-500 ${hoveredSection === 'tutorial' ? 'opacity-40' : 'opacity-60'}`} />
+          <div className={`absolute inset-0 bg-[#4A154B]/60 transition-opacity duration-[600ms] ${hoveredSection === 'tutorial' ? 'opacity-40' : 'opacity-60'}`} />
         </div>
 
-        <div className="text-center relative z-10">
+        <div className={`text-center relative z-10 transition-all duration-[600ms] ${hoveredSection === 'exam' ? 'grayscale blur-sm' : ''}`}>
           <div className="flex justify-center mb-6">
             <HiAcademicCap className="w-20 h-20 text-white opacity-80" />
           </div>
