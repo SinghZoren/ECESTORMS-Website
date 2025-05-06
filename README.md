@@ -55,10 +55,14 @@ The following environment variables are required:
 
 - `NEXT_PUBLIC_ADMIN_USERNAME`: Admin username
 - `NEXT_PUBLIC_ADMIN_PASSWORD`: Admin password
+- `NEXT_PUBLIC_AWS_REGION`: AWS region for S3 bucket
+- `NEXT_PUBLIC_AWS_ACCESS_KEY_ID`: AWS access key ID
+- `NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY`: AWS secret access key
+- `NEXT_PUBLIC_AWS_BUCKET_NAME`: AWS S3 bucket name
 
 ## Deployment
 
-The website can be deployed to any platform that supports Next.js, such as Vercel, Netlify, or a custom server.
+The website can be deployed to any platform that supports Next.js, such as Vercel, Netlify, or a custom server. Ensure that the environment variables are set correctly in your deployment environment.
 
 ## License
 

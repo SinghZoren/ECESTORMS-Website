@@ -485,54 +485,82 @@ export default function ResourceManagerModal({ isOpen, onClose }: ResourceManage
                   {getCurrentResources().map((resource) => (
                     <div
                       key={resource.id}
-                      className="bg-white rounded-lg p-3 hover:shadow-md transition-shadow"
+                      className="relative bg-white rounded-lg p-3 pt-8 hover:shadow-md transition-shadow flex flex-col items-center group min-h-[220px]"
                     >
-                      <div className="flex items-center justify-between">
-                        <div 
-                          className="flex items-center gap-2 flex-1 cursor-pointer"
-                          onClick={() => {
-                            if (resource.type === 'folder') {
-                              handleFolderClick(resource);
-                            } else if (resource.type === 'file' && resource.fileUrl) {
-                              setPreviewFile({ url: resource.fileUrl, name: resource.name.includes('-') ? resource.name.split('-').slice(1).join('-') : resource.name, type: resource.fileUrl.split('.').pop()?.toLowerCase() === 'pdf' ? 'application/pdf' : (resource.fileUrl.match(/\.(jpg|jpeg|png|gif|bmp|webp)$/i) ? 'image/' : 'application/octet-stream') });
-                            }
-                          }}
-                        >
-                          {resource.type === 'folder' ? (
-                            <IoFolder className="text-[#931cf5] w-4 h-4" />
-                          ) : (
-                            <IoDocument className="text-[#931cf5] w-4 h-4" />
-                          )}
-                          <span className="truncate text-sm">
-                            {resource.type === 'file' && resource.name.includes('-')
-                              ? resource.name.split('-').slice(1).join('-')
-                              : resource.name}
-                          </span>
-                        </div>
-                        <div className="flex gap-2 items-center">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteResource(resource.id, resource.type);
-                            }}
-                            className="text-red-500 hover:text-red-700 ml-2 text-sm"
-                          >
-                            Delete
-                          </button>
-                          {resource.type === 'file' && (
-                            <button
-                              onClick={e => {
-                                e.stopPropagation();
-                                setRenamingFile({ id: resource.id, name: resource.name, key: resource.fileUrl?.split('.com/')[1] || '' });
-                                setNewFileName(resource.name.includes('-') ? resource.name.split('-').slice(1).join('-') : resource.name);
-                              }}
-                              className="text-[#931cf5] hover:text-[#7a1ac4] ml-2 text-sm border border-[#931cf5] rounded px-2 py-0.5"
-                            >
-                              Rename
-                            </button>
-                          )}
-                        </div>
+                      {/* Delete button as X at top left */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteResource(resource.id, resource.type);
+                        }}
+                        className="absolute top-2 left-2 text-red-400 hover:text-red-600 p-1 rounded-full bg-white shadow group-hover:scale-110 transition-transform z-10"
+                        title="Delete"
+                      >
+                        <IoClose size={18} />
+                      </button>
+
+                      {/* File name at the top */}
+                      <div className="w-full text-center mb-2 font-medium text-sm truncate px-2">
+                        {resource.type === 'file' && resource.name.includes('-')
+                          ? resource.name.split('-').slice(1).join('-')
+                          : resource.name}
                       </div>
+
+                      {/* File preview */}
+                      <div
+                        className="flex-1 flex items-center justify-center w-full mb-2 cursor-pointer"
+                        onClick={() => {
+                          if (resource.type === 'folder') {
+                            handleFolderClick(resource);
+                          } else if (resource.type === 'file' && resource.fileUrl) {
+                            // Try to infer type for preview
+                            const ext = resource.fileUrl.split('.').pop()?.toLowerCase();
+                            setPreviewFile({
+                              url: resource.fileUrl,
+                              name: resource.name.includes('-') ? resource.name.split('-').slice(1).join('-') : resource.name,
+                              type: ext === 'pdf' ? 'application/pdf' : (resource.fileUrl.match(/\.(jpg|jpeg|png|gif|bmp|webp)$/i) ? 'image/' : 'application/octet-stream')
+                            });
+                          }
+                        }}
+                      >
+                        {resource.type === 'folder' ? (
+                          <IoFolder className="text-[#931cf5] w-12 h-12 opacity-80" />
+                        ) : resource.fileUrl && resource.fileUrl.match(/\.(jpg|jpeg|png|gif|bmp|webp)$/i) ? (
+                          <img
+                            src={resource.fileUrl}
+                            alt={resource.name}
+                            className="max-h-20 max-w-full rounded shadow border border-gray-100 object-contain"
+                          />
+                        ) : resource.fileUrl && resource.fileUrl.toLowerCase().endsWith('.pdf') ? (
+                          <div className="flex flex-col items-center">
+                            <span className="inline-block bg-red-100 text-red-600 rounded-full p-2 mb-1">
+                              <IoDocument className="w-8 h-8" />
+                            </span>
+                            <span className="text-xs text-gray-500">PDF</span>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center">
+                            <span className="inline-block bg-gray-100 text-gray-400 rounded-full p-2 mb-1">
+                              <IoDocument className="w-8 h-8" />
+                            </span>
+                            <span className="text-xs text-gray-400">File</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Rename button below preview (only for files) */}
+                      {resource.type === 'file' && (
+                        <button
+                          onClick={e => {
+                            e.stopPropagation();
+                            setRenamingFile({ id: resource.id, name: resource.name, key: resource.fileUrl?.split('.com/')[1] || '' });
+                            setNewFileName(resource.name.includes('-') ? resource.name.split('-').slice(1).join('-') : resource.name);
+                          }}
+                          className="mt-2 px-3 py-1 text-xs bg-[#931cf5] text-white rounded hover:bg-[#7a1ac4] transition-colors w-full"
+                        >
+                          Rename
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
