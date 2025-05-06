@@ -49,10 +49,13 @@ export default function ResourceManagerModal({ isOpen, onClose }: ResourceManage
 
   const filteredCourses = useMemo(() => {
     const courses = getCourseList();
-    return courses.filter(course =>
-      (course.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-       allCourses[course.code].name.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
+    return courses.filter(course => {
+      const courseInfo = allCourses[course.code];
+      return courseInfo && (
+        course.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        courseInfo.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    });
   }, [searchQuery, selectedProgram]);
 
   if (!isOpen) return null;
