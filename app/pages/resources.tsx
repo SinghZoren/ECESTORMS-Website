@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { bebasNeue } from '../fonts';
 import { IoDocumentText, IoClose } from 'react-icons/io5';
 import { HiAcademicCap } from 'react-icons/hi';
@@ -18,6 +18,7 @@ interface TutorialEvent {
   willRecord: boolean;
   willPostNotes: boolean;
   additionalResources?: string[];
+  type: 'academic' | 'non-academic';
 }
 
 export default function Resources() {
@@ -25,21 +26,27 @@ export default function Resources() {
   const [isTutorialsOpen, setIsTutorialsOpen] = useState(false);
   const [hoveredSection, setHoveredSection] = useState<'exam' | 'tutorial' | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
+  const [tutorialEvents, setTutorialEvents] = useState<TutorialEvent[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const tutorialEvents: TutorialEvent[] = [
-    {
-      id: '1',
-      course: 'ELE302',
-      date: '2024-03-15',
-      time: '14:00-16:00',
-      taName: 'John Doe',
-      location: 'ENG123',
-      zoomLink: 'https://zoom.us/j/example',
-      willRecord: true,
-      willPostNotes: true,
-      additionalResources: ['Practice Problems', 'Solution Guide']
+  useEffect(() => {
+    if (isTutorialsOpen) fetchTutorials();
+  }, [isTutorialsOpen]);
+
+  const fetchTutorials = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/tutorials');
+      const data = await res.json();
+      setTutorialEvents(data.tutorials || []);
+    } catch {
+      setTutorialEvents([]);
     }
-  ];
+    setLoading(false);
+  };
+
+  const academicTutorials = tutorialEvents.filter(event => event.type === 'academic');
+  const nonAcademicTutorials = tutorialEvents.filter(event => event.type === 'non-academic');
 
   return (
     <div className="min-h-screen bg-[#4A154B] flex flex-col md:flex-row relative overflow-hidden">
@@ -156,38 +163,40 @@ export default function Resources() {
                       </tr>
                     </thead>
                     <tbody>
-                      {tutorialEvents
-                        .filter(event => event.course.startsWith('ELE'))
-                        .map((event) => (
-                          <tr key={event.id} className="border-b border-gray-200 hover:bg-gray-100">
-                            <td className="px-4 py-2">{event.course}</td>
-                            <td className="px-4 py-2">{event.date}</td>
-                            <td className="px-4 py-2">{event.time}</td>
-                            <td className="px-4 py-2">{event.taName}</td>
-                            <td className="px-4 py-2">{event.location}</td>
-                            <td className="px-4 py-2">
-                              {event.zoomLink && (
-                                <a 
-                                  href={event.zoomLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-[#931cf5] hover:underline"
-                                >
-                                  Join
-                                </a>
-                              )}
-                            </td>
-                            <td className="px-4 py-2">
-                              <div className="flex flex-col gap-1">
-                                {event.willRecord && <span className="text-sm">📹 Recording</span>}
-                                {event.willPostNotes && <span className="text-sm">📝 Notes</span>}
-                                {event.additionalResources?.map((resource, index) => (
-                                  <span key={index} className="text-sm">📚 {resource}</span>
-                                ))}
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
+                      {loading ? (
+                        <tr><td colSpan={7} className="text-center py-4">Loading...</td></tr>
+                      ) : academicTutorials.length === 0 ? (
+                        <tr><td colSpan={7} className="text-center py-4">No academic tutorials scheduled.</td></tr>
+                      ) : academicTutorials.map(event => (
+                        <tr key={event.id} className="border-b border-gray-200 hover:bg-gray-100">
+                          <td className="px-4 py-2">{event.course}</td>
+                          <td className="px-4 py-2">{event.date}</td>
+                          <td className="px-4 py-2">{event.time}</td>
+                          <td className="px-4 py-2">{event.taName}</td>
+                          <td className="px-4 py-2">{event.location}</td>
+                          <td className="px-4 py-2">
+                            {event.zoomLink && (
+                              <a 
+                                href={event.zoomLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[#931cf5] hover:underline"
+                              >
+                                Join
+                              </a>
+                            )}
+                          </td>
+                          <td className="px-4 py-2">
+                            <div className="flex flex-col gap-1">
+                              {event.willRecord && <span className="text-sm">📹 Recording</span>}
+                              {event.willPostNotes && <span className="text-sm">📝 Notes</span>}
+                              {event.additionalResources?.map((resource, index) => (
+                                <span key={index} className="text-sm">📚 {resource}</span>
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
@@ -210,38 +219,40 @@ export default function Resources() {
                       </tr>
                     </thead>
                     <tbody>
-                      {tutorialEvents
-                        .filter(event => !event.course.startsWith('ELE'))
-                        .map((event) => (
-                          <tr key={event.id} className="border-b border-gray-200 hover:bg-gray-100">
-                            <td className="px-4 py-2">{event.course}</td>
-                            <td className="px-4 py-2">{event.date}</td>
-                            <td className="px-4 py-2">{event.time}</td>
-                            <td className="px-4 py-2">{event.taName}</td>
-                            <td className="px-4 py-2">{event.location}</td>
-                            <td className="px-4 py-2">
-                              {event.zoomLink && (
-                                <a 
-                                  href={event.zoomLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-[#931cf5] hover:underline"
-                                >
-                                  Join
-                                </a>
-                              )}
-                            </td>
-                            <td className="px-4 py-2">
-                              <div className="flex flex-col gap-1">
-                                {event.willRecord && <span className="text-sm">📹 Recording</span>}
-                                {event.willPostNotes && <span className="text-sm">📝 Notes</span>}
-                                {event.additionalResources?.map((resource, index) => (
-                                  <span key={index} className="text-sm">📚 {resource}</span>
-                                ))}
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
+                      {loading ? (
+                        <tr><td colSpan={7} className="text-center py-4">Loading...</td></tr>
+                      ) : nonAcademicTutorials.length === 0 ? (
+                        <tr><td colSpan={7} className="text-center py-4">No non-academic tutorials scheduled.</td></tr>
+                      ) : nonAcademicTutorials.map(event => (
+                        <tr key={event.id} className="border-b border-gray-200 hover:bg-gray-100">
+                          <td className="px-4 py-2">{event.course}</td>
+                          <td className="px-4 py-2">{event.date}</td>
+                          <td className="px-4 py-2">{event.time}</td>
+                          <td className="px-4 py-2">{event.taName}</td>
+                          <td className="px-4 py-2">{event.location}</td>
+                          <td className="px-4 py-2">
+                            {event.zoomLink && (
+                              <a 
+                                href={event.zoomLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[#931cf5] hover:underline"
+                              >
+                                Join
+                              </a>
+                            )}
+                          </td>
+                          <td className="px-4 py-2">
+                            <div className="flex flex-col gap-1">
+                              {event.willRecord && <span className="text-sm">📹 Recording</span>}
+                              {event.willPostNotes && <span className="text-sm">📝 Notes</span>}
+                              {event.additionalResources?.map((resource, index) => (
+                                <span key={index} className="text-sm">📚 {resource}</span>
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>

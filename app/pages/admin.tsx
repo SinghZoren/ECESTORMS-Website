@@ -8,6 +8,7 @@ import TeamMembersModal from '../components/TeamMembersModal';
 import CalendarModal from '../components/CalendarModal';
 import SponsorsModal, { Sponsor } from '../components/SponsorsModal';
 import ResourceManagerModal from '../components/ResourceManagerModal';
+import TutorialEditModal from '../components/TutorialEditModal';
 
 interface CalendarEvent {
   id: string;
@@ -28,6 +29,7 @@ export default function Admin() {
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
   const [isSponsorsModalOpen, setIsSponsorsModalOpen] = useState(false);
   const [isResourceManagerModalOpen, setIsResourceManagerModalOpen] = useState(false);
+  const [isTutorialEditModalOpen, setIsTutorialEditModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [currentHours, setCurrentHours] = useState(defaultOfficeHoursData);
   const [currentLocation, setCurrentLocation] = useState(defaultLocation);
@@ -347,6 +349,14 @@ export default function Admin() {
                   <h3 className="text-lg font-medium text-gray-900">Resource Manager</h3>
                   <p className="mt-1 text-sm text-gray-500">Manage exam bank resources and files</p>
                 </button>
+
+                <button
+                  onClick={() => setIsTutorialEditModalOpen(true)}
+                  className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+                >
+                  <h3 className="text-lg font-medium text-gray-900">Schedule Tutorial</h3>
+                  <p className="mt-1 text-sm text-gray-500">Add or edit tutorial events</p>
+                </button>
               </div>
             </div>
           </main>
@@ -381,6 +391,15 @@ export default function Admin() {
           <ResourceManagerModal
             isOpen={isResourceManagerModalOpen}
             onClose={() => setIsResourceManagerModalOpen(false)}
+          />
+          <TutorialEditModal
+            isOpen={isTutorialEditModalOpen}
+            onClose={() => setIsTutorialEditModalOpen(false)}
+            onSave={(tutorial) => {
+              // Handle saving the tutorial event
+              console.log('Saving tutorial:', tutorial);
+              // Add logic to save the tutorial event
+            }}
           />
         </>
       ) : (
