@@ -107,7 +107,7 @@ export default function OurTeam() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#4A154B]">
-      <div className="flex-grow pt-[1%]">
+      <div className="flex-grow pt-20 md:pt-[1%]">
         <main className="container mx-auto px-[4%] py-[5%]">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-[4%] text-center">
             Our Team

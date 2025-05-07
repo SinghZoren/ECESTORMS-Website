@@ -9,6 +9,8 @@ import CalendarModal from '../components/CalendarModal';
 import SponsorsModal, { Sponsor } from '../components/SponsorsModal';
 import ResourceManagerModal from '../components/ResourceManagerModal';
 import TutorialEditModal from '../components/TutorialEditModal';
+import PastEventsModal from '../components/PastEventsModal';
+import ShopModal from '../components/ShopModal';
 
 interface CalendarEvent {
   id: string;
@@ -17,6 +19,26 @@ interface CalendarEvent {
   end: string;
   allDay: boolean;
   description?: string;
+}
+
+interface PastEvent {
+  id: string;
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  description: string;
+  imageUrl: string;
+  year: string;
+  term: string;
+}
+
+interface ShopItem {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  buyUrl: string;
 }
 
 export default function Admin() {
@@ -30,12 +52,16 @@ export default function Admin() {
   const [isSponsorsModalOpen, setIsSponsorsModalOpen] = useState(false);
   const [isResourceManagerModalOpen, setIsResourceManagerModalOpen] = useState(false);
   const [isTutorialEditModalOpen, setIsTutorialEditModalOpen] = useState(false);
+  const [isPastEventsModalOpen, setIsPastEventsModalOpen] = useState(false);
+  const [isShopModalOpen, setIsShopModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [currentHours, setCurrentHours] = useState(defaultOfficeHoursData);
   const [currentLocation, setCurrentLocation] = useState(defaultLocation);
   const [currentTeamMembers, setCurrentTeamMembers] = useState(defaultTeamMembers);
   const [currentSponsors, setCurrentSponsors] = useState<Sponsor[]>([]);
   const [conferenceVisible, setConferenceVisible] = useState(true);
+  const [currentPastEvents, setCurrentPastEvents] = useState<PastEvent[]>([]);
+  const [currentShopItems, setCurrentShopItems] = useState<ShopItem[]>([]);
 
   useEffect(() => {
     setMounted(true);
@@ -124,6 +150,37 @@ export default function Admin() {
     } catch (error) {
       console.error('Error fetching sponsors:', error);
       alert('Failed to load current sponsors. Please try again.');
+    }
+  };
+
+  // Fetch current past events when opening the modal
+  const handleOpenPastEventsModal = async () => {
+    try {
+      const response = await fetch('/api/getPastEvents');
+      if (!response.ok) {
+        throw new Error('Failed to fetch past events');
+      }
+      const data = await response.json();
+      setCurrentPastEvents(data.events);
+      setIsPastEventsModalOpen(true);
+    } catch (error) {
+      console.error('Error fetching past events:', error);
+      alert('Failed to load current past events. Please try again.');
+    }
+  };
+
+  // Fetch current shop items when opening the modal
+  const handleOpenShopModal = async () => {
+    try {
+      const response = await fetch('/api/getShopItems');
+      if (!response.ok) {
+        throw new Error('Failed to fetch shop items');
+      }
+      const data = await response.json();
+      setCurrentShopItems(data.items);
+      setIsShopModalOpen(true);
+    } catch {
+      alert('Failed to load shop items. Please try again.');
     }
   };
 
@@ -273,8 +330,51 @@ export default function Admin() {
     }
   };
 
+  const handleSavePastEvents = async (events: PastEvent[]) => {
+    try {
+      const response = await fetch('/api/updatePastEvents', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ events }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update past events');
+      }
+
+      setCurrentPastEvents(events);
+      alert('Past events published successfully!');
+    } catch (error) {
+      console.error('Error publishing past events:', error);
+      alert('Failed to publish past events. Please try again.');
+    }
+  };
+
+  function handleSaveShopItems(items: ShopItem[]) {
+    (async () => {
+      try {
+        const response = await fetch('/api/updateShopItems', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ items }),
+        });
+        if (!response.ok) {
+          throw new Error('Failed to update shop items');
+        }
+        setCurrentShopItems(items);
+        alert('Shop items published successfully!');
+      } catch {
+        alert('Failed to publish shop items. Please try again.');
+      }
+    })();
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       {isLoggedIn ? (
         <>
           {/* Header with Logout */}
@@ -357,6 +457,26 @@ export default function Admin() {
                   <h3 className="text-lg font-medium text-gray-900">Schedule Tutorial</h3>
                   <p className="mt-1 text-sm text-gray-500">Add or edit tutorial events</p>
                 </button>
+
+                <button
+                  onClick={handleOpenPastEventsModal}
+                  className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+                >
+                  <h3 className="text-lg font-medium text-gray-900">Manage Past Events</h3>
+                  <p className="mt-2 text-sm text-gray-500">
+                    Add, edit, or remove past events and their details
+                  </p>
+                </button>
+
+                <button
+                  onClick={handleOpenShopModal}
+                  className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+                >
+                  <h3 className="text-lg font-medium text-gray-900">Manage Shop</h3>
+                  <p className="mt-2 text-sm text-gray-500">
+                    Add, edit, or remove shop items and their details
+                  </p>
+                </button>
               </div>
             </div>
           </main>
@@ -400,6 +520,18 @@ export default function Admin() {
               console.log('Saving tutorial:', tutorial);
               // Add logic to save the tutorial event
             }}
+          />
+          <PastEventsModal
+            isOpen={isPastEventsModalOpen}
+            onClose={() => setIsPastEventsModalOpen(false)}
+            onSave={handleSavePastEvents}
+            currentEvents={currentPastEvents}
+          />
+          <ShopModal
+            isOpen={isShopModalOpen}
+            onClose={() => setIsShopModalOpen(false)}
+            onSave={handleSaveShopItems}
+            currentItems={currentShopItems}
           />
         </>
       ) : (

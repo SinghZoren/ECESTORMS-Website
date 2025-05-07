@@ -5,7 +5,7 @@ import Navbar from './components/Navbar';
 import ContentSwitcher from './components/ContentSwitcher';
 import CircuitTransition from './components/CircuitTransition';
 import Footer from './components/Footer';
-import SocialSidebar from './components/SocialSidebar';
+import ResponsiveSocialSidebar from './components/ResponsiveSocialSidebar';
 import { Analytics } from '@vercel/analytics/next';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -35,7 +35,7 @@ export default function RootLayout() {
       <body className={`${inter.className} flex flex-col min-h-screen`}>
         <div className="flex flex-col min-h-screen">
           <Navbar />
-          <SocialSidebar />
+          <ResponsiveSocialSidebar />
           <main className="flex-grow relative">
             <CircuitTransition>
               <ContentSwitcher />   

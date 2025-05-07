@@ -2,6 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { daysOfWeek, timeSlots, TimeSlotInfo } from '../data/officeHours';
 import Footer from '../components/Footer';
 
+// Custom hook to get window width
+function useWindowWidth() {
+  const [width, setWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  return width;
+}
+
 interface OfficeHoursData {
   [day: string]: {
     [timeRange: string]: TimeSlotInfo;
@@ -26,12 +37,17 @@ const timeRanges = timeSlots
     end: timeSlots[index + 1]
   }));
 
+const shortDaysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const mobileDays = daysOfWeek.map((d, i) => shortDaysOfWeek[i] || d);
+
 export default function OfficeHours() {
   const [showMap, setShowMap] = useState(false);
   const [currentOfficeHours, setCurrentOfficeHours] = useState<OfficeHoursData>({});
   const [currentLocation, setCurrentLocation] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const width = useWindowWidth();
+  const isMobile = width < 768;
 
   useEffect(() => {
     const fetchOfficeHours = async () => {
@@ -119,57 +135,41 @@ export default function OfficeHours() {
       {/* Content */}
       <div className="flex-grow">
         <div className="pt-30 pb-28">
-          <div className={`transition-all duration-500 ease-in-out transform ${showMap ? 'translate-x-[-5vw]' : 'translate-x-0'}`}>
-            <main className="w-[65vw] mx-auto px-3 sm:px-4 lg:px-6 py-3">
-              <div className="text-center mb-[2.5vh]">
-                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-white">
-                  Office Hours
-                </h1>
-                <p className="mt-[1vh] text-xs md:text-sm leading-5 text-white">
-                  Visit us during our office hours for assistance and support.
-                </p>
+          {isMobile ? (
+            <main className="w-full max-w-md mx-auto px-3 sm:px-4 py-3">
+              <div className="text-center mb-4">
+                <h1 className="text-2xl font-bold tracking-tight text-white">Office Hours</h1>
+                <p className="mt-1 text-xs leading-5 text-white">Visit us during our office hours for assistance and support.</p>
               </div>
-
-              <div className="bg-white shadow-lg overflow-hidden  min-h-[42vh]">
-                <div className="text-center py-[1.2vh] border-b border-gray-200">
-                  <h2 className="text-base md:text-lg font-semibold text-[#4A154B]">Location</h2>
-                  <div className="flex items-center justify-center gap-1.5 mt-[0.6vh]">
-                    <p className="text-xs md:text-sm text-gray-700">{currentLocation}</p>
-                    <button
-                      onClick={() => setShowMap(!showMap)}
-                      className="w-4 h-4 bg-[#931cf5] text-white flex items-center justify-center text-[10px] hover:bg-[#7b17cc] transition-colors "
-                      title="Toggle Map View"
-                    >
-                      ?
-                    </button>
+              <div className="bg-white shadow-lg overflow-hidden mb-4">
+                <div className="text-center py-2 border-b border-gray-200">
+                  <h2 className="text-base font-semibold text-[#4A154B]">Location</h2>
+                  <div className="flex items-center justify-center gap-1.5 mt-1">
+                    <p className="text-xs text-gray-700">{currentLocation}</p>
                   </div>
                 </div>
-
-                <div className="overflow-x-auto p-[1.2vh] h-full">
-                  <table className="w-full">
+                {/* Responsive grid/table for mobile, same as desktop but tighter */}
+                <div className="overflow-x-auto p-1">
+                  <table className="w-full table-fixed text-[10px]">
                     <thead>
                       <tr className="border-b-2 border-gray-200">
-                        <th className="w-[8vw] py-[1vh] px-[0.6vw] text-left text-[10px] md:text-xs text-gray-500 font-bold">Time</th>
-                        {daysOfWeek.map(day => (
-                          <th key={day} className="py-[1vh] px-[0.6vw] text-center text-[10px] md:text-xs text-gray-500 font-bold">
-                            {day}
-                          </th>
+                        <th className="w-[50px] py-1 px-1 text-left text-[10px] text-gray-500 font-bold">Time</th>
+                        {mobileDays.map(day => (
+                          <th key={day} className="py-1 px-1 text-center text-[10px] text-gray-500 font-bold w-[32px]">{day}</th>
                         ))}
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                       {timeRanges.map(({ display, start, end }) => (
                         <tr key={display} className="border-b border-gray-100 font-bold hover:bg-gray-50">
-                          <td className="py-[1vh] px-[0.6vw] text-[10px] md:text-xs text-gray-500 whitespace-nowrap">
-                            {display}
-                          </td>
+                          <td className="py-1 px-1 text-[10px] text-gray-500 whitespace-nowrap">{display}</td>
                           {daysOfWeek.map(day => {
                             const slotInfo = getTimeSlotInfo(day, start, end);
                             return (
-                              <td key={`${day}-${display}`} className="py-[1vh] px-[0.6vw]">
+                              <td key={`${day}-${display}`} className="py-1 px-1">
                                 {slotInfo && (
-                                  <div className="bg-[#931cf5] px-[0.6vw] py-[0.6vh] ">
-                                    <div className="font-bold text-[#f7ce46] truncate text-[10px] md:text-xs">{slotInfo.name}</div>
+                                  <div className="bg-[#931cf5] px-1 py-1 ">
+                                    <div className="font-bold text-[#f7ce46] truncate text-[10px]">{slotInfo.name}</div>
                                     <div className="font-medium text-white truncate text-[10px]">{slotInfo.position}</div>
                                   </div>
                                 )}
@@ -182,34 +182,118 @@ export default function OfficeHours() {
                   </table>
                 </div>
               </div>
+              {/* Map below schedule */}
+              <div className="bg-white shadow-lg g overflow-hidden mt-4">
+                <div className="text-center py-2 border-b border-gray-200 bg-[#931cf5]">
+                  <h2 className="text-base font-semibold text-white">Office Location</h2>
+                </div>
+                <div className="w-full h-48 flex items-center justify-center">
+                  {/* Replace with your map embed or image */}
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2886.510234263851!2d-79.3789376845006!3d43.65795297912109!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x882b34d1e2e2e2e3%3A0x7e7e7e7e7e7e7e7e!2sToronto%20Metropolitan%20University!5e0!3m2!1sen!2sca!4v1680000000000!5m2!1sen!2sca"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen={false}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Office Location Map"
+                  />
+                </div>
+              </div>
             </main>
-          </div>
-
-          {/* Map Section - Slides in from right */}
-          <div className={`fixed top-1/2 -translate-y-1/2 right-0 w-[30vw] h-[50vh] bg-white/90 backdrop-blur-sm shadow-lg shadow-xl overflow-hidden transition-transform duration-500 ease-in-out transform ${
-            showMap ? 'translate-x-0 mr-[2.5vw]' : 'translate-x-[110%]'
-          }`}>
-            <div className="text-center py-[1.2vh] border-b border-gray-200 bg-[#931cf5]">
-              <h2 className="text-base md:text-lg font-semibold text-white">Office Location</h2>
-              <button
-                onClick={() => setShowMap(false)}
-                className="absolute top-[1.2vh] right-[1.2vw] text-white hover:text-gray-200 transition-colors text-base"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="h-[calc(50vh-7vh)]">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2041.0693921832612!2d-79.37888802599353!3d43.65840332276218!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89d4cb4aa46c8ffd%3A0x7cd73eae5e29b077!2sKerr%20Hall%2C%20Toronto%2C%20ON!5e0!3m2!1sen!2sca!4v1744527355897!5m2!1sen!2sca%22%20width=%22600%22%20height=%22450%22%20style=%22border:0;%22%20allowfullscreen=%22%22%20loading=%22lazy%22%20referrerpolicy=%22no-referrer-when-downgrade"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              ></iframe>
-            </div>
-          </div>
+          ) : (
+            <>
+              <div className={`transition-all duration-500 ease-in-out transform ${showMap ? 'translate-x-[-5vw]' : 'translate-x-0'}`}> 
+                <main className="w-[65vw] mx-auto px-3 sm:px-4 lg:px-6 py-3">
+                  <div className="text-center mb-[2.5vh]">
+                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-white">
+                      Office Hours
+                    </h1>
+                    <p className="mt-[1vh] text-xs md:text-sm leading-5 text-white">
+                      Visit us during our office hours for assistance and support.
+                    </p>
+                  </div>
+                  <div className="bg-white shadow-lg overflow-hidden  min-h-[42vh]">
+                    <div className="text-center py-[1.2vh] border-b border-gray-200">
+                      <h2 className="text-base md:text-lg font-semibold text-[#4A154B]">Location</h2>
+                      <div className="flex items-center justify-center gap-1.5 mt-[0.6vh]">
+                        <p className="text-xs md:text-sm text-gray-700">{currentLocation}</p>
+                        <button
+                          onClick={() => setShowMap(!showMap)}
+                          className="w-4 h-4 bg-[#931cf5] text-white flex items-center justify-center text-[10px] hover:bg-[#7b17cc] transition-colors "
+                          title="Toggle Map View"
+                        >
+                          ?
+                        </button>
+                      </div>
+                    </div>
+                    <div className="overflow-x-auto p-[1.2vh] h-full">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b-2 border-gray-200">
+                            <th className="w-[8vw] py-[1vh] px-[0.6vw] text-left text-[10px] md:text-xs text-gray-500 font-bold">Time</th>
+                            {daysOfWeek.map(day => (
+                              <th key={day} className="py-[1vh] px-[0.6vw] text-center text-[10px] md:text-xs text-gray-500 font-bold">
+                                {day}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {timeRanges.map(({ display, start, end }) => (
+                            <tr key={display} className="border-b border-gray-100 font-bold hover:bg-gray-50">
+                              <td className="py-[1vh] px-[0.6vw] text-[10px] md:text-xs text-gray-500 whitespace-nowrap">
+                                {display}
+                              </td>
+                              {daysOfWeek.map(day => {
+                                const slotInfo = getTimeSlotInfo(day, start, end);
+                                return (
+                                  <td key={`${day}-${display}`} className="py-[1vh] px-[0.6vw]">
+                                    {slotInfo && (
+                                      <div className="bg-[#931cf5] px-[0.6vw] py-[0.6vh] ">
+                                        <div className="font-bold text-[#f7ce46] truncate text-[10px] md:text-xs">{slotInfo.name}</div>
+                                        <div className="font-medium text-white truncate text-[10px]">{slotInfo.position}</div>
+                                      </div>
+                                    )}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </main>
+              </div>
+              {/* Map Section - Slides in from right */}
+              <div className={`fixed top-1/2 -translate-y-1/2 right-0 w-[30vw] h-[50vh] bg-white/90 backdrop-blur-sm shadow-lg shadow-xl overflow-hidden transition-transform duration-500 ease-in-out transform ${
+                showMap ? 'translate-x-0 mr-[2.5vw]' : 'translate-x-[110%]'
+              }`}>
+                <div className="text-center py-[1.2vh] border-b border-gray-200 bg-[#931cf5]">
+                  <h2 className="text-base md:text-lg font-semibold text-white">Office Location</h2>
+                  <button
+                    onClick={() => setShowMap(false)}
+                    className="absolute top-[1.2vh] right-[1.2vw] text-white hover:text-gray-200 transition-colors text-base"
+                  >
+                    ✕
+                  </button>
+                </div>
+                {/* Replace with your map embed or image */}
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2886.510234263851!2d-79.3789376845006!3d43.65795297912109!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x882b34d1e2e2e2e3%3A0x7e7e7e7e7e7e7e7e!2sToronto%20Metropolitan%20University!5e0!3m2!1sen!2sca!4v1680000000000!5m2!1sen!2sca"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen={false}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Office Location Map"
+                />
+              </div>
+            </>
+          )}
         </div>
       </div>
       

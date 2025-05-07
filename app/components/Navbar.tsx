@@ -3,16 +3,18 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { IoChevronDown } from 'react-icons/io5';
+import { IoChevronDown, IoClose } from 'react-icons/io5';
 import Image from 'next/image';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isAboutHovered, setIsAboutHovered] = useState(false);
   const [conferenceVisible, setConferenceVisible] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const isHomePage = pathname === '/';
+  const [ReactDOM, setReactDOM] = useState<typeof import('react-dom') | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,6 +40,23 @@ export default function Navbar() {
     fetchConferenceVisibility();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    if (isMobileMenuOpen && typeof window !== 'undefined') {
+      import('react-dom').then((mod) => setReactDOM(mod));
+    }
+  }, [isMobileMenuOpen]);
 
   const handleNavClick = (path: string) => {
     router.push(path);
@@ -232,29 +251,15 @@ export default function Navbar() {
               Shop
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#931cf5] transition-all duration-500 group-hover:w-full"></span>
             </Link>
-            <Link 
-              href="/contact" 
-              className={`px-3 py-2 text-sm font-bold relative group ${
-                pathname === '/contact' 
-                  ? isHomePage && !isScrolled 
-                    ? 'text-white' 
-                    : 'text-[#931cf5]' 
-                  : isHomePage && !isScrolled 
-                    ? 'text-white hover:text-gray-200' 
-                    : 'text-gray-700 hover:text-[#931cf5]'
-              }`}
-              onClick={() => handleNavClick('/contact')}
-            >
-              Contact
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#931cf5] transition-all duration-500 group-hover:w-full"></span>
-            </Link>
+            
           </div>
           <div className="flex items-center md:hidden">
             <button
               type="button"
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white transition-all duration-300"
               aria-controls="mobile-menu"
-              aria-expanded="false"
+              aria-expanded={isMobileMenuOpen}
+              onClick={() => setIsMobileMenuOpen(true)}
             >
               <span className="sr-only">Open main menu</span>
               <svg
@@ -273,6 +278,31 @@ export default function Navbar() {
                 />
               </svg>
             </button>
+            {isMobileMenuOpen && ReactDOM && ReactDOM.createPortal(
+              <>
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-[99999] md:hidden" />
+                <div className="fixed top-0 right-0 h-full w-3/4 max-w-xs bg-white shadow-lg flex flex-col p-6 animate-slide-in z-[100000] md:hidden">
+                  <button
+                    className="absolute top-4 right-4 text-gray-500 hover:text-[#931cf5]"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <IoClose size={28} />
+                  </button>
+                  <nav className="flex flex-col gap-4 mt-10">
+                    <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-[#931cf5]">Home</Link>
+                    <Link href="/our-team" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-[#931cf5]">Our Team</Link>
+                    <Link href="/office-hours" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-[#931cf5]">Office Hours</Link>
+                    <Link href="/partners" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-[#931cf5]">Partners</Link>
+                    <Link href="/calendar" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-[#931cf5]">Calendar</Link>
+                    <Link href="/events" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-[#931cf5]">Events</Link>
+                    {conferenceVisible && <Link href="/conference" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-[#931cf5]">Conference</Link>}
+                    <Link href="/resources" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-[#931cf5]">Resources</Link>
+                    <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-[#931cf5]">Shop</Link>
+                  </nav>
+                </div>
+              </>,
+              document.body
+            )}
           </div>
         </div>
       </div>
