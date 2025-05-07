@@ -68,7 +68,7 @@ const commonFirstYearSecondSem: CourseNodeProps[] = [
   { 
     code: 'ELE 202', 
     name: 'Electric Circuit Analysis', 
-    prerequisites: ['MTH 140', 'PCS 211'],
+    prerequisites: ['MTH 140', 'MTH 141'],
     url: 'https://www.torontomu.ca/calendar/2025-2026/courses/electrical-engineering/ELE/202/'
   },
   { 
