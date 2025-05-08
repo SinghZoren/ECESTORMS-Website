@@ -1,18 +1,39 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+
+const s3 = new S3Client({
+  region: process.env.NEXT_PUBLIC_AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY || '',
+  },
+});
+
+const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
 
 export async function GET() {
   try {
-    const filePath = path.join(process.cwd(), 'app/data/sponsors.json');
-    const fileContent = await fs.readFile(filePath, 'utf-8');
-    const sponsors = JSON.parse(fileContent);
-
+    const key = 'data/sponsors.json';
+    const { Body } = await s3.send(new GetObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+    }));
+    if (!Body) {
+      throw new Error('No data received from S3');
+    }
+    const json = await Body.transformToString();
+    let sponsors;
+    try {
+      sponsors = JSON.parse(json);
+      if (!Array.isArray(sponsors)) sponsors = [];
+    } catch {
+      sponsors = [];
+    }
     return NextResponse.json({ sponsors });
   } catch (error) {
     console.error('Error reading sponsors:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch sponsors' },
+      { sponsors: [], error: 'Failed to fetch sponsors', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
