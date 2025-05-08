@@ -26,8 +26,13 @@ interface UpdateCalendarRequest {
 
 export async function POST(request: NextRequest) {
   try {
-    const { calendar } = await request.json();
-    if (!calendar || !Array.isArray(calendar)) {
+    const body = await request.json();
+    const calendar = Array.isArray(body.calendar)
+      ? body.calendar
+      : Array.isArray(body.events)
+        ? body.events
+        : null;
+    if (!calendar) {
       return NextResponse.json({ error: 'Invalid calendar data' }, { status: 400 });
     }
 
