@@ -1,9 +1,5 @@
-export const dynamic = 'force-dynamic';
-
-import fs from 'fs';
-import path from 'path';
-
-const DATA_PATH = path.join(process.cwd(), 'data', 'tutorials.json');
+import { NextRequest, NextResponse } from 'next/server';
+import { S3Client, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 
 interface Tutorial {
   id: string;
@@ -19,65 +15,97 @@ interface Tutorial {
   type: 'academic' | 'non-academic';
 }
 
-function readTutorials(): Tutorial[] {
-  if (!fs.existsSync(DATA_PATH)) return [];
-  const data = fs.readFileSync(DATA_PATH, 'utf-8');
-  return JSON.parse(data).map((t: unknown) => {
-    const tutorial = t as Partial<Tutorial>;
-    return { ...tutorial, type: tutorial.type || 'academic' } as Tutorial;
-  });
-}
+const s3 = new S3Client({
+  region: process.env.NEXT_PUBLIC_AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY || '',
+  },
+});
 
-function writeTutorials(tutorials: Tutorial[]) {
-  const dir = path.dirname(DATA_PATH);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  fs.writeFileSync(DATA_PATH, JSON.stringify(tutorials, null, 2));
-}
+const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
+const KEY = 'data/tutorials.json';
 
-async function handler(req: Request) {
+async function readTutorials(): Promise<Tutorial[]> {
   try {
-    const method = req.method;
-    if (method === 'GET') {
-      const tutorials = readTutorials();
-      return new Response(JSON.stringify({ tutorials }), { status: 200, headers: { 'Content-Type': 'application/json' } });
-    }
-
-    if (method === 'POST') {
-      const tutorials = readTutorials();
-      const body = await req.json();
-      const newTutorial: Tutorial = { ...body, id: Date.now().toString(), type: body.type || 'academic' };
-      tutorials.push(newTutorial);
-      writeTutorials(tutorials);
-      return new Response(JSON.stringify({ tutorial: newTutorial }), { status: 201, headers: { 'Content-Type': 'application/json' } });
-    }
-
-    if (method === 'PUT') {
-      const body = await req.json();
-      const { id } = body;
-      if (!id) return new Response(JSON.stringify({ error: 'Missing id' }), { status: 400 });
-      let tutorials = readTutorials();
-      tutorials = tutorials.map(t => t.id === id ? { ...t, ...body, type: body.type || t.type || 'academic' } : t);
-      writeTutorials(tutorials);
-      return new Response(JSON.stringify({ tutorial: body }), { status: 200, headers: { 'Content-Type': 'application/json' } });
-    }
-
-    if (method === 'DELETE') {
-      const body = await req.json();
-      const { id } = body;
-      if (!id) return new Response(JSON.stringify({ error: 'Missing id' }), { status: 400 });
-      let tutorials = readTutorials();
-      tutorials = tutorials.filter(t => t.id !== id);
-      writeTutorials(tutorials);
-      return new Response(JSON.stringify({ success: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
-    }
-
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Internal Server Error';
-    return new Response(JSON.stringify({ error: errorMessage }), { status: 500 });
+    const { Body } = await s3.send(new GetObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: KEY,
+    }));
+    if (!Body) return [];
+    const json = await Body.transformToString();
+    const parsed = JSON.parse(json);
+    return Array.isArray(parsed.tutorials) ? parsed.tutorials as Tutorial[] : [];
+  } catch {
+    return [];
   }
 }
 
-export { handler as GET, handler as POST, handler as PUT, handler as DELETE }; 
+async function writeTutorials(tutorials: Tutorial[]) {
+  await s3.send(new PutObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: KEY,
+    Body: JSON.stringify({ tutorials }, null, 2),
+    ContentType: 'application/json',
+  }));
+}
+
+export async function GET() {
+  try {
+    const tutorials = await readTutorials();
+    return NextResponse.json({ tutorials });
+  } catch (error) {
+    console.error('Error reading tutorials:', error);
+    return NextResponse.json({ tutorials: [], error: 'Failed to fetch tutorials' }, { status: 500 });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const tutorials = await readTutorials();
+    const newTutorial: Tutorial = { ...body, id: Date.now().toString(), type: body.type || 'academic' };
+    tutorials.push(newTutorial);
+    await writeTutorials(tutorials);
+    return NextResponse.json({ tutorial: newTutorial }, { status: 201 });
+  } catch (error) {
+    console.error('Error adding tutorial:', error);
+    return NextResponse.json({ error: 'Failed to add tutorial' }, { status: 500 });
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { id } = body;
+    if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+    let tutorials = await readTutorials();
+    tutorials = tutorials.map((t: unknown) => {
+      const tut = t as Tutorial;
+      return tut.id === id ? { ...tut, ...body, type: body.type || tut.type || 'academic' } : tut;
+    });
+    await writeTutorials(tutorials);
+    return NextResponse.json({ tutorial: body });
+  } catch (error) {
+    console.error('Error updating tutorial:', error);
+    return NextResponse.json({ error: 'Failed to update tutorial' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { id } = body;
+    if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+    let tutorials = await readTutorials();
+    tutorials = tutorials.filter((t: unknown) => {
+      const tut = t as Tutorial;
+      return tut.id !== id;
+    });
+    await writeTutorials(tutorials);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting tutorial:', error);
+    return NextResponse.json({ error: 'Failed to delete tutorial' }, { status: 500 });
+  }
+} 
