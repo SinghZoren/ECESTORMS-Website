@@ -11,10 +11,10 @@ export interface TeamMember {
 export const defaultTeamMembers: TeamMember[] = [
   {
     "id": "pres1",
-    "name": "Zoren Singh",
+    "name": "Name 1",
     "position": "Co-President",
-    "imageUrl": "/images/team/pres1.jpg",
-    "linkedinUrl": "https://www.linkedin.com/in/zorenpartap/",
+    "imageUrl": "https://ecestorms-website-database.s3.amazonaws.com/team/pres1.jpg",
+    "linkedinUrl": "https://www.linkedin.com/",
     "section": "presidents"
   },
   {

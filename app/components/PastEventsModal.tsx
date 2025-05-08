@@ -67,14 +67,38 @@ export default function PastEventsModal({ isOpen, onClose, onSave, currentEvents
     setEvents(events.filter(event => event.id !== id));
   };
 
-  const handleSaveEvent = (event: PastEvent) => {
+  const handleSaveEvent = async (event: PastEvent) => {
+    let finalImageUrl = event.imageUrl;
+    if (useImageUpload && imageFile && imagePreview) {
+      // Upload cropped image to S3
+      const blob = await fetch(imagePreview).then(r => r.blob());
+      const formData = new FormData();
+      formData.append('file', blob, 'event-image.jpg');
+      try {
+        const response = await fetch('/api/uploadEventImage', {
+          method: 'POST',
+          body: formData,
+        });
+        if (response.ok) {
+          const data = await response.json();
+          finalImageUrl = data.imageUrl;
+        } else {
+          alert('Failed to upload image.');
+          return;
+        }
+      } catch {
+        alert('Failed to upload image.');
+        return;
+      }
+    }
+    const newEvent = { ...event, imageUrl: finalImageUrl };
     if (editMode === 'edit' && editEventId) {
       // Update existing event
-      const updatedEvents = events.map(e => e.id === editEventId ? { ...event, id: editEventId } : e);
+      const updatedEvents = events.map(e => e.id === editEventId ? { ...newEvent, id: editEventId } : e);
       setEvents(updatedEvents);
     } else {
       // Add new event
-      setEvents([...events, event]);
+      setEvents([...events, newEvent]);
     }
     setEditingEvent(null);
     setEditMode('add');
@@ -231,14 +255,9 @@ export default function PastEventsModal({ isOpen, onClose, onSave, currentEvents
                   <IoClose size={24} />
                 </button>
               </div>
-              <form onSubmit={(e) => {
+              <form onSubmit={async (e) => {
                 e.preventDefault();
-                const eventToSave = { ...editingEvent };
-                if (useImageUpload && imageFile) {
-                  eventToSave.imageUrl = imagePreview || '';
-                  // Actual upload will be handled after form submit
-                }
-                handleSaveEvent(eventToSave);
+                await handleSaveEvent(editingEvent);
               }}>
                 <div className="space-y-4">
                   <div>

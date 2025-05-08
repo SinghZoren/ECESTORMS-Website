@@ -140,11 +140,35 @@ export default function ShopModal({ isOpen, onClose, onSave, currentItems }: Sho
     setIsCropperOpen(false);
   };
 
-  const handleSaveItem = (item: ShopItem) => {
+  const handleSaveItem = async (item: ShopItem) => {
+    let finalImageUrl = item.imageUrl;
+    if (useImageUpload && imageFile && imagePreview) {
+      // Upload cropped image to S3
+      const blob = await fetch(imagePreview).then(r => r.blob());
+      const formData = new FormData();
+      formData.append('file', blob, 'shop-image.jpg');
+      try {
+        const response = await fetch('/api/uploadShopImage', {
+          method: 'POST',
+          body: formData,
+        });
+        if (response.ok) {
+          const data = await response.json();
+          finalImageUrl = data.imageUrl;
+        } else {
+          alert('Failed to upload image.');
+          return;
+        }
+      } catch (err) {
+        alert('Failed to upload image.');
+        return;
+      }
+    }
+    const newItem = { ...item, imageUrl: finalImageUrl };
     if (items.some(i => i.id === item.id)) {
-      setItems(items.map(i => i.id === item.id ? item : i));
+      setItems(items.map(i => i.id === item.id ? newItem : i));
     } else {
-      setItems([...items, item]);
+      setItems([...items, newItem]);
     }
     setEditingItem(null);
     setImagePreview(null);

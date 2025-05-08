@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
-import { existsSync } from 'fs';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+
+const s3 = new S3Client({ region: process.env.NEXT_PUBLIC_AWS_REGION });
+const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,25 +17,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create a safe filename using the member ID and original extension
-    const fileExtension = path.extname(file.name);
-    const safeFileName = `${memberId}${fileExtension}`;
+    const fileExtension = file.name.split('.').pop();
+    const key = `team/${memberId}.${fileExtension}`;
+    const fileBuffer = Buffer.from(await file.arrayBuffer());
+    await s3.send(new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+      Body: fileBuffer,
+      ContentType: file.type,
+    }));
     
-    // Ensure the directory exists
-    const uploadDir = path.join(process.cwd(), 'public/images/team');
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
-    }
-    
-    // Create the file path
-    const filePath = path.join(uploadDir, safeFileName);
-    
-    // Save the file
-    const fileArrayBuffer = await file.arrayBuffer();
-    await writeFile(filePath, Buffer.from(fileArrayBuffer));
-    
-    // Return the URL path to be used in the app
-    const imageUrl = `/images/team/${safeFileName}`;
+    const imageUrl = `https://${BUCKET_NAME}.s3.amazonaws.com/${key}`;
     
     return NextResponse.json({ imageUrl }, { status: 200 });
   } catch (error: unknown) {
