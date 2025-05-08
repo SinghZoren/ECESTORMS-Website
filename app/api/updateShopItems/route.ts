@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     }
 
     const data = JSON.stringify({ items });
-    const key = 'data/shop.json';
+    const key = 'data/shopItems.json';
     await s3.send(new PutObjectCommand({
       Bucket: BUCKET_NAME,
       Key: key,
