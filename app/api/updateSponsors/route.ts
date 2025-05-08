@@ -1,19 +1,33 @@
-import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
+import { NextRequest, NextResponse } from 'next/server';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
-export async function POST(request: Request) {
+const s3 = new S3Client({
+  region: process.env.NEXT_PUBLIC_AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY || '',
+  },
+});
+
+const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
+
+export async function POST(request: NextRequest) {
   try {
     const { sponsors } = await request.json();
-    const filePath = path.join(process.cwd(), 'app/data/sponsors.json');
-    
-    await fs.writeFile(filePath, JSON.stringify(sponsors, null, 2));
-
+    if (!Array.isArray(sponsors)) {
+      return NextResponse.json({ error: 'Invalid sponsors data' }, { status: 400 });
+    }
+    await s3.send(new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: 'data/sponsors.json',
+      Body: JSON.stringify(sponsors, null, 2),
+      ContentType: 'application/json',
+    }));
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error updating sponsors:', error);
     return NextResponse.json(
-      { error: 'Failed to update sponsors' },
+      { error: 'Failed to update sponsors', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
