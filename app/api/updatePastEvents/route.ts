@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+
+const s3 = new S3Client({ region: process.env.NEXT_PUBLIC_AWS_REGION });
+const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
 
 export async function POST(request: Request) {
   try {
@@ -11,9 +13,13 @@ export async function POST(request: Request) {
       events: events
     };
 
-    // Write to the file
-    const filePath = path.join(process.cwd(), 'app/data/pastEvents.json');
-    fs.writeFileSync(filePath, JSON.stringify(jsonContent, null, 2));
+    // Write to S3
+    await s3.send(new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: 'data/pastEvents.json',
+      Body: JSON.stringify(jsonContent, null, 2),
+      ContentType: 'application/json',
+    }));
 
     return NextResponse.json({ success: true });
   } catch (error) {

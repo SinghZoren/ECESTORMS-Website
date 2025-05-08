@@ -252,7 +252,7 @@ export default function ShopModal({ isOpen, onClose, onSave, currentItems }: Sho
                     <label className="block text-sm font-medium text-gray-700">Title</label>
                     <input
                       type="text"
-                      value={editingItem.title}
+                      value={editingItem.title || ""}
                       onChange={e => setEditingItem({ ...editingItem, title: e.target.value })}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                       required
@@ -261,7 +261,7 @@ export default function ShopModal({ isOpen, onClose, onSave, currentItems }: Sho
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Description</label>
                     <textarea
-                      value={editingItem.description}
+                      value={editingItem.description || ""}
                       onChange={e => setEditingItem({ ...editingItem, description: e.target.value })}
                       rows={3}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
@@ -272,7 +272,7 @@ export default function ShopModal({ isOpen, onClose, onSave, currentItems }: Sho
                     <label className="block text-sm font-medium text-gray-700">Buy URL</label>
                     <input
                       type="text"
-                      value={editingItem.buyUrl}
+                      value={editingItem.buyUrl || ""}
                       onChange={e => setEditingItem({ ...editingItem, buyUrl: e.target.value })}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                       required
@@ -302,7 +302,7 @@ export default function ShopModal({ isOpen, onClose, onSave, currentItems }: Sho
                     {!useImageUpload ? (
                       <input
                         type="text"
-                        value={editingItem.imageUrl || ''}
+                        value={editingItem.imageUrl || ""}
                         onChange={e => {
                           setEditingItem({ ...editingItem, imageUrl: e.target.value });
                           setImagePreview(e.target.value);

@@ -11,10 +11,21 @@ export async function GET() {
       Bucket: BUCKET_NAME,
       Key: key,
     }));
+    
+    if (!Body) {
+      throw new Error('No data received from S3');
+    }
+
     const json = await Body.transformToString();
     const { calendar } = JSON.parse(json);
-    return NextResponse.json({ calendar });
+    
+    // Return the data in the format expected by the frontend
+    return NextResponse.json({ events: calendar });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch calendar data' }, { status: 500 });
+    console.error('Error fetching calendar data:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch calendar data', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
   }
 } 

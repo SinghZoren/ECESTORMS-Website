@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, useRef } from 'react';
+import React, { useState, ChangeEvent, useRef, useEffect } from 'react';
 import { IoClose } from 'react-icons/io5';
 import ReactCrop, { Crop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -37,6 +37,13 @@ export default function PastEventsModal({ isOpen, onClose, onSave, currentEvents
   const [crop, setCrop] = useState<Crop>({ unit: '%', width: 100, height: 100, x: 0, y: 0 });
   const imgRef = useRef<HTMLImageElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setEvents(currentEvents);
+    }
+  }, [isOpen, currentEvents]);
 
   // Filter events by selected year
   const filteredEvents = events.filter(e => e.year === selectedYear);
@@ -69,6 +76,12 @@ export default function PastEventsModal({ isOpen, onClose, onSave, currentEvents
   };
 
   const handleSaveEvent = async (event: PastEvent) => {
+    setSaveError(null);
+    // Validation: require year and term
+    if (!event.year || !event.term) {
+      setSaveError('Year and term are required.');
+      return;
+    }
     let finalImageUrl = event.imageUrl;
     if (useImageUpload && imageFile && imagePreview) {
       // Upload cropped image to S3
@@ -395,6 +408,9 @@ export default function PastEventsModal({ isOpen, onClose, onSave, currentEvents
                   </button>
                 </div>
               </form>
+              {saveError && (
+                <div className="text-red-600 font-semibold mb-2">{saveError}</div>
+              )}
             </div>
           </div>
         )}

@@ -1,5 +1,12 @@
 {
-  "hours": {},
+  "hours": {
+    "MONDAY": {
+      "09:00-10:00": {
+        "name": "Zoren",
+        "position": "Pres"
+      }
+    }
+  },
   "daysOfWeek": [
     "MONDAY",
     "TUESDAY",
@@ -19,5 +26,5 @@
     "17:00",
     "18:00"
   ],
-  "location": "Kerr Hall East, Room 040-G"
+  "location": "Kerr Hall East 040-G"
 }

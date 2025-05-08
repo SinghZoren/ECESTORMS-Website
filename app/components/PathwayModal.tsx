@@ -103,87 +103,87 @@ export default function PathwayModal({ isOpen, onClose }: PathwayModalProps) {
             </div>
           </div>
         ) : (
-          <div className="flex justify-between items-start mb-8">
-            {/* Year Selection - Left Side */}
-            <div className="w-1/3">
-              <h3 className="text-xl font-semibold mb-4">Year</h3>
-              <div className="flex space-x-4">
-                {years.map((year) => (
-                  <button
-                    key={year}
-                    onClick={() => {
-                      setSelectedYear(year);
-                      if (year === 1) {
-                        setSelectedStream(null);
-                        setSoftwareSpecialization(false);
-                      }
-                    }}
-                    className={`px-8 py-4 rounded-lg text-lg transition-all ${
-                      selectedYear === year
-                        ? 'bg-[#931cf5] text-white'
-                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                    }`}
-                  >
-                    Year {year}
-                  </button>
-                ))}
-              </div>
-            </div>
-            {/* Stream Selection - Right Side */}
-            <div className="w-1/3">
-              <h3 className="text-xl font-semibold mb-4">Program</h3>
-              <div className="flex flex-col space-y-4">
-                <div className="flex space-x-4">
-                  <button
-                    onClick={() => {
-                      setSelectedStream('electrical');
+        <div className="flex justify-between items-start mb-8">
+          {/* Year Selection - Left Side */}
+          <div className="w-1/3">
+            <h3 className="text-xl font-semibold mb-4">Year</h3>
+            <div className="flex space-x-4">
+              {years.map((year) => (
+                <button
+                  key={year}
+                  onClick={() => {
+                    setSelectedYear(year);
+                    if (year === 1) {
+                      setSelectedStream(null);
                       setSoftwareSpecialization(false);
-                    }}
-                    disabled={isCommonYear}
-                    className={`px-8 py-4 rounded-lg text-lg transition-all flex-1 ${
-                      isCommonYear
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : selectedStream === 'electrical'
-                        ? 'bg-[#931cf5] text-white'
-                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                    }`}
-                  >
-                    Electrical
-                  </button>
-                  <button
-                    onClick={() => setSelectedStream('computer')}
-                    disabled={isCommonYear}
-                    className={`px-8 py-4 rounded-lg text-lg transition-all flex-1 ${
-                      isCommonYear
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : selectedStream === 'computer'
-                        ? 'bg-[#931cf5] text-white'
-                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                    }`}
-                  >
-                    Computer
-                  </button>
-                </div>
-                {isCommonYear && (
-                  <span className="text-gray-500 italic text-center">
-                    Common year courses
-                  </span>
-                )}
-                {canSelectSoftware && (
-                  <button
-                    onClick={() => setSoftwareSpecialization(!softwareSpecialization)}
-                    className={`px-8 py-4 rounded-lg text-lg transition-all ${
-                      softwareSpecialization
-                        ? 'bg-[#931cf5] text-white'
-                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                    }`}
-                  >
-                    Software Specialization
-                  </button>
-                )}
-              </div>
+                    }
+                  }}
+                  className={`px-8 py-4 rounded-lg text-lg transition-all ${
+                    selectedYear === year
+                      ? 'bg-[#931cf5] text-white'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  Year {year}
+                </button>
+              ))}
             </div>
           </div>
+          {/* Stream Selection - Right Side */}
+          <div className="w-1/3">
+            <h3 className="text-xl font-semibold mb-4">Program</h3>
+            <div className="flex flex-col space-y-4">
+              <div className="flex space-x-4">
+                <button
+                  onClick={() => {
+                    setSelectedStream('electrical');
+                    setSoftwareSpecialization(false);
+                  }}
+                  disabled={isCommonYear}
+                  className={`px-8 py-4 rounded-lg text-lg transition-all flex-1 ${
+                    isCommonYear
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : selectedStream === 'electrical'
+                      ? 'bg-[#931cf5] text-white'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  Electrical
+                </button>
+                <button
+                  onClick={() => setSelectedStream('computer')}
+                  disabled={isCommonYear}
+                  className={`px-8 py-4 rounded-lg text-lg transition-all flex-1 ${
+                    isCommonYear
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : selectedStream === 'computer'
+                      ? 'bg-[#931cf5] text-white'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  Computer
+                </button>
+              </div>
+              {isCommonYear && (
+                <span className="text-gray-500 italic text-center">
+                  Common year courses
+                </span>
+              )}
+              {canSelectSoftware && (
+                <button
+                  onClick={() => setSoftwareSpecialization(!softwareSpecialization)}
+                  className={`px-8 py-4 rounded-lg text-lg transition-all ${
+                    softwareSpecialization
+                      ? 'bg-[#931cf5] text-white'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  Software Specialization
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
         )}
 
         {/* Course Tree Diagram Area */}

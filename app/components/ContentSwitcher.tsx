@@ -2,17 +2,17 @@
 
 import { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
-import Home from '../pages/home';
-import Calendar from '../pages/calendar';
-import Events from '../pages/events';
-import Conference from '../pages/conference';
-import Resources from '../pages/resources';
-import Shop from '../pages/shop';
-import Contact from '../pages/contact';
-import OurTeam from '../pages/our-team'
-import OfficeHours from '../pages/office-hours'
-import Partners from '../pages/partners'
-import Admin from '../pages/admin'
+import Home from '../home/page';
+import Calendar from '../calendar/page';
+import Events from '../events/page';
+import Conference from '../conference/page';
+import Resources from '../resources/page';
+import Shop from '../shop/page';
+import Contact from '../contact/page';
+import OurTeam from '../our-team/page';
+import OfficeHours from '../office-hours/page';
+import Partners from '../partners/page';
+import Admin from '../admin/page';
 
 export default function ContentSwitcher() {
   const pathname = usePathname();

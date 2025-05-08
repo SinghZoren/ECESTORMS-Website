@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from 'react';
 import { daysOfWeek, timeSlots, TimeSlotInfo } from '../data/officeHours';
 import Footer from '../components/Footer';

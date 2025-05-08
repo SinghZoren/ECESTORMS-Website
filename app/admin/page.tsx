@@ -213,34 +213,15 @@ export default function Admin() {
 
   const handleSaveOfficeHours = async (newHours: typeof defaultOfficeHoursData, newLocation: string) => {
     try {
-      // Create the JSON content
-      const jsonContent = {
-        hours: newHours,
-        daysOfWeek: ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY'],
-        timeSlots: [
-          '09:00',
-          '10:00',
-          '11:00',
-          '12:00',
-          '13:00',
-          '14:00',
-          '15:00',
-          '16:00',
-          '17:00',
-          '18:00'
-        ],
-        location: newLocation
-      };
-
-      // Use fetch to send the content to your backend to update the file
+      // Use fetch to send the correct content to your backend to update the file
       const response = await fetch('/api/updateOfficeHours', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          content: JSON.stringify(jsonContent, null, 2),
-          isJson: true
+          hours: newHours,
+          location: newLocation
         }),
       });
 

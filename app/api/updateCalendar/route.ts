@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+
+const s3 = new S3Client({ region: process.env.NEXT_PUBLIC_AWS_REGION });
+const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
 
 interface CalendarEvent {
   id: string;
@@ -39,19 +41,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid event format' }, { status: 400 });
     }
 
-    // Write to file
-    const filePath = path.join(process.cwd(), 'app/data/calendar.json');
-    await fs.writeFile(
-      filePath,
-      JSON.stringify({ events: data.events }, null, 2),
-      'utf8'
-    );
+    // Store in S3
+    const key = 'data/calendar.json';
+    await s3.send(new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+      Body: JSON.stringify({ calendar: data.events }, null, 2),
+      ContentType: 'application/json',
+    }));
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error updating calendar:', error);
     return NextResponse.json(
-      { error: 'Failed to update calendar' },
+      { error: 'Failed to update calendar', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

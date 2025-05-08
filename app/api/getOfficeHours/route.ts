@@ -1,17 +1,32 @@
 import { NextResponse } from 'next/server';
-import officeHoursData from '../../data/officeHours.json';
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+
+const s3 = new S3Client({ region: process.env.NEXT_PUBLIC_AWS_REGION });
+const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
 
 export async function GET() {
   try {
+    const key = 'data/officeHours.json';
+    const { Body } = await s3.send(new GetObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+    }));
+    
+    if (!Body) {
+      throw new Error('No data received from S3');
+    }
+
+    const json = await Body.transformToString();
+    const data = JSON.parse(json);
+    
     return NextResponse.json({
-      hours: officeHoursData.hours,
-      location: officeHoursData.location
+      hours: data.hours,
+      location: data.location
     });
-  } catch (error: unknown) {
-    console.error('Error reading office hours:', error);
-    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+  } catch (error) {
+    console.error('Error fetching office hours:', error);
     return NextResponse.json(
-      { error: 'Failed to read office hours', details: errorMessage },
+      { error: 'Failed to fetch office hours', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

@@ -11,10 +11,19 @@ export async function GET() {
       Bucket: BUCKET_NAME,
       Key: key,
     }));
+    
+    if (!Body) {
+      throw new Error('No data received from S3');
+    }
+
     const json = await Body.transformToString();
     const { resources } = JSON.parse(json);
     return NextResponse.json({ resources });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch resources data' }, { status: 500 });
+    console.error('Error fetching resources data:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch resources data', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    );
   }
 } 
