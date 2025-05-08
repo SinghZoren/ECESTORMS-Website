@@ -24,8 +24,8 @@ export async function GET() {
     }
 
     const json = await Body.transformToString();
-    const { pastEvents } = JSON.parse(json);
-    return NextResponse.json({ pastEvents });
+    const data = JSON.parse(json);
+    return NextResponse.json(data);
   } catch (error: unknown) {
     console.error('Error fetching past events:', error);
     return NextResponse.json({ error: 'Failed to fetch past events data' }, { status: 500 });

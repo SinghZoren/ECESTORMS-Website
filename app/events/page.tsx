@@ -37,7 +37,7 @@ export default function Events() {
           throw new Error('Failed to fetch events');
         }
         const data = await response.json();
-        setEvents(data.events);
+        setEvents(data.events || []);
         // Set default selected year to the most recent
         if (data.events && data.events.length > 0) {
           const years = Array.from(new Set(data.events.map((e: Event) => e.year))).sort().reverse();
