@@ -6,15 +6,15 @@ const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
 
 export async function GET() {
   try {
-    const key = 'data/calendar.json';
+    const key = 'data/events.json';
     const { Body } = await s3.send(new GetObjectCommand({
       Bucket: BUCKET_NAME,
       Key: key,
     }));
     const json = await Body.transformToString();
-    const { calendar } = JSON.parse(json);
-    return NextResponse.json({ calendar });
+    const { events } = JSON.parse(json);
+    return NextResponse.json({ events });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch calendar data' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch events data' }, { status: 500 });
   }
 } 
