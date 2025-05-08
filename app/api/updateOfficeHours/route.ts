@@ -13,7 +13,7 @@ const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
 
 export async function POST(request: NextRequest) {
   try {
-    const { officeHours } = await request.json();
+    const officeHours = await request.json();
     if (!officeHours || typeof officeHours !== 'object' || Array.isArray(officeHours)) {
       return NextResponse.json({ error: 'Invalid office hours data' }, { status: 400 });
     }
