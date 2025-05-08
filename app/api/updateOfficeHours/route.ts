@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       ContentType: 'application/json',
     }));
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json(officeHours);
   } catch (error: unknown) {
     console.error('Error updating office hours:', error);
     return NextResponse.json(

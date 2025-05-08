@@ -24,16 +24,12 @@ export async function GET() {
     }
 
     const json = await Body.transformToString();
-    const data = JSON.parse(json);
-    
-    return NextResponse.json({
-      hours: data.hours,
-      location: data.location
-    });
+    const { officeHours } = JSON.parse(json);
+    return NextResponse.json(officeHours);
   } catch (error) {
     console.error('Error fetching office hours:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch office hours', details: error instanceof Error ? error.message : 'Unknown error' },
+      {},
       { status: 500 }
     );
   }
