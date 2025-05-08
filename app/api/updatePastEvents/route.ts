@@ -13,12 +13,12 @@ const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
 
 export async function POST(request: NextRequest) {
   try {
-    const { pastEvents } = await request.json();
-    if (!pastEvents || !Array.isArray(pastEvents)) {
+    const { events } = await request.json();
+    if (!events || !Array.isArray(events)) {
       return NextResponse.json({ error: 'Invalid past events data' }, { status: 400 });
     }
 
-    const data = JSON.stringify({ pastEvents });
+    const data = JSON.stringify({ events });
     const key = 'data/pastEvents.json';
     await s3.send(new PutObjectCommand({
       Bucket: BUCKET_NAME,
