@@ -1,7 +1,7 @@
 'use client';
 
 import { IoClose } from 'react-icons/io5';
-import { HiAcademicCap, HiHeart } from 'react-icons/hi';
+import { HiHeart } from 'react-icons/hi';
 import { FaHospital, FaDatabase, FaUniversity, FaBook } from 'react-icons/fa';
 import { MdAccessibility, MdSecurity } from 'react-icons/md';
 
@@ -20,28 +20,22 @@ interface Resource {
 export default function ResourcesModal({ isOpen, onClose }: ResourcesModalProps) {
   const mainResources: Resource[] = [
     {
-      title: "Consent Comes First",
-      description: "Provides TMU students with support to students affected by various forms of violence in order to create a welcoming and safe environment for all students embarking on their academic journey.",
+      title: "Academic Consideration Request Form",
+      description: "Academic consideration is a form of alternate arrangement that may be made with the approval of the course faculty/contract lecturer, when a student experiences extenuating circumstances that prevents them from completing an academic requirement. ",
       icon: <MdSecurity className="w-8 h-8 text-[#931cf5]" />,
-      link: "https://www.torontomu.ca/consent-comes-first/"
+      link: "https://prod.apps.ccs.torontomu.ca/senateapps/acadconsprecondition"
     },
     {
       title: "TMU Medical Centre",
       description: "The Medical Centre, located in 181 Kerr Hall West, offers various health services to current TMU students, faculty, and staff in order to account for and respond to the physical well-being of the student body.",
       icon: <FaHospital className="w-8 h-8 text-[#931cf5]" />,
-      link: "https://www.torontomu.ca/student-wellbeing/medical-centre/"
+      link: "https://www.torontomu.ca/student-wellbeing/medicalcentre/"
     },
     {
       title: "Community Wellbeing",
       description: "A department at TMU which works to address the needs of students and issues impacting the wellbeing of students across campus by tackling issues over time which cannot be handled by a single department.",
       icon: <HiHeart className="w-8 h-8 text-[#931cf5]" />,
       link: "https://www.torontomu.ca/community-wellbeing/"
-    },
-    {
-      title: "Student Experience Centre",
-      description: "A Faculty of Arts led team who work to provide Faculty of Arts students support and guidance in engaging, connecting, and goal setting with their department and further on in order to help them navigate through and past their Undergraduate experience.",
-      icon: <HiAcademicCap className="w-8 h-8 text-[#931cf5]" />,
-      link: "https://www.torontomu.ca/arts/student-experience/"
     },
     {
       title: "Centre For Student Development & Counselling",
@@ -53,7 +47,7 @@ export default function ResourcesModal({ isOpen, onClose }: ResourcesModalProps)
       title: "Test Centre",
       description: "TMU Test Centre, including the Accommodated Test Centre (ATC) and Make Up Test Centre (MUTC), provides administrative guidance and support to students in order to aid in demonstrating their learning.",
       icon: <FaBook className="w-8 h-8 text-[#931cf5]" />,
-      link: "https://www.torontomu.ca/test-centre/"
+      link: "https://www.torontomu.ca/accommodations/test-centre/"
     },
     {
       title: "Student Resources Database",
