@@ -1,3 +1,15 @@
 {
-  "events": []
+  "events": [
+    {
+      "id": "1746669106734",
+      "title": "ECE Meet and Greet",
+      "date": "",
+      "time": "",
+      "location": "POD 250",
+      "description": "Test",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWv2RvLu1hBB0hNo1r4oYiLuygaocgjIBFiQ&s",
+      "year": "2024-2025",
+      "term": "Fall"
+    }
+  ]
 }

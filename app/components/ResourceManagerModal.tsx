@@ -56,7 +56,7 @@ export default function ResourceManagerModal({ isOpen, onClose }: ResourceManage
         courseInfo.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     });
-  }, [searchQuery, selectedProgram]);
+  }, [searchQuery, selectedProgram, getCourseList]);
 
   if (!isOpen) return null;
 

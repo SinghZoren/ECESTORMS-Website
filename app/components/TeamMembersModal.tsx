@@ -18,7 +18,7 @@ interface TeamMember {
 interface TeamMembersModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (members: TeamMember[]) => void;
+  onSave: (members: TeamMember[], teamPhotoUrl: string) => void;
   currentMembers: TeamMember[];
 }
 
@@ -31,7 +31,7 @@ export default function TeamMembersModal({
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [isPublishing, setIsPublishing] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [activeSection, setActiveSection] = useState<'presidents' | 'vps' | 'directors' | 'yearReps'>('presidents');
+  const [activeSection, setActiveSection] = useState<'presidents' | 'vps' | 'directors' | 'yearReps' | 'teamPhoto'>('presidents');
   const [tempImageUrl, setTempImageUrl] = useState<string | null>(null);
   const [tempMemberId, setTempMemberId] = useState<string | null>(null);
   const [isCropperOpen, setIsCropperOpen] = useState(false);
@@ -45,12 +45,18 @@ export default function TeamMembersModal({
   const imgRef = useRef<HTMLImageElement | null>(null);
   const [imagePreview, setImagePreview] = useState<Record<string, string>>({});
   const [originalImages, setOriginalImages] = useState<Record<string, string>>({});
+  const [teamPhotoUrl, setTeamPhotoUrl] = useState<string>('');
+  const [teamPhotoPreview, setTeamPhotoPreview] = useState<string>('');
+  const [isTeamPhotoCropperOpen, setIsTeamPhotoCropperOpen] = useState(false);
+  const [teamPhotoCrop, setTeamPhotoCrop] = useState<Crop>({ unit: '%', width: 100, height: 100, x: 0, y: 0 });
+  const teamPhotoImgRef = useRef<HTMLImageElement | null>(null);
 
   const sections = [
     { id: 'presidents', label: 'Presidents' },
     { id: 'vps', label: 'Vice Presidents' },
     { id: 'directors', label: 'Directors' },
-    { id: 'yearReps', label: 'Year Representatives' }
+    { id: 'yearReps', label: 'Year Representatives' },
+    { id: 'teamPhoto', label: 'Team Photo' },
   ];
 
   const positionTitles = {
@@ -71,6 +77,13 @@ export default function TeamMembersModal({
         previews[member.id] = member.imageUrl;
       });
       setImagePreview(previews);
+      // Fetch team photo URL
+      fetch('/api/getTeamPhoto')
+        .then(res => res.json())
+        .then(data => {
+          setTeamPhotoUrl(data.teamPhotoUrl || '');
+          setTeamPhotoPreview(data.teamPhotoUrl || '');
+        });
     }
   }, [isOpen, currentMembers]);
 
@@ -246,7 +259,11 @@ export default function TeamMembersModal({
   const handleSave = async () => {
     setIsPublishing(true);
     try {
-      await onSave(members);
+      await fetch('/api/updateTeamMembers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ teamMembers: members, teamPhotoUrl }),
+      });
       setHasChanges(false);
       onClose();
     } catch (error) {
@@ -300,7 +317,7 @@ export default function TeamMembersModal({
           {sections.map(section => (
             <button
               key={section.id}
-              onClick={() => setActiveSection(section.id as 'presidents' | 'vps' | 'directors' | 'yearReps')}
+              onClick={() => setActiveSection(section.id as 'presidents' | 'vps' | 'directors' | 'yearReps' | 'teamPhoto')}
               className={`px-4 py-2 ${activeSection === section.id ? 'text-[#931cf5] border-b-2 border-[#931cf5] -mb-px' : 'text-gray-500'}`}
             >
               {section.label}
@@ -399,6 +416,154 @@ export default function TeamMembersModal({
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {activeSection === 'teamPhoto' && (
+          <div className="bg-gray-50 p-6 rounded-lg flex flex-col items-center">
+            <h3 className="text-lg font-bold mb-4">Upload Team Photo</h3>
+            <div className="w-full max-w-xs flex flex-col items-center">
+              {teamPhotoPreview && (
+                <>
+                  <div className="w-full aspect-[2.5/1] shadow mb-4 relative overflow-hidden">
+                    <Image src={teamPhotoPreview} alt="Team Photo Preview" fill className="object-cover" />
+                  </div>
+                  <button
+                    className="mb-2 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+                    onClick={() => { setTeamPhotoUrl(''); setTeamPhotoPreview(''); setHasChanges(true); }}
+                    type="button"
+                  >
+                    Delete Image
+                  </button>
+                </>
+              )}
+              <div className="flex gap-2 mb-2">
+                <button
+                  className="bg-[#931cf5] hover:bg-[#7b17cc] text-white font-medium py-2 px-4 rounded-md"
+                  onClick={() => document.getElementById('team-photo-upload')?.click()}
+                >
+                  Upload Image
+                </button>
+                <button
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md"
+                  onClick={() => {
+                    const url = prompt('Paste image URL:');
+                    if (url) { setTeamPhotoUrl(url); setTeamPhotoPreview(url); setHasChanges(true); }
+                  }}
+                >
+                  Use Image URL
+                </button>
+              </div>
+              <input
+                id="team-photo-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={e => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      setTeamPhotoPreview(reader.result as string);
+                      setIsTeamPhotoCropperOpen(true);
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+              />
+            </div>
+            {isTeamPhotoCropperOpen && teamPhotoPreview && (
+              <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[60]">
+                <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-xl font-bold text-gray-900">Crop Team Photo</h3>
+                    <button onClick={() => setIsTeamPhotoCropperOpen(false)} className="text-gray-500 hover:text-gray-700">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <ReactCrop
+                    crop={teamPhotoCrop}
+                    onChange={(newCrop, percentCrop) => setTeamPhotoCrop(percentCrop)}
+                    aspect={2.5}
+                    minWidth={100}
+                    minHeight={40}
+                  >
+                    <Image
+                      ref={teamPhotoImgRef as LegacyRef<HTMLImageElement>}
+                      src={teamPhotoPreview}
+                      alt="Crop preview"
+                      width={1000}
+                      height={400}
+                      className="max-h-[50vh] max-w-full"
+                      onLoad={e => { teamPhotoImgRef.current = e.currentTarget; }}
+                      unoptimized
+                    />
+                  </ReactCrop>
+                  <div className="flex justify-end gap-3 mt-4">
+                    <button onClick={() => setIsTeamPhotoCropperOpen(false)} className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">Cancel</button>
+                    <button
+                      onClick={async () => {
+                        if (!teamPhotoImgRef.current || !teamPhotoPreview) return;
+                        const canvas = document.createElement('canvas');
+                        const image = teamPhotoImgRef.current;
+                        const imageWidth = image.naturalWidth;
+                        const imageHeight = image.naturalHeight;
+                        const outputWidth = 1200;
+                        const outputHeight = 480;
+                        canvas.width = outputWidth;
+                        canvas.height = outputHeight;
+                        const ctx = canvas.getContext('2d');
+                        if (!ctx) return;
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        let sourceX, sourceY, sourceWidth, sourceHeight;
+                        if (teamPhotoCrop.unit === '%') {
+                          sourceX = (teamPhotoCrop.x / 100) * imageWidth;
+                          sourceY = (teamPhotoCrop.y / 100) * imageHeight;
+                          sourceWidth = (teamPhotoCrop.width / 100) * imageWidth;
+                          sourceHeight = (teamPhotoCrop.height / 100) * imageHeight;
+                        } else {
+                          sourceX = teamPhotoCrop.x;
+                          sourceY = teamPhotoCrop.y;
+                          sourceWidth = teamPhotoCrop.width;
+                          sourceHeight = teamPhotoCrop.height;
+                        }
+                        ctx.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, outputWidth, outputHeight);
+                        canvas.toBlob(async (blob) => {
+                          if (!blob) return;
+                          const croppedUrl = URL.createObjectURL(blob);
+                          setTeamPhotoPreview(croppedUrl);
+                          // Upload to S3
+                          const formData = new FormData();
+                          formData.append('file', blob, 'team-photo.jpg');
+                          formData.append('memberId', 'team-photo');
+                          try {
+                            const response = await fetch('/api/uploadTeamImage', {
+                              method: 'POST',
+                              body: formData,
+                            });
+                            if (response.ok) {
+                              const data = await response.json();
+                              setTeamPhotoUrl(data.imageUrl);
+                              setHasChanges(true);
+                            } else {
+                              alert('Failed to upload team photo.');
+                            }
+                          } catch {
+                            alert('Failed to upload team photo.');
+                          }
+                          setIsTeamPhotoCropperOpen(false);
+                        }, 'image/jpeg', 0.98);
+                      }}
+                      className="px-4 py-2 bg-[#931cf5] text-white rounded-md hover:bg-[#7b17cc] transition-colors"
+                    >Apply Crop</button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

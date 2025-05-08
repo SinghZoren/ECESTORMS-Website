@@ -25,6 +25,7 @@ export default function Home() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const width = useWindowWidth();
   const isMobile = width < 768;
+  const [teamPhotoUrl, setTeamPhotoUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -32,6 +33,13 @@ export default function Home() {
         setShowImage(true);
       });
     }
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/getTeamPhoto')
+      .then(res => res.json())
+      .then(data => setTeamPhotoUrl(data.teamPhotoUrl))
+      .catch(() => setTeamPhotoUrl(null));
   }, []);
 
   return (
@@ -152,7 +160,13 @@ export default function Home() {
                 </h2>
                 <div className="relative h-[100%]">
                   <div className="absolute left-[10%] bg-[#4A154B] shadow-xl p-[2%] w-[80%] h-[80%]"></div>
-                  <div className="absolute left-[5%] top-[8%] bg-[#000000] shadow-xl p-[2%] w-[80%] h-[80%]"></div>
+                  {teamPhotoUrl ? (
+                    <div className="absolute left-[5%] top-[8%] w-[80%] h-[80%] overflow-hidden shadow-xl">
+                      <Image src={teamPhotoUrl} alt="Team Photo" fill className="object-cover" />
+                    </div>
+                  ) : (
+                    <div className="absolute left-[5%] top-[8%] bg-[#000000] shadow-xl p-[2%] w-[80%] h-[80%]"></div>
+                  )}
                 </div>
               </div>
               <div className="absolute right-[5%] top-[55%] bg-white/80 backdrop-blur-sm shadow-lg shadow-xl p-[3%] w-[90%] max-w-[39.1%] h-[35%] mx-auto md:right-[10%] md:w-[40%]">

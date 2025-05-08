@@ -36,6 +36,7 @@ export default function PastEventsModal({ isOpen, onClose, onSave, currentEvents
   const [isCropperOpen, setIsCropperOpen] = useState(false);
   const [crop, setCrop] = useState<Crop>({ unit: '%', width: 100, height: 100, x: 0, y: 0 });
   const imgRef = useRef<HTMLImageElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Filter events by selected year
   const filteredEvents = events.filter(e => e.year === selectedYear);
@@ -264,7 +265,7 @@ export default function PastEventsModal({ isOpen, onClose, onSave, currentEvents
                     <label className="block text-sm font-medium text-gray-700">Title</label>
                     <input
                       type="text"
-                      value={editingEvent.title}
+                      value={editingEvent.title || ''}
                       onChange={(e) => setEditingEvent({ ...editingEvent, title: e.target.value })}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                       required
@@ -274,7 +275,7 @@ export default function PastEventsModal({ isOpen, onClose, onSave, currentEvents
                     <label className="block text-sm font-medium text-gray-700">Location</label>
                     <input
                       type="text"
-                      value={editingEvent.location}
+                      value={editingEvent.location || ''}
                       onChange={(e) => setEditingEvent({ ...editingEvent, location: e.target.value })}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                       required
@@ -284,7 +285,7 @@ export default function PastEventsModal({ isOpen, onClose, onSave, currentEvents
                     <label className="block text-sm font-medium text-gray-700">Year</label>
                     <input
                       type="text"
-                      value={editingEvent.year}
+                      value={editingEvent.year || ''}
                       onChange={(e) => setEditingEvent({ ...editingEvent, year: e.target.value })}
                       placeholder="e.g., 2023-2024"
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
@@ -309,7 +310,7 @@ export default function PastEventsModal({ isOpen, onClose, onSave, currentEvents
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Description</label>
                     <textarea
-                      value={editingEvent.description}
+                      value={editingEvent.description || ''}
                       onChange={(e) => setEditingEvent({ ...editingEvent, description: e.target.value })}
                       rows={4}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
@@ -329,7 +330,10 @@ export default function PastEventsModal({ isOpen, onClose, onSave, currentEvents
                       <button
                         type="button"
                         className={`px-3 py-1 rounded ${useImageUpload ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
-                        onClick={() => setUseImageUpload(true)}
+                        onClick={() => {
+                          setUseImageUpload(true);
+                          setTimeout(() => fileInputRef.current?.click(), 0);
+                        }}
                       >
                         Upload Image
                       </button>
@@ -337,7 +341,7 @@ export default function PastEventsModal({ isOpen, onClose, onSave, currentEvents
                     {!useImageUpload ? (
                       <input
                         type="text"
-                        value={editingEvent.imageUrl}
+                        value={editingEvent.imageUrl || ''}
                         onChange={(e) => {
                           setEditingEvent({ ...editingEvent, imageUrl: e.target.value });
                           setImagePreview(e.target.value);
@@ -347,14 +351,29 @@ export default function PastEventsModal({ isOpen, onClose, onSave, currentEvents
                         required={!useImageUpload}
                       />
                     ) : (
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageFileChange}
-                        className="mt-1 block w-full"
-                        required={useImageUpload}
-                      />
+                      <div
+                        className="border-2 border-dashed border-gray-300 rounded p-4 text-center cursor-pointer hover:bg-gray-50"
+                        onClick={() => fileInputRef.current?.click()}
+                        onDragOver={e => { e.preventDefault(); e.stopPropagation(); }}
+                        onDrop={e => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          const files = (e.dataTransfer.files as FileList);
+                          const file = files?.[0];
+                          if (file) handleImageFileChange({ target: { files } } as ChangeEvent<HTMLInputElement>);
+                        }}
+                      >
+                        <span className="block text-gray-500">Drag & drop an image here, or click to choose a file</span>
+                      </div>
                     )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageFileChange}
+                      style={{ display: 'none' }}
+                      ref={fileInputRef}
+                      required={useImageUpload}
+                    />
                     {imagePreview && (
                       <Image src={imagePreview} alt="Preview" className="mt-2 rounded max-h-40" width={160} height={160} />
                     )}

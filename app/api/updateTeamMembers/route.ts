@@ -4,7 +4,7 @@ import path from 'path';
 
 export async function POST(request: NextRequest) {
   try {
-    const { teamMembers } = await request.json();
+    const { teamMembers, teamPhotoUrl } = await request.json();
     
     if (!teamMembers || !Array.isArray(teamMembers)) {
       return NextResponse.json(
@@ -34,6 +34,12 @@ export const teamMembers = defaultTeamMembers;`;
     
     // Write the updated content back to the file
     await fs.writeFile(filePath, updatedContent, 'utf8');
+    
+    // Save the team photo URL to a separate JSON file
+    if (teamPhotoUrl) {
+      const teamPhotoPath = path.join(process.cwd(), 'app/data/teamPhoto.json');
+      await fs.writeFile(teamPhotoPath, JSON.stringify({ teamPhotoUrl }), 'utf8');
+    }
     
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error: unknown) {
