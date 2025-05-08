@@ -19,7 +19,8 @@ export async function GET() {
       const parsed = JSON.parse(json);
       teamMembers = parsed.teamMembers;
       teamPhotoUrl = parsed.teamPhotoUrl || null;
-    } catch (err) {
+    } catch (err: unknown) {
+      console.error('Error fetching from S3, using default data:', err);
       // Fallback to local data if S3 file does not exist
       teamMembers = defaultTeamMembers;
       teamPhotoUrl = null;

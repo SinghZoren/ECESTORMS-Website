@@ -1,6 +1,5 @@
 export const dynamic = 'force-dynamic';
 
-import { NextApiRequest, NextApiResponse } from 'next';
 import fs from 'fs';
 import path from 'path';
 
@@ -23,7 +22,10 @@ interface Tutorial {
 function readTutorials(): Tutorial[] {
   if (!fs.existsSync(DATA_PATH)) return [];
   const data = fs.readFileSync(DATA_PATH, 'utf-8');
-  return JSON.parse(data).map((t: any) => ({ ...t, type: t.type || 'academic' }));
+  return JSON.parse(data).map((t: unknown) => {
+    const tutorial = t as Partial<Tutorial>;
+    return { ...tutorial, type: tutorial.type || 'academic' } as Tutorial;
+  });
 }
 
 function writeTutorials(tutorials: Tutorial[]) {
@@ -72,8 +74,9 @@ async function handler(req: Request) {
     }
 
     return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
-  } catch (error: any) {
-    return new Response(JSON.stringify({ error: error.message || 'Internal Server Error' }), { status: 500 });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Internal Server Error';
+    return new Response(JSON.stringify({ error: errorMessage }), { status: 500 });
   }
 }
 

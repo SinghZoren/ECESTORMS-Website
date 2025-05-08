@@ -11,10 +11,16 @@ export async function GET() {
       Bucket: BUCKET_NAME,
       Key: key,
     }));
+    
+    if (!Body) {
+      throw new Error('No data received from S3');
+    }
+
     const json = await Body.transformToString();
     const { events } = JSON.parse(json);
     return NextResponse.json({ events });
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error('Error fetching events:', error);
     return NextResponse.json({ error: 'Failed to fetch events data' }, { status: 500 });
   }
 } 

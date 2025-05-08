@@ -1,7 +1,14 @@
 import { NextResponse } from 'next/server';
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, GetObjectCommand, S3ServiceException } from '@aws-sdk/client-s3';
 
-const s3 = new S3Client({ region: process.env.NEXT_PUBLIC_AWS_REGION });
+const s3 = new S3Client({
+  region: process.env.NEXT_PUBLIC_AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY || '',
+  },
+});
+
 const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
 
 export async function GET() {
@@ -21,7 +28,7 @@ export async function GET() {
     return NextResponse.json({ teamPhotoUrl: teamPhotoUrl || null });
   } catch (error) {
     // Fallback: If file not found, return null instead of 500
-    if (error && (error.Code === 'NoSuchKey' || error.name === 'NoSuchKey')) {
+    if (error instanceof S3ServiceException && error.name === 'NoSuchKey') {
       return NextResponse.json({ teamPhotoUrl: null });
     }
     console.error('Error fetching team photo data:', error);

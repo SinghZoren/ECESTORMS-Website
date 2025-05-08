@@ -11,10 +11,16 @@ export async function GET() {
       Bucket: BUCKET_NAME,
       Key: key,
     }));
+    
+    if (!Body) {
+      throw new Error('No data received from S3');
+    }
+
     const json = await Body.transformToString();
     const { shopItems } = JSON.parse(json);
     return NextResponse.json({ shopItems });
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error('Error fetching shop data:', error);
     return NextResponse.json({ error: 'Failed to fetch shop data' }, { status: 500 });
   }
 } 

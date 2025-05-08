@@ -11,7 +11,6 @@ export async function POST(request: NextRequest) {
     if (!file) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
     }
-    const fileExtension = file.name.split('.').pop();
     const key = `events/${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
     const fileBuffer = Buffer.from(await file.arrayBuffer());
     await s3.send(new PutObjectCommand({

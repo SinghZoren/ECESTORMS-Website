@@ -18,7 +18,6 @@ export async function POST(request: Request) {
       );
     }
 
-    const fileExtension = file.name.split('.').pop();
     const key = `partners/${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
     const fileBuffer = Buffer.from(await file.arrayBuffer());
     await s3.send(new PutObjectCommand({
