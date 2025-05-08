@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { IoClose } from 'react-icons/io5';
+import { IoClose, IoFolder, IoDocument } from 'react-icons/io5';
 import { allCourses, electricalCourses, computerHardwareCourses, computerSoftwareCourses, CourseInfo } from '../data/courses';
+import { bebasNeue } from '../fonts';
+import Image from 'next/image';
 
 interface Resource {
   id: string;
@@ -31,6 +33,7 @@ export default function ExamBankModal({ isOpen, onClose }: ExamBankModalProps) {
   const [currentFolder, setCurrentFolder] = useState<Resource | null>(null);
   const [resourcePath, setResourcePath] = useState<Resource[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [previewFile, setPreviewFile] = useState<null | { url: string; name: string; type: string }>(null);
 
   const years = [1, 2, 3, 4];
   const isCommonYear = selectedYear === 1;
@@ -103,6 +106,13 @@ export default function ExamBankModal({ isOpen, onClose }: ExamBankModalProps) {
       return resources.filter(r => !r.parentId || r.parentId === selectedCourse?.code);
     }
     return resources.filter(r => r.parentId === currentFolder.id);
+  };
+
+  // Helper to get the current path as a string
+  const getCurrentPath = () => {
+    if (!selectedCourse) return '';
+    if (!currentFolder) return selectedCourse.code;
+    return `${selectedCourse.code}/${resourcePath.map(f => f.name).join('/')}`;
   };
 
   if (!isOpen) return null;
@@ -286,15 +296,31 @@ export default function ExamBankModal({ isOpen, onClose }: ExamBankModalProps) {
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-2 mb-6">
+            {/* Back button for exiting folder or course */}
+            {selectedCourse && (
               <button
-                onClick={handleBackClick}
-                className="text-gray-500 hover:text-gray-700 transition-colors"
+                onClick={() => {
+                  if (resourcePath.length > 0) {
+                    handleBackClick();
+                  } else {
+                    setSelectedCourse(null);
+                    setResources([]);
+                    setCurrentFolder(null);
+                    setResourcePath([]);
+                  }
+                }}
+                className="mb-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-[#4A154B] font-semibold rounded transition-colors w-fit"
               >
-                Back
+                {resourcePath.length > 0 ? '← Back' : '← Back to Courses'}
               </button>
-              <h3 className="text-2xl text-[#4A154B]">{selectedCourse.code}</h3>
+            )}
+            {/* Path/Breadcrumb Display */}
+            <div className="flex items-center gap-2 mb-6">
+              <h3 className={`${bebasNeue.className} text-2xl text-[#4A154B]`}>
+                {getCurrentPath()}
+              </h3>
             </div>
+            {/* File/Folder Grid with Previews */}
             <div className="bg-gray-50 rounded-lg p-6 h-[calc(90vh-10rem)] overflow-auto">
               {isLoading ? (
                 <div className="flex items-center justify-center h-full">
@@ -305,41 +331,65 @@ export default function ExamBankModal({ isOpen, onClose }: ExamBankModalProps) {
                   {getCurrentResources().map((resource) => (
                     <div
                       key={resource.id}
-                      className="bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
+                      className="relative bg-white rounded-lg p-4 pt-8 hover:shadow-md transition-shadow flex flex-col items-center min-h-[200px]"
                     >
-                      <div className="flex items-center justify-between">
-                        <div
-                          className="flex items-center gap-2 flex-1 cursor-pointer"
-                          onClick={() => {
-                            if (resource.type === 'folder') {
-                              handleFolderClick(resource);
-                            } else if (resource.type === 'file' && resource.fileUrl) {
-                              // setPreviewFile({
-                              //   url: resource.fileUrl,
-                              //   name: resource.name,
-                              //   type: resource.fileUrl.split('.').pop()?.toLowerCase() === 'pdf' ? 'application/pdf' : (resource.fileUrl.match(/\.(jpg|jpeg|png|gif|bmp|webp)$/i) ? 'image/' : 'application/octet-stream')
-                              // });
-                            }
-                          }}
-                        >
-                          {resource.type === 'folder' ? (
-                            <span>📁</span>
-                          ) : (
-                            <span>📄</span>
-                          )}
-                          <span className="truncate">{resource.name}</span>
-                        </div>
-                        {resource.type === 'file' && (
-                          <a
-                            href={resource.fileUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[#931cf5] hover:text-[#7a1ac4]"
-                          >
-                            Open
-                          </a>
+                      {/* File/folder name at the top */}
+                      <div className="w-full text-center mb-2 font-medium text-sm truncate px-2">
+                        {resource.name}
+                      </div>
+                      {/* File/folder preview */}
+                      <div
+                        className="flex-1 flex items-center justify-center w-full mb-2 cursor-pointer"
+                        onClick={() => {
+                          if (resource.type === 'folder') {
+                            handleFolderClick(resource);
+                          } else if (resource.type === 'file' && resource.fileUrl) {
+                            const ext = resource.fileUrl.split('.').pop()?.toLowerCase();
+                            setPreviewFile({
+                              url: resource.fileUrl,
+                              name: resource.name,
+                              type: ext === 'pdf' ? 'application/pdf' : (resource.fileUrl.match(/\.(jpg|jpeg|png|gif|bmp|webp)$/i) ? 'image/' : 'application/octet-stream')
+                            });
+                          }
+                        }}
+                      >
+                        {resource.type === 'folder' ? (
+                          <IoFolder className="text-[#931cf5] w-12 h-12 opacity-80" />
+                        ) : resource.fileUrl && resource.fileUrl.match(/\.(jpg|jpeg|png|gif|bmp|webp)$/i) ? (
+                          <Image
+                            src={resource.fileUrl}
+                            alt={resource.name}
+                            width={80}
+                            height={80}
+                            className="max-h-20 max-w-full rounded shadow border border-gray-100 object-contain"
+                          />
+                        ) : resource.fileUrl && resource.fileUrl.toLowerCase().endsWith('.pdf') ? (
+                          <div className="flex flex-col items-center">
+                            <span className="inline-block bg-red-100 text-red-600 rounded-full p-2 mb-1">
+                              <IoDocument className="w-8 h-8" />
+                            </span>
+                            <span className="text-xs text-gray-500">PDF</span>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center">
+                            <span className="inline-block bg-gray-100 text-gray-400 rounded-full p-2 mb-1">
+                              <IoDocument className="w-8 h-8" />
+                            </span>
+                            <span className="text-xs text-gray-400">File</span>
+                          </div>
                         )}
                       </div>
+                      {/* Open link for files */}
+                      {resource.type === 'file' && resource.fileUrl && (
+                        <a
+                          href={resource.fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-2 px-3 py-1 text-xs bg-[#931cf5] text-white rounded hover:bg-[#7a1ac4] transition-colors w-full text-center"
+                        >
+                          Open
+                        </a>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -349,6 +399,51 @@ export default function ExamBankModal({ isOpen, onClose }: ExamBankModalProps) {
                 </div>
               )}
             </div>
+            {/* File Preview Modal */}
+            {previewFile && (
+              <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-60">
+                <div className="bg-white rounded-lg shadow-lg relative max-w-3xl w-full max-h-[90vh] flex flex-col">
+                  {/* Download button */}
+                  <a
+                    href={previewFile.url}
+                    download={previewFile.name}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute top-4 right-16 px-4 py-2 bg-[#931cf5] text-white rounded hover:bg-[#7a1ac4] z-10"
+                  >
+                    Download
+                  </a>
+                  {/* Close button */}
+                  <button
+                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10"
+                    onClick={() => setPreviewFile(null)}
+                  >
+                    <IoClose size={24} />
+                  </button>
+                  <div className="flex-1 flex items-center justify-center p-8 overflow-auto">
+                    {/* Render preview based on file type */}
+                    {previewFile.type.startsWith('image/') ? (
+                      <Image src={previewFile.url} alt={previewFile.name} width={600} height={600} className="max-h-[70vh] max-w-full rounded" />
+                    ) : previewFile.type === 'application/pdf' ? (
+                      <iframe src={previewFile.url} title={previewFile.name} className="w-full h-[70vh] rounded" />
+                    ) : (
+                      <div className="text-center w-full">
+                        <p className="mb-4">Preview not available for this file type.</p>
+                        <a
+                          href={previewFile.url}
+                          download={previewFile.name}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-4 py-2 bg-[#931cf5] text-white rounded hover:bg-[#7a1ac4]"
+                        >
+                          Download File
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>
