@@ -1,7 +1,14 @@
 import { NextResponse } from 'next/server';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 
-const s3 = new S3Client({ region: process.env.NEXT_PUBLIC_AWS_REGION });
+const s3 = new S3Client({
+  region: process.env.NEXT_PUBLIC_AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY || '',
+  },
+});
+
 const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
 
 export async function GET() {
@@ -17,10 +24,10 @@ export async function GET() {
     }
 
     const json = await Body.transformToString();
-    const { shopItems } = JSON.parse(json);
-    return NextResponse.json({ shopItems });
+    const { items } = JSON.parse(json);
+    return NextResponse.json({ items });
   } catch (error: unknown) {
-    console.error('Error fetching shop data:', error);
-    return NextResponse.json({ error: 'Failed to fetch shop data' }, { status: 500 });
+    console.error('Error fetching shop items:', error);
+    return NextResponse.json({ error: 'Failed to fetch shop items data' }, { status: 500 });
   }
 } 

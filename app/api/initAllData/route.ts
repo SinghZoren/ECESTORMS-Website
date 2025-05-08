@@ -1,7 +1,15 @@
 import { NextResponse } from 'next/server';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { defaultTeamMembers } from '../../data/teamMembers';
 
-const s3 = new S3Client({ region: process.env.NEXT_PUBLIC_AWS_REGION });
+const s3 = new S3Client({
+  region: process.env.NEXT_PUBLIC_AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY || '',
+  },
+});
+
 const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
 
 // Default data structures for each file
@@ -37,43 +45,64 @@ const defaultData = {
 export async function GET() {
   try {
     // Initialize all data files
-    const results = await Promise.all(
-      Object.entries(defaultData).map(async ([key, data]) => {
-        try {
-          await s3.send(new PutObjectCommand({
-            Bucket: BUCKET_NAME,
-            Key: `data/${key}.json`,
-            Body: JSON.stringify(data, null, 2),
-            ContentType: 'application/json',
-          }));
-          return { key, success: true };
-        } catch (error) {
-          console.error(`Error initializing ${key} data:`, error);
-          return { key, success: false, error };
-        }
-      })
-    );
-
-    // Check if all initializations were successful
-    const failed = results.filter(r => !r.success);
-    if (failed.length > 0) {
-      throw new Error(`Failed to initialize: ${failed.map(f => f.key).join(', ')}`);
-    }
-
-    return NextResponse.json({ 
-      success: true,
-      message: 'All data files initialized successfully',
-      initialized: Object.keys(defaultData)
-    });
-  } catch (error) {
-    console.error('Error initializing data:', error);
-    return NextResponse.json(
-      {
-        error: 'Failed to initialize data',
-        details: error instanceof Error ? error.message : 'Unknown error',
-        bucket: BUCKET_NAME,
-        region: process.env.NEXT_PUBLIC_AWS_REGION,
+    const initialData = {
+      team: {
+        teamMembers: defaultTeamMembers,
+        teamPhotoUrl: null
       },
+      shop: {
+        items: []
+      },
+      pastEvents: {
+        pastEvents: []
+      },
+      officeHours: {
+        officeHours: []
+      },
+      calendar: {
+        calendar: []
+      }
+    };
+
+    // Upload each file
+    await Promise.all([
+      s3.send(new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: 'data/team.json',
+        Body: JSON.stringify(initialData.team),
+        ContentType: 'application/json',
+      })),
+      s3.send(new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: 'data/shop.json',
+        Body: JSON.stringify(initialData.shop),
+        ContentType: 'application/json',
+      })),
+      s3.send(new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: 'data/pastEvents.json',
+        Body: JSON.stringify(initialData.pastEvents),
+        ContentType: 'application/json',
+      })),
+      s3.send(new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: 'data/officeHours.json',
+        Body: JSON.stringify(initialData.officeHours),
+        ContentType: 'application/json',
+      })),
+      s3.send(new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: 'data/calendar.json',
+        Body: JSON.stringify(initialData.calendar),
+        ContentType: 'application/json',
+      }))
+    ]);
+
+    return NextResponse.json({ success: true });
+  } catch (error: unknown) {
+    console.error('Error initializing all data:', error);
+    return NextResponse.json(
+      { error: 'Failed to initialize all data', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
