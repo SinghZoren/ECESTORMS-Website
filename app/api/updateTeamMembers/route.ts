@@ -1,48 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+
+const s3 = new S3Client({ region: process.env.NEXT_PUBLIC_AWS_REGION });
+const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
 
 export async function POST(request: NextRequest) {
   try {
     const { teamMembers, teamPhotoUrl } = await request.json();
-    
     if (!teamMembers || !Array.isArray(teamMembers)) {
-      return NextResponse.json(
-        { error: 'Invalid team members data' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid team members data' }, { status: 400 });
     }
-    
-    // Read the file path
-    const filePath = path.join(process.cwd(), 'app/data/teamMembers.ts');
-    
-    // Create a new file content with the updated team members
-    const updatedContent = `export interface TeamMember {
-  id: string;
-  name: string;
-  position: string;
-  imageUrl: string;
-  linkedinUrl?: string;
-  section: 'presidents' | 'vps' | 'directors' | 'yearReps';
-}
-
-// Export team members data in a format that's easy to extract with regex
-export const defaultTeamMembers: TeamMember[] = ${JSON.stringify(teamMembers, null, 2)};
-
-// Current team members (reference to the default ones)
-export const teamMembers = defaultTeamMembers;`;
-    
-    // Write the updated content back to the file
-    await fs.writeFile(filePath, updatedContent, 'utf8');
-    
-    // Save the team photo URL to a separate JSON file
-    if (teamPhotoUrl) {
-      const teamPhotoPath = path.join(process.cwd(), 'app/data/teamPhoto.json');
-      await fs.writeFile(teamPhotoPath, JSON.stringify({ teamPhotoUrl }), 'utf8');
-    }
-    
+    // Store as JSON in S3
+    const data = JSON.stringify({ teamMembers, teamPhotoUrl });
+    const key = 'data/team.json';
+    await s3.send(new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+      Body: data,
+      ContentType: 'application/json',
+    }));
     return NextResponse.json({ success: true }, { status: 200 });
-  } catch (error: unknown) {
+  } catch (error) {
     console.error('Error updating team members:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
     return NextResponse.json(
