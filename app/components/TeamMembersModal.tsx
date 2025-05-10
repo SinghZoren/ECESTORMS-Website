@@ -352,28 +352,22 @@ export default function TeamMembersModal({
                   minWidth={50} 
                   minHeight={50}
                 >
-                  <div className="relative max-h-[50vh]">
+                  <div className="relative max-w-[90vw] max-h-[60vh] w-auto h-auto">
                     <Image 
                       ref={imgRef as LegacyRef<HTMLImageElement>}
                       src={tempImageUrl || ''}
                       alt="Crop preview"
-                      className="max-h-[50vh] max-w-full"
-                      width={800}
-                      height={800}
+                      className="max-w-[90vw] max-h-[60vh] w-auto h-auto"
                       onLoad={(e) => {
                         // Store the image element reference
                         imgRef.current = e.currentTarget;
-                        
                         // When image loads, initialize crop to center square if not set
                         if (crop.width === 100 && crop.height === 100) {
-                          // Use setTimeout to allow the image to render fully
                           setTimeout(() => {
                             if (!imgRef.current) return;
                             const { width, height } = imgRef.current;
-                            
                             // Calculate a centered square crop
                             if (width > height) {
-                              // Landscape image
                               const cropSize = (height / width) * 100;
                               setCrop({
                                 unit: '%',
@@ -383,7 +377,6 @@ export default function TeamMembersModal({
                                 y: 0
                               });
                             } else {
-                              // Portrait or square image
                               const cropSize = (width / height) * 100;
                               setCrop({
                                 unit: '%',
@@ -647,20 +640,22 @@ export default function TeamMembersModal({
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Position
-                    </label>
-                    <select
-                      value={member.position}
-                      onChange={(e) => handleMemberChange(member.id, 'position', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#931cf5]"
-                    >
-                      {positionTitles[activeSection].map(position => (
-                        <option key={position} value={position}>{position}</option>
-                      ))}
-                    </select>
-                  </div>
+                  {['presidents', 'vps', 'directors', 'yearReps'].includes(activeSection) && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Position
+                      </label>
+                      <select
+                        value={member.position}
+                        onChange={(e) => handleMemberChange(member.id, 'position', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#931cf5]"
+                      >
+                        {positionTitles[activeSection as keyof typeof positionTitles].map((position: string) => (
+                          <option key={position} value={position}>{position}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
