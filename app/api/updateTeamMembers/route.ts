@@ -14,6 +14,8 @@ const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
 export async function POST(request: NextRequest) {
   try {
     const { teamMembers, teamPhotoUrl } = await request.json();
+    console.log('API DEBUG: Saving teamMembers:', teamMembers);
+    console.log('API DEBUG: Saving teamPhotoUrl:', teamPhotoUrl);
     if (!teamMembers || !Array.isArray(teamMembers)) {
       return NextResponse.json({ error: 'Invalid team members data' }, { status: 400 });
     }

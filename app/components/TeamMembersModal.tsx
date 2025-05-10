@@ -259,6 +259,7 @@ export default function TeamMembersModal({
   const handleSave = async () => {
     setIsPublishing(true);
     try {
+      console.log('Saving team members:', members);
       await fetch('/api/updateTeamMembers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
