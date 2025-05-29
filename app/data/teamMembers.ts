@@ -34,17 +34,9 @@ export const defaultTeamMembers: TeamMember[] = [
     "section": "vps"
   },
   {
-    "id": "vp2",
-    "name": "Name 4",
-    "position": "VP Student Life",
-    "imageUrl": "/images/placeholder-headshot.png",
-    "linkedinUrl": "https://linkedin.com/",
-    "section": "vps"
-  },
-  {
-    "id": "vp3",
-    "name": "Name 5",
-    "position": "VP Professional Development",
+    "id": "vp6",
+    "name": "Name 8",
+    "position": "VP Finance & Sponsorship",
     "imageUrl": "/images/placeholder-headshot.png",
     "linkedinUrl": "https://linkedin.com/",
     "section": "vps"
@@ -66,12 +58,28 @@ export const defaultTeamMembers: TeamMember[] = [
     "section": "vps"
   },
   {
-    "id": "vp6",
-    "name": "Name 8",
-    "position": "VP Finance & Sponsorship",
+    "id": "vp3",
+    "name": "Name 5",
+    "position": "VP Professional Development",
     "imageUrl": "/images/placeholder-headshot.png",
     "linkedinUrl": "https://linkedin.com/",
     "section": "vps"
+  },
+  {
+    "id": "vp2",
+    "name": "Name 4",
+    "position": "VP Student Life",
+    "imageUrl": "/images/placeholder-headshot.png",
+    "linkedinUrl": "https://linkedin.com/",
+    "section": "vps"
+  },
+  {
+    "id": "dir5",
+    "name": "Name 13",
+    "position": "Corporate Relations Director",
+    "imageUrl": "/images/placeholder-headshot.png",
+    "linkedinUrl": "https://linkedin.com/",
+    "section": "directors"
   },
   {
     "id": "dir1",
@@ -101,14 +109,6 @@ export const defaultTeamMembers: TeamMember[] = [
     "id": "dir4",
     "name": "Name 12",
     "position": "Outreach Director",
-    "imageUrl": "/images/placeholder-headshot.png",
-    "linkedinUrl": "https://linkedin.com/",
-    "section": "directors"
-  },
-  {
-    "id": "dir5",
-    "name": "Name 13",
-    "position": "Corporate Relations Director",
     "imageUrl": "/images/placeholder-headshot.png",
     "linkedinUrl": "https://linkedin.com/",
     "section": "directors"
