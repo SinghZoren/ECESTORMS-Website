@@ -152,6 +152,22 @@ export const defaultTeamMembers: TeamMember[] = [
     "imageUrl": "/images/placeholder-headshot.png",
     "linkedinUrl": "https://linkedin.com/",
     "section": "yearReps"
+  },
+  {
+    "id": "compRep",
+    "name": "Name 19",
+    "position": "Computer Representative",
+    "imageUrl": "/images/placeholder-headshot.png",
+    "linkedinUrl": "https://linkedin.com/",
+    "section": "yearReps"
+  },
+  {
+    "id": "elecRep",
+    "name": "Name 20",
+    "position": "Electrical Representative",
+    "imageUrl": "/images/placeholder-headshot.png",
+    "linkedinUrl": "https://linkedin.com/",
+    "section": "yearReps"
   }
 ];
 
