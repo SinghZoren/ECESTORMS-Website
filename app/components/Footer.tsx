@@ -29,7 +29,7 @@ export default function Footer() {
               <FaLinkedin size={24} />
             </a>
             <a
-              href="https://discord.gg/ecestorms"
+              href="https://discord.gg/Bv9AZRcDJN"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-600 hover:text-[#931cf5] transition-colors duration-300"

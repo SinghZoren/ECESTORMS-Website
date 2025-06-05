@@ -116,7 +116,7 @@ export default function Home() {
                 <h2 className={`${bebasNeue.className} text-3xl text-[#4A154B] mb-4 text-left`}>Quick Links</h2>
                 <div className="grid grid-cols-1 gap-4">
                   <a 
-                    href="https://forms.gle/YourGoogleFormLink" 
+                    href="https://forms.gle/U8DAVDg9kTTzqkP57" 
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className="flex flex-col items-center p-4 rounded-lg hover:bg-gray-50 transition-all duration-300 group"

@@ -57,7 +57,7 @@ export default function SocialSidebar() {
           <FaLinkedin size={24} />
         </a>
         <a
-          href="https://discord.gg/ecestorms"
+          href="https://discord.gg/Bv9AZRcDJN"
           target="_blank"
           rel="noopener noreferrer"
           className={`transition-colors duration-300 hover:scale-110 transform ${
