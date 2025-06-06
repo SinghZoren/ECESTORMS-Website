@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
-import s3 from '../../../utils/s3Client';
-import { defaultShopItems } from '@/app/data/shopItems';
+import s3 from '../../utils/s3Client';
+import defaultShopItems from '../../data/shopItems.json';
 
 const BUCKET_NAME = process.env.AWS_BUCKET_NAME;
 
