@@ -8,13 +8,19 @@ if (!secret) {
 }
 
 export async function GET(req: NextRequest) {
+  if (!secret) {
+    // This case should ideally not be reached if the initial check is effective,
+    // but it satisfies TypeScript's static analysis.
+    return NextResponse.json({ isLoggedIn: false, error: 'JWT secret not configured.' });
+  }
+
   const token = req.cookies.get('auth_token')?.value;
 
   if (token) {
     try {
       jwt.verify(token, secret);
       return NextResponse.json({ isLoggedIn: true });
-    } catch (error) {
+    } catch {
       // Token is invalid or expired
       return NextResponse.json({ isLoggedIn: false });
     }

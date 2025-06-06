@@ -1,15 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
+import s3 from '@/app/utils/s3Client';
 
-const s3 = new S3Client({
-  region: process.env.NEXT_PUBLIC_AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID || '',
-    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY || '',
-  },
-});
-
-const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
+const BUCKET_NAME = process.env.AWS_BUCKET_NAME;
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,7 +24,7 @@ export async function POST(request: NextRequest) {
       fileType: file.type,
       memberId,
       bucket: BUCKET_NAME,
-      region: process.env.NEXT_PUBLIC_AWS_REGION
+      region: process.env.AWS_REGION
     });
 
     const fileExtension = file.name.split('.').pop();
@@ -50,7 +43,7 @@ export async function POST(request: NextRequest) {
         error: s3Error,
         bucket: BUCKET_NAME,
         key,
-        region: process.env.NEXT_PUBLIC_AWS_REGION
+        region: process.env.AWS_REGION
       });
       throw s3Error;
     }
@@ -63,9 +56,9 @@ export async function POST(request: NextRequest) {
     console.error('Error uploading image:', {
       error,
       bucket: BUCKET_NAME,
-      region: process.env.NEXT_PUBLIC_AWS_REGION,
-      hasAccessKey: !!process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
-      hasSecretKey: !!process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY
+      region: process.env.AWS_REGION,
+      hasAccessKey: !!process.env.AWS_ACCESS_KEY_ID,
+      hasSecretKey: !!process.env.AWS_SECRET_ACCESS_KEY
     });
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
     return NextResponse.json(

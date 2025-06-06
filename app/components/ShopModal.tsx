@@ -159,7 +159,7 @@ export default function ShopModal({ isOpen, onClose, onSave, currentItems }: Sho
           alert('Failed to upload image.');
           return;
         }
-      } catch (err) {
+      } catch {
         alert('Failed to upload image.');
         return;
       }

@@ -17,8 +17,8 @@ export async function POST(req: NextRequest) {
   try {
     const { username, password } = await req.json();
 
-    const correctUsername = process.env.NEXT_PUBLIC_ADMIN_USERNAME;
-    const correctPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
+    const correctUsername = process.env.ADMIN_USERNAME;
+    const correctPassword = process.env.ADMIN_PASSWORD;
 
     if (username === correctUsername && password === correctPassword) {
       const token = jwt.sign({ username }, secret, { expiresIn: '8h' });

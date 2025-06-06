@@ -13,13 +13,13 @@ interface ResourceManagerModalProps {
 }
 
 const s3Client = new S3Client({
-  region: process.env.NEXT_PUBLIC_AWS_REGION || 'us-east-1',
+  region: process.env.AWS_REGION || 'us-east-1',
   credentials: {
-    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID || '',
-    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY || '',
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
   },
 });
-const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME || '';
+const BUCKET_NAME = process.env.AWS_BUCKET_NAME || '';
 
 export default function ResourceManagerModal({ isOpen, onClose }: ResourceManagerModalProps) {
   const [selectedCourse, setSelectedCourse] = useState<CourseInfo | null>(null);

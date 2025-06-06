@@ -1,36 +1,35 @@
 import { NextResponse } from 'next/server';
-import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3';
-
-const s3 = new S3Client({ region: process.env.NEXT_PUBLIC_AWS_REGION });
-const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
+import { ListObjectsV2Command, _Object } from '@aws-sdk/client-s3';
+import s3 from '@/app/utils/s3Client';
 
 export async function GET() {
   try {
     // List all objects in the data directory
     const { Contents } = await s3.send(new ListObjectsV2Command({
-      Bucket: BUCKET_NAME,
+      Bucket: process.env.AWS_BUCKET_NAME,
       Prefix: 'data/',
     }));
 
-    const files = Contents?.map(file => ({
-      key: file.Key,
-      size: file.Size,
-      lastModified: file.LastModified,
-    })) || [];
+    const files = Contents ? Contents.map((file: _Object) => ({
+      Key: file.Key,
+      Size: file.Size,
+      LastModified: file.LastModified,
+    })) : [];
 
     return NextResponse.json({
-      bucket: BUCKET_NAME,
-      region: process.env.NEXT_PUBLIC_AWS_REGION,
+      bucket: process.env.AWS_BUCKET_NAME,
+      region: process.env.AWS_REGION,
       files,
+      message: 'S3 setup appears to be correct.',
     });
   } catch (error) {
-    console.error('Error verifying S3 setup:', error);
+    console.error('S3 setup verification failed:', error);
     return NextResponse.json(
       {
         error: 'Failed to verify S3 setup',
         details: error instanceof Error ? error.message : 'Unknown error',
-        bucket: BUCKET_NAME,
-        region: process.env.NEXT_PUBLIC_AWS_REGION,
+        bucket: process.env.AWS_BUCKET_NAME,
+        region: process.env.AWS_REGION,
       },
       { status: 500 }
     );

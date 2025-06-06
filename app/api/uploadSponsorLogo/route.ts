@@ -1,15 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
+import s3 from '@/app/utils/s3Client';
 
-const s3 = new S3Client({
-  region: process.env.NEXT_PUBLIC_AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID || '',
-    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY || '',
-  },
-});
-
-const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
+const BUCKET_NAME = process.env.AWS_BUCKET_NAME;
 
 export const runtime = 'nodejs';
 
@@ -33,7 +26,7 @@ export async function POST(request: NextRequest) {
       Body: fileBuffer,
       ContentType: file.type,
     }));
-    const imageUrl = `https://${BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/${key}`;
+    const imageUrl = `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
     return NextResponse.json({ imageUrl });
   } catch (error: unknown) {
     console.error('Error uploading file:', error);

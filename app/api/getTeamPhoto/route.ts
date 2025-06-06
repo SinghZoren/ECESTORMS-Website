@@ -1,15 +1,8 @@
 import { NextResponse } from 'next/server';
-import { S3Client, GetObjectCommand, S3ServiceException } from '@aws-sdk/client-s3';
+import { GetObjectCommand, S3ServiceException } from '@aws-sdk/client-s3';
+import s3 from '@/app/utils/s3Client';
 
-const s3 = new S3Client({
-  region: process.env.NEXT_PUBLIC_AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID || '',
-    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY || '',
-  },
-});
-
-const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
+const BUCKET_NAME = process.env.AWS_BUCKET_NAME;
 
 export async function GET() {
   try {
@@ -27,13 +20,13 @@ export async function GET() {
     const { teamPhotoUrl } = JSON.parse(json);
     return NextResponse.json({ teamPhotoUrl: teamPhotoUrl || null });
   } catch (error) {
-    // Fallback: If file not found, return null instead of 500
+    console.error('Error fetching team photo from S3:', error);
     if (error instanceof S3ServiceException && error.name === 'NoSuchKey') {
-      return NextResponse.json({ teamPhotoUrl: null });
+      return NextResponse.json({ teamPhotoUrl: null }, { status: 404 });
     }
-    console.error('Error fetching team photo data:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
     return NextResponse.json(
-      { error: 'Failed to fetch team photo data', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Failed to fetch team photo data', details: errorMessage },
       { status: 500 }
     );
   }

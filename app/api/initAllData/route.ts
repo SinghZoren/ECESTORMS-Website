@@ -1,46 +1,9 @@
 import { NextResponse } from 'next/server';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
+import s3 from '@/app/utils/s3Client';
 import { defaultTeamMembers } from '../../data/teamMembers';
 
-const s3 = new S3Client({
-  region: process.env.NEXT_PUBLIC_AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID || '',
-    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY || '',
-  },
-});
-
-const BUCKET_NAME = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
-
-// Default data structures for each file
-const defaultData = {
-  calendar: {
-    calendar: []
-  },
-  resources: {
-    resources: []
-  },
-  conference: {
-    conference: {
-      visible: false,
-      registrationOpen: false,
-      registrationLink: '',
-      date: '',
-      location: '',
-      description: ''
-    }
-  },
-  officeHours: {
-    hours: {},
-    location: 'ENG 101'
-  },
-  pastEvents: {
-    events: []
-  },
-  shopItems: {
-    items: []
-  }
-};
+const BUCKET_NAME = process.env.AWS_BUCKET_NAME;
 
 export async function GET() {
   try {
