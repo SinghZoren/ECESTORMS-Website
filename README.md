@@ -53,12 +53,13 @@ The website includes an admin panel for content management. To access it:
 
 The following environment variables are required:
 
-- `NEXT_PUBLIC_ADMIN_USERNAME`: Admin username
-- `NEXT_PUBLIC_ADMIN_PASSWORD`: Admin password
-- `NEXT_PUBLIC_AWS_REGION`: AWS region for S3 bucket
-- `NEXT_PUBLIC_AWS_ACCESS_KEY_ID`: AWS access key ID
-- `NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY`: AWS secret access key
-- `NEXT_PUBLIC_AWS_BUCKET_NAME`: AWS S3 bucket name
+- `ADMIN_USERNAME`: Admin username
+- `ADMIN_PASSWORD`: Admin password
+- `AWS_REGION`: AWS region for S3 bucket
+- `AWS_ACCESS_KEY_ID`: AWS access key ID
+- `AWS_SECRET_ACCESS_KEY`: AWS secret access key
+- `AWS_BUCKET_NAME`: AWS S3 bucket name
+- `JWT_KEY`: JWT key name
 
 ## Deployment
 
