@@ -2,13 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
 
-const secret = process.env.NEXT_PUBLIC_JWT_SECRET;
+const secret = process.env.JWT_SECRET;
 
 if (!secret) {
-  throw new Error('NEXT_PUBLIC_JWT_SECRET is not set in environment variables.');
+  throw new Error('JWT_SECRET is not set in environment variables.');
 }
 
 export async function POST(req: NextRequest) {
+  if (!secret) {
+    console.error('JWT secret is not configured.');
+    return NextResponse.json({ success: false, message: 'Authentication configuration error.' }, { status: 500 });
+  }
+
   try {
     const { username, password } = await req.json();
 
