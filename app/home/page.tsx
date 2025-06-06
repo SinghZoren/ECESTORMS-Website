@@ -176,7 +176,7 @@ export default function Home() {
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-[3%]">
                   <a 
-                    href="https://forms.gle/YourGoogleFormLink" 
+                    href="https://forms.gle/U8DAVDg9kTTzqkP57" 
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className="flex flex-col items-center p-[5%] rounded-lg hover:bg-gray-50 transition-all duration-300 group"
