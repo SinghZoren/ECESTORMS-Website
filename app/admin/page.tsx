@@ -54,7 +54,6 @@ export default function Admin() {
   const [isTutorialEditModalOpen, setIsTutorialEditModalOpen] = useState(false);
   const [isPastEventsModalOpen, setIsPastEventsModalOpen] = useState(false);
   const [isShopModalOpen, setIsShopModalOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const [currentHours, setCurrentHours] = useState(defaultOfficeHoursData);
   const [currentLocation, setCurrentLocation] = useState(defaultLocation);
   const [currentTeamMembers, setCurrentTeamMembers] = useState(defaultTeamMembers);
@@ -62,19 +61,31 @@ export default function Admin() {
   const [conferenceVisible, setConferenceVisible] = useState(true);
   const [currentPastEvents, setCurrentPastEvents] = useState<PastEvent[]>([]);
   const [currentShopItems, setCurrentShopItems] = useState<ShopItem[]>([]);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    const loggedIn = localStorage.getItem('isLoggedIn');
-    if (loggedIn === 'true') {
-      setIsLoggedIn(true);
-      fetchConferenceVisibility();
-    }
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/check-auth');
+        const data = await response.json();
+        setIsLoggedIn(data.isLoggedIn);
+        if (data.isLoggedIn) {
+          fetchConferenceVisibility();
+        }
+      } catch (error) {
+        console.error('Error checking authentication status:', error);
+        setIsLoggedIn(false);
+      } finally {
+        setAuthChecked(true);
+      }
+    };
+
+    checkAuth();
   }, []);
 
   const fetchConferenceVisibility = async () => {
     try {
-      const response = await fetch('/api/conferenceVisibility');
+      const response = await fetch('/api/conferenceVisibility/GET');
       if (!response.ok) throw new Error('Failed to fetch conference visibility');
       const data = await response.json();
       setConferenceVisible(data.conferenceVisible);
@@ -184,31 +195,49 @@ export default function Admin() {
     }
   };
 
-  // Don't render anything until mounted
-  if (!mounted) {
-    return null;
+  // Don't render anything until auth check is complete
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
   }
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const correctUsername = process.env.NEXT_PUBLIC_ADMIN_USERNAME;
-    const correctPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
-    
-    if (username === correctUsername && password === correctPassword) {
-      localStorage.setItem('isLoggedIn', 'true');
-      setIsLoggedIn(true);
-      setError('');
-    } else {
-      setError('Invalid username or password');
+    setError('');
+
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (response.ok) {
+        setIsLoggedIn(true);
+        fetchConferenceVisibility();
+      } else {
+        const data = await response.json();
+        setError(data.message || 'Invalid username or password');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('An error occurred during login.');
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    setIsLoggedIn(false);
-    setUsername('');
-    setPassword('');
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/logout', { method: 'POST' });
+      setIsLoggedIn(false);
+      setUsername('');
+      setPassword('');
+    } catch (error) {
+      console.error('Logout error:', error);
+      alert('Failed to log out. Please try again.');
+    }
   };
 
   const handleSaveOfficeHours = async (newHours: typeof defaultOfficeHoursData, newLocation: string) => {

@@ -27,7 +27,7 @@ export default function Navbar() {
 
     const fetchConferenceVisibility = async () => {
       try {
-        const response = await fetch('/api/conferenceVisibility');
+        const response = await fetch('/api/conferenceVisibility/GET');
         if (!response.ok) throw new Error('Failed to fetch conference visibility');
         const data = await response.json();
         setConferenceVisible(data.conferenceVisible);
