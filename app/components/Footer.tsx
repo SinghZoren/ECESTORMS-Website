@@ -47,6 +47,7 @@ export default function Footer() {
           <p className="text-gray-600 text-sm">
             © {currentYear} ECESTORMS. All rights reserved.
           </p>
+          <img src="/images/logo.png" alt="ECESTORMS Logo" className="w-28 h-12 inline-block mr-2" />
         </div>
       </div>
     </footer>
