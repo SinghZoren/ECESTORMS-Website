@@ -150,7 +150,9 @@ export default function ShopModal({ isOpen, onClose, onSave, currentItems }: Sho
       // Upload cropped image to S3
       const blob = await fetch(imagePreview).then(r => r.blob());
       const formData = new FormData();
-      formData.append('file', blob, 'shop-image.jpg');
+      const timestamp = Date.now();
+      const filename = `shop-image-${timestamp}.jpg`;
+      formData.append('file', blob, filename);
       try {
         const response = await fetch('/api/uploadShopImage', {
           method: 'POST',

@@ -101,7 +101,9 @@ export default function PastEventsModal({ isOpen, onClose, onSave, currentEvents
       // Upload cropped image to S3
       const blob = await fetch(imagePreview).then(r => r.blob());
       const formData = new FormData();
-      formData.append('file', blob, 'event-image.jpg');
+      const timestamp = Date.now();
+      const filename = `event-image-${timestamp}.jpg`;
+      formData.append('file', blob, filename);
       try {
         const response = await fetch('/api/uploadEventImage', {
           method: 'POST',
