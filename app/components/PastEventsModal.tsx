@@ -63,12 +63,26 @@ export default function PastEventsModal({ isOpen, onClose, onSave, currentEvents
     setEditingEvent(newEvent);
     setEditMode('add');
     setEditEventId(null);
+    // Reset image-related states
+    setImagePreview(null);
+    setImageFile(null);
+    setUseImageUpload(false);
+    setIsCropperOpen(false);
+    setCrop({ unit: '%', width: 100, height: 100, x: 0, y: 0 });
+    setSaveError(null);
   };
 
   const handleEditEvent = (event: PastEvent) => {
     setEditingEvent({ ...event });
     setEditMode('edit');
     setEditEventId(event.id);
+    // Set image preview for existing event
+    setImagePreview(event.imageUrl);
+    setImageFile(null);
+    setUseImageUpload(false);
+    setIsCropperOpen(false);
+    setCrop({ unit: '%', width: 100, height: 100, x: 0, y: 0 });
+    setSaveError(null);
   };
 
   const handleDeleteEvent = (id: string) => {
@@ -117,6 +131,13 @@ export default function PastEventsModal({ isOpen, onClose, onSave, currentEvents
     setEditingEvent(null);
     setEditMode('add');
     setEditEventId(null);
+    // Reset image-related states after saving
+    setImagePreview(null);
+    setImageFile(null);
+    setUseImageUpload(false);
+    setIsCropperOpen(false);
+    setCrop({ unit: '%', width: 100, height: 100, x: 0, y: 0 });
+    setSaveError(null);
   };
 
   const handleSaveAll = () => {
@@ -327,7 +348,6 @@ export default function PastEventsModal({ isOpen, onClose, onSave, currentEvents
                       onChange={(e) => setEditingEvent({ ...editingEvent, description: e.target.value })}
                       rows={4}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                      required
                     />
                   </div>
                   <div>

@@ -45,6 +45,8 @@ export default function ShopModal({ isOpen, onClose, onSave, currentItems }: Sho
     setImagePreview(null);
     setUseImageUpload(false);
     setImageFile(null);
+    setIsCropperOpen(false);
+    setCrop({ unit: '%', width: 100, height: 100, x: 0, y: 0 });
   };
 
   const handleEditItem = (item: ShopItem) => {
@@ -52,6 +54,8 @@ export default function ShopModal({ isOpen, onClose, onSave, currentItems }: Sho
     setImagePreview(item.imageUrl);
     setUseImageUpload(false);
     setImageFile(null);
+    setIsCropperOpen(false);
+    setCrop({ unit: '%', width: 100, height: 100, x: 0, y: 0 });
   };
 
   const handleDeleteItem = (id: string) => {
@@ -173,6 +177,9 @@ export default function ShopModal({ isOpen, onClose, onSave, currentItems }: Sho
     setEditingItem(null);
     setImagePreview(null);
     setImageFile(null);
+    setUseImageUpload(false);
+    setIsCropperOpen(false);
+    setCrop({ unit: '%', width: 100, height: 100, x: 0, y: 0 });
   };
 
   const handleSaveAll = () => {
