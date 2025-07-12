@@ -75,7 +75,7 @@ export default function Partners() {
         {/* Corporate Sponsors Section */}
         <div>
           <h2 className="text-3xl font-semibold text-center mb-8">Corporate Sponsors</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {sponsors
               .filter(sponsor => sponsor.category === 'corporate')
               .map(sponsor => (
@@ -86,7 +86,7 @@ export default function Partners() {
                   rel="noopener noreferrer"
                   className="bg-white p-6 flex items-center justify-center transform hover:scale-105 transition-transform duration-200"
                 >
-                  <div className="relative w-full h-32">
+                  <div className="relative w-full h-40">
                     <Image
                       src={sponsor.imageUrl}
                       alt={sponsor.name}
