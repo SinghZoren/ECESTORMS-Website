@@ -8,16 +8,7 @@ export interface CourseInfo {
 // Master dictionary of all unique courses
 export const allCourses: { [code: string]: CourseInfo } = {
   // First Year
-  'CEN 100': { code: 'CEN 100', name: 'Introduction to Engineering', year: 1, folder: 'CEN 100' },
-  'CHY 102': { code: 'CHY 102', name: 'General Chemistry', year: 1, folder: 'CHY 102' },
-  'MTH 140': { code: 'MTH 140', name: 'Calculus I', year: 1, folder: 'MTH 140' },
-  'MTH 141': { code: 'MTH 141', name: 'Linear Algebra', year: 1, folder: 'MTH 141' },
-  'PCS 211': { code: 'PCS 211', name: 'Physics: Mechanics', year: 1, folder: 'PCS 211' },
-  'CPS 188': { code: 'CPS 188', name: 'Computer Programming Fundamentals', year: 1, folder: 'CPS 188' },
-  'ECN 801': { code: 'ECN 801', name: 'Principles of Engineering Economics', year: 1, folder: 'ECN 801' },
   'ELE 202': { code: 'ELE 202', name: 'Electric Circuit Analysis', year: 1, folder: 'ELE 202' },
-  'MTH 240': { code: 'MTH 240', name: 'Calculus II', year: 1, folder: 'MTH 240' },
-  'PCS 125': { code: 'PCS 125', name: 'Physics: Waves and Fields', year: 1, folder: 'PCS 125' },
 
   // Second Year
   'COE 318': { code: 'COE 318', name: 'Software Systems', year: 2, folder: 'COE 318' },
