@@ -27,8 +27,9 @@ export async function POST(request: NextRequest) {
       region: process.env.AWS_REGION
     });
 
-    const fileExtension = file.name.split('.').pop();
-    const key = `team/${memberId}.${fileExtension}`;
+    const fileExtension = file.name.split('.').pop() || 'jpg';
+    const timestamp = Date.now();
+    const key = `team/${memberId}-${timestamp}.${fileExtension}`;
     const fileBuffer = Buffer.from(await file.arrayBuffer());
     
     try {

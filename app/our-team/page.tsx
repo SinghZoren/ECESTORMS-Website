@@ -80,6 +80,7 @@ export default function OurTeam() {
 
   // Filter team members by section
   const presidents = teamMembers.filter(member => member.section === 'presidents');
+  const executiveAdvisors = teamMembers.filter(member => member.section === 'executiveAdvisors');
   const vps = teamMembers.filter(member => member.section === 'vps');
   const directors = teamMembers.filter(member => member.section === 'directors');
   const yearReps = teamMembers.filter(member => member.section === 'yearReps');
@@ -117,6 +118,9 @@ export default function OurTeam() {
             
             {/* Presidents */}
             {presidents.length > 0 && <TeamSection title="Presidents" members={presidents} />}
+            
+            {/* Executive Advisors */}
+            {executiveAdvisors.length > 0 && <TeamSection title="Executive Advisors" members={executiveAdvisors} />}
             
             {/* Vice Presidents */}
             {vps.length > 0 && <TeamSection title="Vice Presidents" members={vps} />}

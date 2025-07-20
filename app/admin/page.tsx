@@ -269,7 +269,7 @@ export default function Admin() {
     }
   };
 
-  const handleSaveTeamMembers = async (newTeamMembers: typeof defaultTeamMembers) => {
+  const handleSaveTeamMembers = async (newTeamMembers: typeof defaultTeamMembers, teamPhotoUrl: string) => {
     try {
       // Send team members data to backend
       const response = await fetch('/api/updateTeamMembers', {
@@ -278,7 +278,8 @@ export default function Admin() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          teamMembers: newTeamMembers
+          teamMembers: newTeamMembers,
+          teamPhotoUrl
         }),
       });
 

@@ -13,6 +13,39 @@ export async function GET() {
         teamMembers: defaultTeamMembers,
         teamPhotoUrl: null
       },
+      positions: {
+        positions: [
+          // Presidents
+          { id: 'presidents_0', title: 'Co-President', section: 'presidents' },
+          
+          // Executive Advisors
+          { id: 'executiveAdvisors_0', title: 'Executive Advisor', section: 'executiveAdvisors' },
+          
+          // VPs
+          { id: 'vps_0', title: 'VP Academic', section: 'vps' },
+          { id: 'vps_1', title: 'VP Student Life', section: 'vps' },
+          { id: 'vps_2', title: 'VP Professional Development', section: 'vps' },
+          { id: 'vps_3', title: 'VP Marketing', section: 'vps' },
+          { id: 'vps_4', title: 'VP Operations', section: 'vps' },
+          { id: 'vps_5', title: 'VP Finance & Sponsorship', section: 'vps' },
+          
+          // Directors
+          { id: 'directors_0', title: 'Events Director', section: 'directors' },
+          { id: 'directors_1', title: 'Marketing Director', section: 'directors' },
+          { id: 'directors_2', title: 'Merchandise Director', section: 'directors' },
+          { id: 'directors_3', title: 'Outreach Director', section: 'directors' },
+          { id: 'directors_4', title: 'Corporate Relations Director', section: 'directors' },
+          { id: 'directors_5', title: 'Webmaster', section: 'directors' },
+          
+          // Year Reps
+          { id: 'yearReps_0', title: 'First Year Rep', section: 'yearReps' },
+          { id: 'yearReps_1', title: 'Second Year Rep', section: 'yearReps' },
+          { id: 'yearReps_2', title: 'Third Year Rep', section: 'yearReps' },
+          { id: 'yearReps_3', title: 'Fourth Year Rep', section: 'yearReps' },
+          { id: 'yearReps_4', title: 'Computer Representative', section: 'yearReps' },
+          { id: 'yearReps_5', title: 'Electrical Representative', section: 'yearReps' },
+        ]
+      },
       shop: {
         items: []
       },
@@ -33,6 +66,12 @@ export async function GET() {
         Bucket: BUCKET_NAME,
         Key: 'data/team.json',
         Body: JSON.stringify(initialData.team),
+        ContentType: 'application/json',
+      })),
+      s3.send(new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: 'data/positions.json',
+        Body: JSON.stringify(initialData.positions),
         ContentType: 'application/json',
       })),
       s3.send(new PutObjectCommand({

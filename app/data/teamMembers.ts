@@ -4,7 +4,7 @@ export interface TeamMember {
   position: string;
   imageUrl: string;
   linkedinUrl?: string;
-  section: 'presidents' | 'vps' | 'directors' | 'yearReps';
+  section: 'presidents' | 'executiveAdvisors' | 'vps' | 'directors' | 'yearReps';
 }
 
 // Export team members data in a format that's easy to extract with regex
@@ -24,6 +24,22 @@ export const defaultTeamMembers: TeamMember[] = [
     "imageUrl": "/images/placeholder-headshot.png",
     "linkedinUrl": "https://linkedin.com/",
     "section": "presidents"
+  },
+  {
+    "id": "advisor1",
+    "name": "Name Advisor 1",
+    "position": "Executive Advisor",
+    "imageUrl": "/images/placeholder-headshot.png",
+    "linkedinUrl": "https://linkedin.com/",
+    "section": "executiveAdvisors"
+  },
+  {
+    "id": "advisor2",
+    "name": "Name Advisor 2",
+    "position": "Executive Advisor",
+    "imageUrl": "/images/placeholder-headshot.png",
+    "linkedinUrl": "https://linkedin.com/",
+    "section": "executiveAdvisors"
   },
   {
     "id": "vp1",
@@ -68,7 +84,15 @@ export const defaultTeamMembers: TeamMember[] = [
   {
     "id": "vp2",
     "name": "Name 4",
-    "position": "VP Student Life",
+    "position": "Co-VP Student Life",
+    "imageUrl": "/images/placeholder-headshot.png",
+    "linkedinUrl": "https://linkedin.com/",
+    "section": "vps"
+  },
+  {
+    "id": "vp7",
+    "name": "Name 4",
+    "position": "CoVP Student Life",
     "imageUrl": "/images/placeholder-headshot.png",
     "linkedinUrl": "https://linkedin.com/",
     "section": "vps"

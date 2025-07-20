@@ -12,7 +12,7 @@ interface TeamMember {
   position: string;
   imageUrl: string;
   linkedinUrl?: string;
-  section: 'presidents' | 'vps' | 'directors' | 'yearReps';
+  section: 'presidents' | 'executiveAdvisors' | 'vps' | 'directors' | 'yearReps';
 }
 
 interface TeamMembersModalProps {
@@ -21,6 +21,8 @@ interface TeamMembersModalProps {
   onSave: (members: TeamMember[], teamPhotoUrl: string) => void;
   currentMembers: TeamMember[];
 }
+
+
 
 export default function TeamMembersModal({
   isOpen,
@@ -32,6 +34,7 @@ export default function TeamMembersModal({
   const [isPublishing, setIsPublishing] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [activeSection, setActiveSection] = useState<'presidents' | 'vps' | 'directors' | 'yearReps' | 'teamPhoto'>('presidents');
+
   const [tempImageUrl, setTempImageUrl] = useState<string | null>(null);
   const [tempMemberId, setTempMemberId] = useState<string | null>(null);
   const [isCropperOpen, setIsCropperOpen] = useState(false);
@@ -53,18 +56,14 @@ export default function TeamMembersModal({
 
   const sections = [
     { id: 'presidents', label: 'Presidents' },
+    { id: 'executiveAdvisors', label: 'Executive Advisors' },
     { id: 'vps', label: 'Vice Presidents' },
     { id: 'directors', label: 'Directors' },
     { id: 'yearReps', label: 'Year Representatives' },
     { id: 'teamPhoto', label: 'Team Photo' },
   ];
 
-  const positionTitles = {
-    presidents: ['Co-President'],
-    vps: ['VP Academic', 'VP Student Life', 'VP Professional Development', 'VP Marketing', 'VP Operations', 'VP Finance & Sponsorship'],
-    directors: ['Events Director', 'Marketing Director', 'Merchandise Director', 'Outreach Director', 'Corporate Relations Director', 'Webmaster'],
-    yearReps: ['First Year Rep', 'Second Year Rep', 'Third Year Rep', 'Fourth Year Rep', 'Computer Representative', 'Electrical Representative']
-  };
+
 
   useEffect(() => {
     if (isOpen) {
@@ -74,9 +73,13 @@ export default function TeamMembersModal({
       // Initialize image previews
       const previews: Record<string, string> = {};
       currentMembers.forEach(member => {
-        previews[member.id] = member.imageUrl;
+        // Use placeholder if no image or empty imageUrl
+        previews[member.id] = member.imageUrl || '/images/placeholder-headshot.png';
       });
       setImagePreview(previews);
+      
+
+      
       // Fetch team photo URL
       fetch('/api/getTeamPhoto')
         .then(res => res.json())
@@ -260,11 +263,17 @@ export default function TeamMembersModal({
     setIsPublishing(true);
     try {
       console.log('Saving team members:', members);
-      await fetch('/api/updateTeamMembers', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ teamMembers: members, teamPhotoUrl }),
-      });
+      
+      // Save team photo if changed
+      if (teamPhotoUrl !== teamPhotoPreview) {
+        await fetch('/api/updateTeamPhoto', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ teamPhotoUrl: teamPhotoPreview }),
+        });
+      }
+      
+      onSave(members, teamPhotoPreview);
       setHasChanges(false);
       onClose();
     } catch (error) {
@@ -276,10 +285,13 @@ export default function TeamMembersModal({
   };
 
   const handleRemoveImage = (id: string) => {
-    // Update the image preview to remove the image
+    // Set placeholder image instead of empty
+    const placeholderUrl = '/images/placeholder-headshot.png';
+    
+    // Update the image preview to show placeholder
     setImagePreview(prev => ({
       ...prev,
-      [id]: ''
+      [id]: placeholderUrl
     }));
     
     // Remove from original images as well
@@ -289,13 +301,49 @@ export default function TeamMembersModal({
       return newOriginals;
     });
     
-    // Update the member data
-    handleMemberChange(id, 'imageUrl', '');
+    // Update the member data with placeholder
+    handleMemberChange(id, 'imageUrl', placeholderUrl);
     
     setHasChanges(true);
   };
 
   const filteredMembers = members.filter(member => member.section === activeSection);
+
+
+
+  const handleAddMember = () => {
+    const newMemberId = `${activeSection}_${Date.now()}`;
+    const newMember: TeamMember = {
+      id: newMemberId,
+      name: '',
+      position: '',
+      imageUrl: '/images/placeholder-headshot.png',
+      linkedinUrl: '',
+      section: activeSection as 'presidents' | 'executiveAdvisors' | 'vps' | 'directors' | 'yearReps'
+    };
+    setMembers([...members, newMember]);
+    
+    // Set the placeholder image in the preview
+    setImagePreview(prev => ({
+      ...prev,
+      [newMemberId]: '/images/placeholder-headshot.png'
+    }));
+    
+    setHasChanges(true);
+  };
+
+  const handleDeleteMember = (id: string) => {
+    if (window.confirm('Are you sure you want to delete this team member?')) {
+      setMembers(members.filter(member => member.id !== id));
+      // Remove image preview for deleted member
+      setImagePreview(prev => {
+        const newPreviews = {...prev};
+        delete newPreviews[id];
+        return newPreviews;
+      });
+      setHasChanges(true);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -410,6 +458,20 @@ export default function TeamMembersModal({
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {['presidents', 'executiveAdvisors', 'vps', 'directors', 'yearReps'].includes(activeSection) && (
+          <div className="mb-8">
+            <button
+              onClick={handleAddMember}
+              className="bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-6 rounded-md transition-colors flex items-center gap-2 shadow-sm"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Add Team Member
+            </button>
           </div>
         )}
 
@@ -561,12 +623,21 @@ export default function TeamMembersModal({
           </div>
         )}
 
-        <div className="space-y-8">
+        <div className="space-y-10">
           {filteredMembers.map(member => (
-            <div key={member.id} className="bg-gray-50 p-6 rounded-lg">
-              <div className="flex flex-col md:flex-row gap-6">
-                <div className="w-full md:w-1/4">
-                  <div className="relative h-[200px] w-full bg-gray-200 mb-2 overflow-hidden">
+            <div key={member.id} className="bg-gray-50 p-8 rounded-lg relative shadow-sm border border-gray-200">
+              <button
+                onClick={() => handleDeleteMember(member.id)}
+                className="absolute top-4 right-4 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center transition-colors shadow-md"
+                title="Delete team member"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+              <div className="flex flex-col lg:flex-row gap-8">
+                <div className="w-full lg:w-1/3">
+                  <div className="relative h-[220px] w-full bg-gray-200 mb-4 overflow-hidden rounded-lg">
                     {imagePreview[member.id] && (
                       <>
                         <Image
@@ -575,32 +646,34 @@ export default function TeamMembersModal({
                           fill
                           className="object-cover"
                         />
-                        <button 
-                          className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-md hover:bg-red-600 transition-colors z-10"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (window.confirm('Are you sure you want to remove this image?')) {
-                              handleRemoveImage(member.id);
-                            }
-                          }}
-                          title="Remove image"
-                        >
+                        {imagePreview[member.id] !== '/images/placeholder-headshot.png' && (
+                          <button 
+                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-md hover:bg-red-600 transition-colors z-10"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (window.confirm('Are you sure you want to remove this image?')) {
+                                handleRemoveImage(member.id);
+                              }
+                            }}
+                            title="Remove image"
+                          >
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                           </svg>
                         </button>
+                        )}
                       </>
                     )}
                   </div>
-                  <div className="flex flex-col items-center space-y-2">
+                  <div className="flex flex-col items-center space-y-3">
                     <div className="flex space-x-2 w-full">
                       <label htmlFor={`image-upload-${member.id}`} className="flex-1 cursor-pointer bg-[#931cf5] hover:bg-[#7b17cc] text-white font-medium py-2 px-4 rounded-md text-center transition-colors flex justify-center items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
                         </svg>
-                        {imagePreview[member.id] ? 'Change' : 'Upload'}
+                        {imagePreview[member.id] && imagePreview[member.id] !== '/images/placeholder-headshot.png' ? 'Change' : 'Upload'}
                       </label>
-                      {imagePreview[member.id] && (
+                      {imagePreview[member.id] && imagePreview[member.id] !== '/images/placeholder-headshot.png' && (
                         <button
                           onClick={() => handleReCrop(member.id)}
                           className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md text-center transition-colors flex justify-center items-center gap-2"
@@ -620,54 +693,55 @@ export default function TeamMembersModal({
                       className="hidden"
                     />
                     <p className="text-xs text-gray-500 text-center">
-                      {imagePreview[member.id] 
+                      {imagePreview[member.id] && imagePreview[member.id] !== '/images/placeholder-headshot.png'
                         ? 'Change photo or adjust the crop' 
                         : 'Upload a team member photo (square crop will be applied)'}
                     </p>
                   </div>
                 </div>
 
-                <div className="w-full md:w-3/4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Name
-                    </label>
-                    <input
-                      type="text"
-                      value={member.name}
-                      onChange={(e) => handleMemberChange(member.id, 'name', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#931cf5]"
-                    />
-                  </div>
-
-                  {['presidents', 'vps', 'directors', 'yearReps'].includes(activeSection) && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Position
+                <div className="w-full lg:w-2/3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Name
                       </label>
-                      <select
-                        value={member.position}
-                        onChange={(e) => handleMemberChange(member.id, 'position', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#931cf5]"
-                      >
-                        {positionTitles[activeSection as keyof typeof positionTitles].map((position: string) => (
-                          <option key={position} value={position}>{position}</option>
-                        ))}
-                      </select>
+                      <input
+                        type="text"
+                        value={member.name}
+                        onChange={(e) => handleMemberChange(member.id, 'name', e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#931cf5] focus:border-transparent"
+                        placeholder="Name"
+                      />
                     </div>
-                  )}
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      LinkedIn URL
-                    </label>
-                    <input
-                      type="text"
-                      value={member.linkedinUrl || ''}
-                      onChange={(e) => handleMemberChange(member.id, 'linkedinUrl', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#931cf5]"
-                      placeholder="https://linkedin.com/in/username"
-                    />
+                    {['presidents', 'executiveAdvisors', 'vps', 'directors', 'yearReps'].includes(activeSection) && (
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Position
+                        </label>
+                        <input
+                          type="text"
+                          value={member.position}
+                          onChange={(e) => handleMemberChange(member.id, 'position', e.target.value)}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#931cf5] focus:border-transparent"
+                          placeholder="Position"
+                        />
+                      </div>
+                    )}
+
+                    <div className="space-y-2 md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        LinkedIn URL
+                      </label>
+                      <input
+                        type="text"
+                        value={member.linkedinUrl || ''}
+                        onChange={(e) => handleMemberChange(member.id, 'linkedinUrl', e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#931cf5] focus:border-transparent"
+                        placeholder="https://linkedin.com/in/username"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -675,21 +749,23 @@ export default function TeamMembersModal({
           ))}
         </div>
 
-        <div className="mt-8 flex justify-end space-x-4">
+        <div className="mt-12 pt-6 border-t border-gray-200 flex justify-end space-x-4">
           <button
             onClick={handleClose}
-            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+            className="px-6 py-3 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors shadow-sm"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={isPublishing}
-            className="px-4 py-2 bg-[#931cf5] text-white rounded-md hover:bg-[#7b17cc] transition-colors disabled:opacity-50"
+            className="px-6 py-3 bg-[#931cf5] text-white rounded-md hover:bg-[#7b17cc] transition-colors disabled:opacity-50 shadow-sm"
           >
             {isPublishing ? 'Publishing...' : 'Publish Changes'}
           </button>
         </div>
+
+
       </div>
     </div>
   );
