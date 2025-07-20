@@ -59,7 +59,7 @@ interface OfficeHoursModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (hours: OfficeHoursSchedule, location: string) => void;
-  currentHours: OfficeHoursSchedule;
+  currentHours: OfficeHoursSchedule | undefined;
   currentLocation: string;
 }
 
@@ -92,21 +92,26 @@ export default function OfficeHoursModal({
   // Convert current hours to time slots format when modal opens
   useEffect(() => {
     if (isOpen) {
-      setLocation(currentLocation);
+      setLocation(currentLocation || '');
       const slots: TimeSlot[] = [];
       
-      Object.entries(currentHours).forEach(([day, schedule]) => {
-        Object.entries(schedule).forEach(([timeRange, info]) => {
-          const [startTime, endTime] = timeRange.split('-');
-          slots.push({
-            day,
-            startTime,
-            endTime,
-            name: info.name,
-            position: info.position
-          });
+      // Defensive check for currentHours
+      if (currentHours && typeof currentHours === 'object') {
+        Object.entries(currentHours).forEach(([day, schedule]) => {
+          if (schedule && typeof schedule === 'object') {
+            Object.entries(schedule).forEach(([timeRange, info]) => {
+              const [startTime, endTime] = timeRange.split('-');
+              slots.push({
+                day,
+                startTime,
+                endTime,
+                name: info.name || '',
+                position: info.position || ''
+              });
+            });
+          }
         });
-      });
+      }
       
       setTimeSlots(slots);
       setHasChanges(false); // Reset changes flag when modal opens

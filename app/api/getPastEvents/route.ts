@@ -7,20 +7,42 @@ const BUCKET_NAME = process.env.AWS_BUCKET_NAME;
 export async function GET() {
   try {
     const key = 'data/pastEvents.json';
-    const { Body } = await s3.send(new GetObjectCommand({
-      Bucket: BUCKET_NAME,
-      Key: key,
-    }));
+    let events = [];
     
-    if (!Body) {
-      throw new Error('No data received from S3');
-    }
+    try {
+      const { Body } = await s3.send(new GetObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: key,
+      }));
+      
+      if (!Body) {
+        throw new Error('No data received from S3');
+      }
 
-    const json = await Body.transformToString();
-    const data = JSON.parse(json);
-    return NextResponse.json(data);
+      const json = await Body.transformToString();
+      const data = JSON.parse(json);
+      
+      // Handle different possible data structures
+      if (data.events && Array.isArray(data.events)) {
+        events = data.events;
+      } else if (data.pastEvents && Array.isArray(data.pastEvents)) {
+        events = data.pastEvents; // Handle old structure
+      } else if (Array.isArray(data)) {
+        events = data; // Handle direct array
+      } else {
+        console.warn('Unexpected pastEvents data structure:', data);
+        events = [];
+      }
+    } catch (error: unknown) {
+      console.error('Error fetching from S3, using empty events array:', error);
+      // Return empty events array if file doesn't exist or is corrupted
+      events = [];
+    }
+    
+    return NextResponse.json({ events });
   } catch (error: unknown) {
-    console.error('Error fetching past events:', error);
-    return NextResponse.json({ error: 'Failed to fetch past events data' }, { status: 500 });
+    console.error('Error in getPastEvents:', error);
+    // Always return valid structure even on error
+    return NextResponse.json({ events: [] });
   }
 } 

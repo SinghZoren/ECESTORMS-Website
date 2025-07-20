@@ -50,7 +50,7 @@ export async function GET() {
         items: []
       },
       pastEvents: {
-        pastEvents: []
+        events: []
       },
       officeHours: {
         officeHours: []

@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import s3 from '@/app/utils/s3Client';
-import { defaultPastEvents } from '@/app/data/pastEvents';
 
 const BUCKET_NAME = process.env.AWS_BUCKET_NAME;
+
+const defaultPastEvents = {
+  events: []
+};
 
 export async function GET() {
   try {
