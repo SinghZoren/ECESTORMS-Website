@@ -21,10 +21,15 @@ export interface S3Resource {
   courseCode: string;
   parentId: string | null;
   fileUrl?: string;
+  linkUrl?: string; // For folders that act as links
   children?: S3Resource[];
 }
 
 export async function uploadFileToS3(file: File, key: string): Promise<string> {
+  if (!BUCKET_NAME) {
+    throw new Error('AWS_BUCKET_NAME is not configured');
+  }
+
   const command = new PutObjectCommand({
     Bucket: BUCKET_NAME,
     Key: key,
@@ -37,6 +42,10 @@ export async function uploadFileToS3(file: File, key: string): Promise<string> {
 }
 
 export async function deleteFileFromS3(key: string): Promise<void> {
+  if (!BUCKET_NAME) {
+    throw new Error('AWS_BUCKET_NAME is not configured');
+  }
+
   const command = new DeleteObjectCommand({
     Bucket: BUCKET_NAME,
     Key: key,
@@ -46,6 +55,11 @@ export async function deleteFileFromS3(key: string): Promise<void> {
 }
 
 export async function listObjects(prefix: string): Promise<S3Resource[]> {
+  if (!BUCKET_NAME) {
+    console.warn('AWS_BUCKET_NAME is not configured, returning empty resources');
+    return [];
+  }
+
   const command = new ListObjectsV2Command({
     Bucket: BUCKET_NAME,
     Prefix: prefix,
@@ -89,6 +103,10 @@ export async function listObjects(prefix: string): Promise<S3Resource[]> {
 }
 
 export async function getSignedUrlForUpload(key: string): Promise<string> {
+  if (!BUCKET_NAME) {
+    throw new Error('AWS_BUCKET_NAME is not configured');
+  }
+
   const command = new PutObjectCommand({
     Bucket: BUCKET_NAME,
     Key: key,

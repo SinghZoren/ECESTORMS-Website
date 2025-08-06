@@ -6,6 +6,11 @@ const BUCKET_NAME = process.env.AWS_BUCKET_NAME;
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if bucket name is configured
+    if (!BUCKET_NAME) {
+      return NextResponse.json({ error: 'AWS configuration missing' }, { status: 500 });
+    }
+
     const formData = await request.formData();
     const file = formData.get('file') as File;
     if (!file) {

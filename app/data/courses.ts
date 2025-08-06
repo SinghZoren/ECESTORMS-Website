@@ -10,6 +10,7 @@ export const allCourses: { [code: string]: CourseInfo } = {
   // First Year
   'ELE 202': { code: 'ELE 202', name: 'Electric Circuit Analysis', year: 1, folder: 'ELE 202' },
 
+
   // Second Year
   'COE 318': { code: 'COE 318', name: 'Software Systems', year: 2, folder: 'COE 318' },
   'COE 328': { code: 'COE 328', name: 'Digital Systems', year: 2, folder: 'COE 328' },
@@ -90,6 +91,8 @@ export const allCourses: { [code: string]: CourseInfo } = {
 
 // Electrical Engineering course list
 export const electricalCourses: { code: string; year: number }[] = [
+  // First Year
+  { code: 'ELE 202', year: 1 },
   // Second Year
   { code: 'COE 318', year: 2 },
   { code: 'COE 328', year: 2 },
@@ -153,6 +156,9 @@ export const electricalCourses: { code: string; year: number }[] = [
 
 // Computer Engineering (Hardware) course list
 export const computerHardwareCourses: { code: string; year: number }[] = [
+  // First Year
+  { code: 'ELE 202', year: 1 },
+
   // Second Year
   { code: 'COE 318', year: 2 },
   { code: 'COE 328', year: 2 },
@@ -210,6 +216,8 @@ export const computerHardwareCourses: { code: string; year: number }[] = [
 
 // Computer Engineering (Software) course list
 export const computerSoftwareCourses: { code: string; year: number }[] = [
+  // First Year
+  { code: 'ELE 202', year: 1 },
   // Second Year (same as hardware)
   { code: 'COE 318', year: 2 },
   { code: 'COE 328', year: 2 },

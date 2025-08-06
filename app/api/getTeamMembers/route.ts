@@ -7,6 +7,15 @@ const BUCKET_NAME = process.env.AWS_BUCKET_NAME;
 
 export async function GET() {
   try {
+    // Check if bucket name is configured
+    if (!BUCKET_NAME) {
+      console.warn('AWS_BUCKET_NAME not configured, using default team data');
+      return NextResponse.json({ 
+        teamMembers: defaultTeamMembers, 
+        teamPhotoUrl: null 
+      });
+    }
+
     const key = 'data/team.json';
     let teamMembers, teamPhotoUrl;
     try {

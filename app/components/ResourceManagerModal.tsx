@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import Image from 'next/image';
 import { IoClose, IoFolder, IoDocument, IoArrowBack, IoSearch } from 'react-icons/io5';
 import { bebasNeue } from '../fonts';
 import { allCourses, electricalCourses, computerHardwareCourses, computerSoftwareCourses, CourseInfo } from '../data/courses';
@@ -39,16 +40,18 @@ export default function ResourceManagerModal({ isOpen, onClose }: ResourceManage
   const [previewFile, setPreviewFile] = useState<null | { url: string; name: string; type: string }>(null);
   const [renamingFile, setRenamingFile] = useState<null | { id: string; name: string; key: string }>(null);
   const [newFileName, setNewFileName] = useState('');
-
-  const getCourseList = () => {
-    if (selectedProgram === 'Electrical') return electricalCourses;
-    if (selectedProgram === 'Computer-Hardware') return computerHardwareCourses;
-    if (selectedProgram === 'Computer-Software') return computerSoftwareCourses;
-    return [];
-  };
+  const [linkingFolder, setLinkingFolder] = useState<null | { id: string; name: string; linkUrl?: string }>(null);
+  const [folderLinkUrl, setFolderLinkUrl] = useState('');
+  const [courseLinks, setCourseLinks] = useState<{[courseCode: string]: string}>({});
+  const [linkingCourse, setLinkingCourse] = useState<null | { code: string; name: string; linkUrl?: string }>(null);
+  const [courseLinkUrl, setCourseLinkUrl] = useState('');
 
   const filteredCourses = useMemo(() => {
-    const courses = getCourseList();
+    const courses = selectedProgram === 'Electrical' ? electricalCourses 
+      : selectedProgram === 'Computer-Hardware' ? computerHardwareCourses
+      : selectedProgram === 'Computer-Software' ? computerSoftwareCourses
+      : [];
+      
     return courses.filter(course => {
       const courseInfo = allCourses[course.code];
       return courseInfo && (
@@ -56,7 +59,29 @@ export default function ResourceManagerModal({ isOpen, onClose }: ResourceManage
         courseInfo.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     });
-  }, [searchQuery, selectedProgram, getCourseList]);
+  }, [searchQuery, selectedProgram]);
+
+  // Load course links on mount
+  useEffect(() => {
+    if (isOpen) {
+      const loadCourseLinks = async () => {
+        try {
+          const response = await fetch('/api/resources/course-links');
+          if (response.ok) {
+            const data = await response.json();
+            const linksMap: {[courseCode: string]: string} = {};
+            data.links.forEach((link: {courseCode: string; linkUrl: string}) => {
+              linksMap[link.courseCode] = link.linkUrl;
+            });
+            setCourseLinks(linksMap);
+          }
+        } catch (error) {
+          console.error('Error loading course links:', error);
+        }
+      };
+      loadCourseLinks();
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -283,6 +308,146 @@ export default function ResourceManagerModal({ isOpen, onClose }: ResourceManage
     }
   };
 
+  const handleSetFolderLink = async () => {
+    if (!linkingFolder || !selectedCourse || !folderLinkUrl.trim()) return;
+    
+    try {
+      // Validate URL format
+      new URL(folderLinkUrl);
+      
+      const response = await fetch('/api/resources/folder-links', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          courseCode: selectedCourse.code,
+          folderId: linkingFolder.id,
+          linkUrl: folderLinkUrl,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save folder link');
+      }
+
+      // Refresh the resources list to show updated link status
+      const prefix = currentFolder
+        ? `${selectedCourse.code}/${currentFolder.id}/`
+        : `${selectedCourse.code}/`;
+      const updatedResources = await listObjects(prefix);
+      setResources(updatedResources);
+      
+      setLinkingFolder(null);
+      setFolderLinkUrl('');
+      alert('Folder link saved successfully!');
+    } catch (error) {
+      console.error('Error setting folder link:', error);
+      alert(error instanceof Error ? error.message : 'Failed to save folder link');
+    }
+  };
+
+  const handleRemoveFolderLink = async (folderId: string) => {
+    if (!selectedCourse) return;
+    
+    try {
+      const response = await fetch('/api/resources/folder-links', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          courseCode: selectedCourse.code,
+          folderId: folderId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to remove folder link');
+      }
+
+      // Refresh the resources list
+      const prefix = currentFolder
+        ? `${selectedCourse.code}/${currentFolder.id}/`
+        : `${selectedCourse.code}/`;
+      const updatedResources = await listObjects(prefix);
+      setResources(updatedResources);
+      
+      alert('Folder link removed successfully!');
+    } catch (error) {
+      console.error('Error removing folder link:', error);
+      alert(error instanceof Error ? error.message : 'Failed to remove folder link');
+    }
+  };
+
+  // Course linking functions
+  const handleSetCourseLink = async () => {
+    if (!linkingCourse || !courseLinkUrl.trim()) return;
+    
+    try {
+      // Validate URL format
+      new URL(courseLinkUrl);
+      
+      const response = await fetch('/api/resources/course-links', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          courseCode: linkingCourse.code,
+          linkUrl: courseLinkUrl,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save course link');
+      }
+
+      // Update local state
+      setCourseLinks(prev => ({
+        ...prev,
+        [linkingCourse.code]: courseLinkUrl
+      }));
+      
+      setLinkingCourse(null);
+      setCourseLinkUrl('');
+      alert('Course link saved successfully!');
+    } catch (error) {
+      console.error('Error setting course link:', error);
+      alert(error instanceof Error ? error.message : 'Failed to save course link');
+    }
+  };
+
+  const handleRemoveCourseLink = async (courseCode: string) => {
+    try {
+      const response = await fetch('/api/resources/course-links', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          courseCode: courseCode,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to remove course link');
+      }
+
+      // Update local state
+      setCourseLinks(prev => {
+        const updated = { ...prev };
+        delete updated[courseCode];
+        return updated;
+      });
+      
+      alert('Course link removed successfully!');
+    } catch (error) {
+      console.error('Error removing course link:', error);
+      alert(error instanceof Error ? error.message : 'Failed to remove course link');
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center backdrop-blur-sm">
       <div className="bg-white rounded-lg w-[95%] h-[90vh] p-8 relative flex">
@@ -336,7 +501,7 @@ export default function ResourceManagerModal({ isOpen, onClose }: ResourceManage
               <div className="flex-1 flex items-center justify-center p-8 overflow-auto">
                 {/* Render preview based on file type */}
                 {previewFile.type.startsWith('image/') ? (
-                  <img src={previewFile.url} alt={previewFile.name} className="max-h-[70vh] max-w-full rounded" />
+                  <Image src={previewFile.url} alt={previewFile.name} width={600} height={600} className="max-h-[70vh] max-w-full rounded" />
                 ) : previewFile.type === 'application/pdf' ? (
                   <iframe src={previewFile.url} title={previewFile.name} className="w-full h-[70vh] rounded" />
                 ) : (
@@ -379,6 +544,118 @@ export default function ResourceManagerModal({ isOpen, onClose }: ResourceManage
                   className="px-4 py-2 bg-[#931cf5] text-white rounded hover:bg-[#7a1ac4]"
                   onClick={handleRenameFile}
                 >Rename</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Folder Link Modal */}
+        {linkingFolder && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
+            <div className="bg-white rounded-lg p-6 shadow-lg min-w-[400px]">
+              <h3 className="text-lg font-bold mb-2 text-[#931cf5]">Set Folder Link</h3>
+              <div className="mb-4">
+                <p className="text-sm text-gray-600 mb-2">
+                  Make &quot;<b>{linkingFolder.name}</b>&quot; act as a link button that redirects to an external URL.
+                </p>
+                {linkingFolder.linkUrl && (
+                  <div className="mb-2 p-2 bg-blue-50 rounded">
+                    <span className="text-sm text-blue-700">Current link: </span>
+                    <a href={linkingFolder.linkUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-sm">
+                      {linkingFolder.linkUrl}
+                    </a>
+                  </div>
+                )}
+              </div>
+              <input
+                className="border rounded px-3 py-2 w-full mb-4"
+                value={folderLinkUrl}
+                onChange={e => setFolderLinkUrl(e.target.value)}
+                placeholder="Enter URL (e.g., https://example.com)"
+                type="url"
+              />
+              <div className="flex gap-2 justify-end">
+                <button
+                  className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                  onClick={() => { setLinkingFolder(null); setFolderLinkUrl(''); }}
+                >
+                  Cancel
+                </button>
+                {linkingFolder.linkUrl && (
+                  <button
+                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                    onClick={() => {
+                      handleRemoveFolderLink(linkingFolder.id);
+                      setLinkingFolder(null);
+                      setFolderLinkUrl('');
+                    }}
+                  >
+                    Remove Link
+                  </button>
+                )}
+                <button
+                  className="px-4 py-2 bg-[#931cf5] text-white rounded hover:bg-[#7a1ac4]"
+                  onClick={handleSetFolderLink}
+                  disabled={!folderLinkUrl.trim()}
+                >
+                  Save Link
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Course Link Modal */}
+        {linkingCourse && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
+            <div className="bg-white rounded-lg p-6 shadow-lg min-w-[400px]">
+              <h3 className="text-lg font-bold mb-2 text-[#931cf5]">Set Course Link</h3>
+              <div className="mb-4">
+                <p className="text-sm text-gray-600 mb-2">
+                  Make &quot;<b>{linkingCourse.code}</b>&quot; redirect to an external URL when accessed from the Exam Bank.
+                </p>
+                {linkingCourse.linkUrl && (
+                  <div className="mb-2 p-2 bg-blue-50 rounded">
+                    <span className="text-sm text-blue-700">Current link: </span>
+                    <a href={linkingCourse.linkUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-sm">
+                      {linkingCourse.linkUrl}
+                    </a>
+                  </div>
+                )}
+              </div>
+              <input
+                className="border rounded px-3 py-2 w-full mb-4"
+                value={courseLinkUrl}
+                onChange={e => setCourseLinkUrl(e.target.value)}
+                placeholder="Enter URL (e.g., https://example.com)"
+                type="url"
+              />
+              <div className="flex gap-2 justify-end">
+                <button
+                  className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                  onClick={() => { setLinkingCourse(null); setCourseLinkUrl(''); }}
+                >
+                  Cancel
+                </button>
+                {linkingCourse.linkUrl && (
+                  <button
+                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                    onClick={() => {
+                      handleRemoveCourseLink(linkingCourse.code);
+                      setLinkingCourse(null);
+                      setCourseLinkUrl('');
+                    }}
+                  >
+                    Remove Link
+                  </button>
+                )}
+                <button
+                  className="px-4 py-2 bg-[#931cf5] text-white rounded hover:bg-[#7a1ac4]"
+                  onClick={handleSetCourseLink}
+                  disabled={!courseLinkUrl.trim()}
+                >
+                  Save Link
+                </button>
               </div>
             </div>
           </div>
@@ -427,17 +704,23 @@ export default function ResourceManagerModal({ isOpen, onClose }: ResourceManage
               return (
                 <div
                   key={course.code}
-                  onClick={() => handleCourseClick(course.code)}
-                  className={`p-2 rounded-lg cursor-pointer transition-colors mb-1 ${
+                  className={`p-2 rounded-lg transition-colors mb-1 ${
                     selectedCourse?.code === course.code
                       ? 'bg-[#931cf5] text-white'
                       : 'hover:bg-gray-100'
                   }`}
                 >
-                  <div className="font-semibold text-sm">{course.code}</div>
-                  <div className="text-xs">{courseInfo.name}</div>
-                  <div className={`text-xs mt-0.5 ${selectedCourse?.code === course.code ? 'text-white/80' : 'text-gray-500'}`}>
-                    Year {course.year}
+                  <div 
+                    onClick={() => handleCourseClick(course.code)}
+                    className="cursor-pointer"
+                  >
+                    <div className="font-semibold text-sm">
+                      {course.code}
+                    </div>
+                    <div className="text-xs">{courseInfo.name}</div>
+                    <div className={`text-xs mt-0.5 ${selectedCourse?.code === course.code ? 'text-white/80' : 'text-gray-500'}`}>
+                      Year {course.year}
+                    </div>
                   </div>
                 </div>
               );
@@ -477,7 +760,12 @@ export default function ResourceManagerModal({ isOpen, onClose }: ResourceManage
                 </div>
                 <button
                   onClick={handleCreateFolder}
-                  className="px-4 py-1.5 text-sm bg-[#931cf5] text-white rounded-lg hover:bg-[#7a1ac4] transition-colors"
+                  disabled={selectedCourse && !!courseLinks[selectedCourse.code]}
+                  className={`px-4 py-1.5 text-sm rounded-lg transition-colors ${
+                    selectedCourse && !!courseLinks[selectedCourse.code]
+                      ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                      : 'bg-[#931cf5] text-white hover:bg-[#7a1ac4] cursor-pointer'
+                  }`}
                 >
                   Create Folder
                 </button>
@@ -529,9 +817,11 @@ export default function ResourceManagerModal({ isOpen, onClose }: ResourceManage
                         {resource.type === 'folder' ? (
                           <IoFolder className="text-[#931cf5] w-12 h-12 opacity-80" />
                         ) : resource.fileUrl && resource.fileUrl.match(/\.(jpg|jpeg|png|gif|bmp|webp)$/i) ? (
-                          <img
+                          <Image
                             src={resource.fileUrl}
                             alt={resource.name}
+                            width={80}
+                            height={80}
                             className="max-h-20 max-w-full rounded shadow border border-gray-100 object-contain"
                           />
                         ) : resource.fileUrl && resource.fileUrl.toLowerCase().endsWith('.pdf') ? (
@@ -551,8 +841,8 @@ export default function ResourceManagerModal({ isOpen, onClose }: ResourceManage
                         )}
                       </div>
 
-                      {/* Rename button below preview (only for files) */}
-                      {resource.type === 'file' && (
+                      {/* Action buttons below preview */}
+                      {resource.type === 'file' ? (
                         <button
                           onClick={e => {
                             e.stopPropagation();
@@ -563,6 +853,32 @@ export default function ResourceManagerModal({ isOpen, onClose }: ResourceManage
                         >
                           Rename
                         </button>
+                      ) : (
+                        <div className="mt-2 w-full space-y-1">
+                          <button
+                            onClick={e => {
+                              e.stopPropagation();
+                              setLinkingFolder({ 
+                                id: resource.id, 
+                                name: resource.name, 
+                                linkUrl: resource.linkUrl 
+                              });
+                              setFolderLinkUrl(resource.linkUrl || '');
+                            }}
+                            className={`px-3 py-1 text-xs rounded transition-colors w-full ${
+                              resource.linkUrl 
+                                ? 'bg-blue-500 text-white hover:bg-blue-600' 
+                                : 'bg-green-500 text-white hover:bg-green-600'
+                            }`}
+                          >
+                            {resource.linkUrl ? 'Edit Link' : 'Act as Link'}
+                          </button>
+                          {resource.linkUrl && (
+                            <div className="text-xs text-blue-600 text-center truncate px-1" title={resource.linkUrl}>
+                              🔗 {resource.linkUrl.length > 25 ? resource.linkUrl.substring(0, 25) + '...' : resource.linkUrl}
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
                   ))}
@@ -570,14 +886,37 @@ export default function ResourceManagerModal({ isOpen, onClose }: ResourceManage
               </div>
 
               <div className="mt-3 flex justify-between items-center">
-                <label className="px-4 py-1.5 text-sm bg-[#931cf5] text-white rounded-lg hover:bg-[#7a1ac4] transition-colors cursor-pointer inline-block">
-                  Upload Files
-                  <input
-                    type="file"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                  />
-                </label>
+                <div className="flex gap-3">
+                  <label className={`px-4 py-1.5 text-sm rounded-lg transition-colors inline-block ${
+                    selectedCourse && !!courseLinks[selectedCourse.code]
+                      ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                      : 'bg-[#931cf5] text-white hover:bg-[#7a1ac4] cursor-pointer'
+                  }`}>
+                    Upload Files
+                    <input
+                      type="file"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                      disabled={selectedCourse && !!courseLinks[selectedCourse.code]}
+                    />
+                  </label>
+                  {selectedCourse && (
+                    <button
+                      onClick={() => {
+                        const hasLink = courseLinks[selectedCourse.code];
+                        setLinkingCourse({ 
+                          code: selectedCourse.code, 
+                          name: selectedCourse.name, 
+                          linkUrl: hasLink 
+                        });
+                        setCourseLinkUrl(hasLink || '');
+                      }}
+                      className="px-4 py-1.5 text-sm bg-[#931cf5] text-white rounded-lg hover:bg-[#7a1ac4] transition-colors"
+                    >
+                      {courseLinks[selectedCourse.code] ? 'Edit Course Link' : 'Act as Link'}
+                    </button>
+                  )}
+                </div>
                 <button
                   onClick={handleSave}
                   disabled={isSaving}

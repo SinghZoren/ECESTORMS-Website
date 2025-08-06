@@ -6,6 +6,12 @@ const BUCKET_NAME = process.env.AWS_BUCKET_NAME;
 
 export async function GET() {
   try {
+    // Check if bucket name is configured
+    if (!BUCKET_NAME) {
+      console.warn('AWS_BUCKET_NAME not configured, returning empty events');
+      return NextResponse.json({ events: [] });
+    }
+
     const key = 'data/events.json';
     const { Body } = await s3.send(new GetObjectCommand({
       Bucket: BUCKET_NAME,

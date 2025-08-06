@@ -13,6 +13,7 @@ interface Resource {
   courseCode: string;
   parentId: string | null;
   fileUrl?: string;
+  linkUrl?: string; // For folders that act as links
   children?: Resource[];
 }
 
@@ -34,6 +35,7 @@ export default function ExamBankModal({ isOpen, onClose }: ExamBankModalProps) {
   const [resourcePath, setResourcePath] = useState<Resource[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [previewFile, setPreviewFile] = useState<null | { url: string; name: string; type: string }>(null);
+  const [courseLinks, setCourseLinks] = useState<{[courseCode: string]: string}>({});
 
   const years = [1, 2, 3, 4];
   const isCommonYear = selectedYear === 1;
@@ -44,6 +46,28 @@ export default function ExamBankModal({ isOpen, onClose }: ExamBankModalProps) {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Load course links on mount
+  useEffect(() => {
+    if (isOpen) {
+      const loadCourseLinks = async () => {
+        try {
+          const response = await fetch('/api/resources/course-links');
+          if (response.ok) {
+            const data = await response.json();
+            const linksMap: {[courseCode: string]: string} = {};
+            data.links.forEach((link: {courseCode: string; linkUrl: string}) => {
+              linksMap[link.courseCode] = link.linkUrl;
+            });
+            setCourseLinks(linksMap);
+          }
+        } catch (error) {
+          console.error('Error loading course links:', error);
+        }
+      };
+      loadCourseLinks();
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const fetchResources = async () => {
@@ -97,6 +121,13 @@ export default function ExamBankModal({ isOpen, onClose }: ExamBankModalProps) {
   };
 
   const handleFolderClick = (folder: Resource) => {
+    // If folder has a link URL, open it in a new tab instead of navigating
+    if (folder.linkUrl) {
+      window.open(folder.linkUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    
+    // Otherwise, navigate into the folder as usual
     setCurrentFolder(folder);
     setResourcePath([...resourcePath, folder]);
   };
@@ -279,13 +310,28 @@ export default function ExamBankModal({ isOpen, onClose }: ExamBankModalProps) {
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {getFilteredCourses().map((course) => {
                   if (!course) return null;
+                  const hasLink = courseLinks[course.code];
+                  
+                  const handleCourseClick = () => {
+                    // If course has a link URL, open it in a new tab instead of selecting the course
+                    if (hasLink) {
+                      window.open(hasLink, '_blank', 'noopener,noreferrer');
+                      return;
+                    }
+                    
+                    // Otherwise, select the course as usual
+                    setSelectedCourse(course);
+                  };
+                  
                   return (
                     <div
                       key={course.code}
-                      onClick={() => setSelectedCourse(course)}
+                      onClick={handleCourseClick}
                       className="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
                     >
-                      <div className="font-semibold text-[#4A154B]">{course.code}</div>
+                      <div className="font-semibold text-[#4A154B]">
+                        {course.code}
+                      </div>
                       <div className="text-sm text-gray-600">{course.name}</div>
                       <div className="text-xs text-gray-500 mt-1">Year {course.year}</div>
                     </div>
@@ -354,7 +400,7 @@ export default function ExamBankModal({ isOpen, onClose }: ExamBankModalProps) {
                         }}
                       >
                         {resource.type === 'folder' ? (
-                          <IoFolder className="text-[#931cf5] w-12 h-12 opacity-80" />
+                          <IoFolder className="w-12 h-12 opacity-80 text-[#931cf5]" />
                         ) : resource.fileUrl && resource.fileUrl.match(/\.(jpg|jpeg|png|gif|bmp|webp)$/i) ? (
                           <Image
                             src={resource.fileUrl}
@@ -379,7 +425,7 @@ export default function ExamBankModal({ isOpen, onClose }: ExamBankModalProps) {
                           </div>
                         )}
                       </div>
-                      {/* Open link for files */}
+                      {/* Action buttons for files and folders */}
                       {resource.type === 'file' && resource.fileUrl && (
                         <a
                           href={resource.fileUrl}
@@ -390,6 +436,7 @@ export default function ExamBankModal({ isOpen, onClose }: ExamBankModalProps) {
                           Open
                         </a>
                       )}
+
                     </div>
                   ))}
                 </div>
