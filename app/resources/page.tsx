@@ -6,6 +6,7 @@ import { IoDocumentText, IoClose } from 'react-icons/io5';
 import { HiAcademicCap } from 'react-icons/hi';
 import Image from 'next/image';
 import ExamBankModal from '../components/ExamBankModal';
+import { useModalRegistration } from '../components/ModalVisibilityContext';
 
 interface TutorialEvent {
   id: string;
@@ -30,6 +31,9 @@ export default function Resources() {
   const [loading, setLoading] = useState(false);
   const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 1200);
   const isMobile = windowWidth < 768;
+
+  useModalRegistration('resources-modal-exam', isExamBankOpen);
+  useModalRegistration('resources-modal-tutorials', isTutorialsOpen);
 
   useEffect(() => {
     if (isTutorialsOpen) fetchTutorials();

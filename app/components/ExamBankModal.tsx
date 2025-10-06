@@ -5,6 +5,7 @@ import { IoClose, IoFolder, IoDocument } from 'react-icons/io5';
 import { allCourses, electricalCourses, computerHardwareCourses, computerSoftwareCourses, CourseInfo } from '../data/courses';
 import { bebasNeue } from '../fonts';
 import Image from 'next/image';
+import { useModalRegistration } from './ModalVisibilityContext';
 
 interface Resource {
   id: string;
@@ -24,6 +25,7 @@ interface ExamBankModalProps {
 }
 
 export default function ExamBankModal({ isOpen, onClose }: ExamBankModalProps) {
+  useModalRegistration('exam-bank-modal', isOpen);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedProgram, setSelectedProgram] = useState<'Electrical' | 'Computer' | null>(null);
   const [softwareSpecialization, setSoftwareSpecialization] = useState(false);

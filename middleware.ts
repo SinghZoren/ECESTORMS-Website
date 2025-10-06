@@ -8,6 +8,11 @@ if (!secret) {
 }
 
 export async function middleware(req: NextRequest) {
+  // Allow GET requests to /api/tutorials without authentication
+  if (req.nextUrl.pathname.startsWith('/api/tutorials') && req.method === 'GET') {
+    return NextResponse.next();
+  }
+
   const token = req.cookies.get('auth_token')?.value;
 
   if (!token) {

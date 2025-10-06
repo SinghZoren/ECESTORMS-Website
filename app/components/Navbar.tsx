@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { IoChevronDown, IoClose } from 'react-icons/io5';
 import Image from 'next/image';
+import { useModalVisibility } from './ModalVisibilityContext';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -15,6 +16,8 @@ export default function Navbar() {
   const router = useRouter();
   const isHomePage = pathname === '/';
   const [ReactDOM, setReactDOM] = useState<typeof import('react-dom') | null>(null);
+  const modalContext = useModalVisibility();
+  const hasActiveModal = useMemo(() => modalContext.activeModals.size > 0, [modalContext.activeModals]);
 
   if (pathname === '/slides') {
     return null;
@@ -67,11 +70,13 @@ export default function Navbar() {
   };
 
   return (
-    <nav 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled || !isHomePage 
-          ? 'bg-white/80 backdrop-blur-sm shadow-lg shadow-md' 
-          : 'bg-transparent'
+    <nav
+      className={`fixed top-0 left-0 right-0 z-[60] transition-all duration-300 ${
+        hasActiveModal
+          ? 'pointer-events-none opacity-0'
+          : isScrolled || !isHomePage
+            ? 'bg-white/80 backdrop-blur-sm shadow-lg shadow-md'
+            : 'bg-transparent'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

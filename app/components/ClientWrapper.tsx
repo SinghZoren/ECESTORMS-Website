@@ -2,6 +2,7 @@
 
 import ClientLayout from './ClientLayout';
 import Head from 'next/head';
+import { ModalVisibilityProvider } from './ModalVisibilityContext';
 
 export default function ClientWrapper() {
   return (
@@ -10,7 +11,9 @@ export default function ClientWrapper() {
         <title>ECESTORMS</title>
         <meta name="description" content="ECESTORMS Website" />
       </Head>
-      <ClientLayout />
+      <ModalVisibilityProvider>
+        <ClientLayout />
+      </ModalVisibilityProvider>
     </>
   );
 } 
