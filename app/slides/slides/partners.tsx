@@ -1,63 +1,78 @@
+'use client';
+
 import { SlideDefinition } from '../types';
+import { FaBusAlt, FaUsersCog, FaHandshake, FaGift } from 'react-icons/fa';
+
+const highlights = [
+  {
+    icon: FaBusAlt,
+    title: 'Industry Tours',
+    description: 'Guided visits to labs, design houses, and partner offices so students can see engineering in action.',
+    badge: 'Site Experiences',
+    color: 'from-indigo-500 to-blue-500',
+  },
+  {
+    icon: FaUsersCog,
+    title: 'Professional Events',
+    description: 'Panels, portfolio showcases, and networking nights that connect members with practicing engineers and recruiters.',
+    badge: 'Career Momentum',
+    color: 'from-purple-500 to-pink-500',
+  },
+  {
+    icon: FaHandshake,
+    title: 'Business Collaborations',
+    description: 'Exclusive partnerships offer students project support, discounted services, and prototyping resources.',
+    badge: 'Member Perks',
+    color: 'from-orange-500 to-amber-500',
+  },
+];
 
 const partnersSlide: SlideDefinition = {
   id: 'partners',
   render: () => (
     <div className="relative flex h-full w-full items-center justify-center overflow-hidden">
-      <img
-        src="/images/partners/1745044402286-TMU-rgb.png"
-        alt="Partner highlight background"
-        className="absolute inset-0 h-full w-full object-cover"
-      />
-      <div className="absolute inset-0 bg-gradient-to-br from-[#040014]/90 via-[#12054b]/85 to-[#040014]/90" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#040014] via-[#12054b] to-[#040014]" />
 
-      <div className="relative z-10 flex w-full max-w-5xl flex-col gap-12 px-10 py-12 md:flex-row md:items-center">
-        <div className="flex-1 text-white">
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white/80">
-            Industry & Partners
-          </span>
-          <h2 className="mt-6 text-4xl font-black uppercase tracking-tight md:text-5xl lg:text-6xl">
-            Bridging Academia & Industry
+      <div className="relative z-10 w-full max-w-6xl px-10 py-12 text-white">
+        <div className="text-center mb-10">
+          <h2 className="text-5xl font-black uppercase tracking-tight md:text-6xl lg:text-7xl">
+            Industry Connections
           </h2>
-          <p className="mt-6 text-lg text-white/85 md:text-xl">
-            Together with faculty, alumni, and corporate partners, we create meaningful experiential learning and
-            professional opportunities for ECE students.
+          <p className="mx-auto mt-6 max-w-3xl text-xl text-white/90 md:text-2xl font-medium">
+            Real-world tours, professional events, and collaborations that unlock opportunities for ECE students.
           </p>
-          <div className="mt-10 space-y-6">
-            {[
-              {
-                title: 'Faculty Collaborations',
-                description: 'Joint initiatives with TMU FEAS and MUES delivering interdisciplinary programming.',
-              },
-              {
-                title: 'Corporate Partnerships',
-                description: 'Technical workshops, sponsorships, and recruiting events with leading tech companies.',
-              },
-              {
-                title: 'Support for Projects',
-                description: 'Funding and mentorship for competition teams, capstone projects, and student ventures.',
-              },
-            ].map(({ title, description }) => (
-              <div key={title} className="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur">
-                <h3 className="text-xl font-semibold text-[#f7ce46]">{title}</h3>
-                <p className="mt-3 text-white/85 text-sm md:text-base">{description}</p>
-              </div>
-            ))}
-          </div>
         </div>
 
-        <div className="flex flex-1 items-center justify-center">
-          <div className="grid w-full max-w-[420px] gap-4 rounded-[36px] border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-md">
-            {[
-              '/images/partners/1745044402286-TMU-rgb.png',
-              '/images/partners/1745044435876-TMU-FEAS-rgb-(1).png',
-              '/images/partners/1745044465880-MUES_Horizontal_Purple.png',
-              '/images/partners/1745291473484-tmu-logo-full-colour.jpg',
-            ].map((logo) => (
-              <div key={logo} className="flex items-center justify-center rounded-2xl bg-white/80 p-4">
-                <img src={logo} alt="Partner logo" className="max-h-16 w-auto object-contain" />
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
+          {highlights.map(({ icon: Icon, title, description, badge, color }) => (
+            <div
+              key={title}
+              className="group relative flex h-full flex-col items-center justify-start gap-5 overflow-hidden rounded-3xl border-2 border-white/20 bg-gradient-to-br from-white/10 to-white/5 p-6 text-center backdrop-blur transition-all duration-300 hover:scale-105 hover:border-white/40"
+            >
+              <div className={`inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br ${color} shadow-xl`}>
+                <Icon className="text-white text-3xl" />
               </div>
-            ))}
+              <span className="inline-flex items-center justify-center rounded-full bg-white/15 px-4 py-1 text-xs font-bold uppercase tracking-wider text-white">
+                {badge}
+              </span>
+              <h3 className="text-xl font-black text-white">{title}</h3>
+              <p className="text-white/80 text-sm leading-relaxed">{description}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-12 rounded-3xl border-2 border-white/20 bg-gradient-to-br from-white/10 to-white/5 p-8 backdrop-blur">
+          <div className="flex flex-col items-center gap-6 md:flex-row md:items-center md:justify-between">
+            <div className="text-center md:text-left">
+              <h3 className="flex items-center justify-center gap-2 text-2xl font-bold text-white md:justify-start">
+                <FaGift className="text-[#f7ce46]" />
+                Sponsorships That Invest in Students
+              </h3>
+              <p className="mt-2 max-w-xl text-sm text-white/75 leading-relaxed">
+                From discounted lab rentals to hardware credits and product demos, our partners help students experiment, prototype,
+                and launch ambitious projects without the financial barrier.
+              </p>
+            </div>
           </div>
         </div>
       </div>

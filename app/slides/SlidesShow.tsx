@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { FaArrowLeft, FaArrowRight, FaPlay, FaPause } from "react-icons/fa";
 
 import { slides } from "./slides";
 import type { SlideDefinition } from "./types";
@@ -18,8 +17,8 @@ const fadeVariants = {
 export default function SlidesShow() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [isControlsVisible, setIsControlsVisible] = useState(true);
   const [progress, setProgress] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const progressRef = useMemo(() => ({ current: 0 }), []);
 
   const currentSlide = useMemo<SlideDefinition>(() => slides[currentIndex], [currentIndex]);
@@ -76,18 +75,34 @@ export default function SlidesShow() {
   }, [handleKeyNavigation]);
 
   useEffect(() => {
-    let timeout: ReturnType<typeof setTimeout>;
+    const checkFullscreen = () => {
+      const hasFullscreenElement = !!(
+        document.fullscreenElement ||
+        (document as any).webkitFullscreenElement ||
+        (document as any).mozFullScreenElement ||
+        (document as any).msFullscreenElement
+      );
 
-    const handleMouseMove = () => {
-      setIsControlsVisible(true);
-      clearTimeout(timeout);
-      timeout = setTimeout(() => setIsControlsVisible(false), 3000);
+      const isF11Fullscreen = window.innerHeight === window.screen.height &&
+        window.innerWidth === window.screen.width;
+
+      setIsFullscreen(hasFullscreenElement || isF11Fullscreen);
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("fullscreenchange", checkFullscreen);
+    document.addEventListener("webkitfullscreenchange", checkFullscreen);
+    document.addEventListener("mozfullscreenchange", checkFullscreen);
+    document.addEventListener("MSFullscreenChange", checkFullscreen);
+    window.addEventListener("resize", checkFullscreen);
+
+    checkFullscreen();
+
     return () => {
-      clearTimeout(timeout);
-      window.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("fullscreenchange", checkFullscreen);
+      document.removeEventListener("webkitfullscreenchange", checkFullscreen);
+      document.removeEventListener("mozfullscreenchange", checkFullscreen);
+      document.removeEventListener("MSFullscreenChange", checkFullscreen);
+      window.removeEventListener("resize", checkFullscreen);
     };
   }, []);
 
@@ -132,43 +147,11 @@ export default function SlidesShow() {
             ))}
           </div>
 
-          <AnimatePresence>
-            {isControlsVisible && (
-              <motion.div
-                className="absolute inset-x-0 bottom-16 flex items-center justify-center gap-6"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.3 }}
-              >
-                <button
-                  onClick={handlePrev}
-                  className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur transition hover:bg-white/40"
-                  aria-label="Previous slide"
-                >
-                  <FaArrowLeft />
-                </button>
-                <button
-                  onClick={handleTogglePlay}
-                  className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur transition hover:bg-white/40"
-                  aria-label={isPlaying ? "Pause slide" : "Play slide"}
-                >
-                  {isPlaying ? <FaPause /> : <FaPlay />}
-                </button>
-                <button
-                  onClick={handleNext}
-                  className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur transition hover:bg-white/40"
-                  aria-label="Next slide"
-                >
-                  <FaArrowRight />
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <div className="absolute top-6 left-1/2 -translate-x-1/2 rounded-full border border-white/20 bg-white/10 px-6 py-2 text-xs font-semibold uppercase tracking-widest text-white shadow-lg backdrop-blur">
-            Use arrow keys · Press P to pause · Press F11 for fullscreen
-          </div>
+          {!isFullscreen && (
+            <div className="absolute top-6 left-1/2 -translate-x-1/2 rounded-full border border-white/20 bg-white/10 px-6 py-2 text-xs font-semibold uppercase tracking-widest text-white shadow-lg backdrop-blur">
+              Use arrow keys · Press P to pause · Press F11 for fullscreen
+            </div>
+          )}
         </div>
       </div>
     </div>
