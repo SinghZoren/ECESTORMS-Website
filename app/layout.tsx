@@ -1,13 +1,9 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import Navbar from './components/Navbar';
-import ContentSwitcher from './components/ContentSwitcher';
-import CircuitTransition from './components/CircuitTransition';
-import Footer from './components/Footer';
-import ResponsiveSocialSidebar from './components/ResponsiveSocialSidebar';
+import ClientWrapper from './components/ClientWrapper';
 import { Analytics } from '@vercel/analytics/next';
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -34,18 +30,9 @@ export default function RootLayout() {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} flex flex-col min-h-screen`}>
-        <div className="flex flex-col min-h-screen">
-          <Navbar />
-          <ResponsiveSocialSidebar />
-          <main className="flex-grow relative">
-            <CircuitTransition>
-              <ContentSwitcher />   
-            </CircuitTransition>
-          </main>
-          <Footer />
-        </div>
+        <ClientWrapper />
         <Analytics />
-        <SpeedInsights/>
+        <SpeedInsights />
       </body>
     </html>
   );

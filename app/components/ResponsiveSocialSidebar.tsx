@@ -23,5 +23,6 @@ export default function ResponsiveSocialSidebar() {
 
   if (!mounted) return null; // Don't render on server
   if (width < 768) return null;
+  if (typeof window !== 'undefined' && window.location.pathname === '/slides') return null;
   return <SocialSidebar />;
 } 

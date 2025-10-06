@@ -53,7 +53,13 @@ export default function TutorialEditModal({ isOpen, onClose }: TutorialEditModal
 
   const fetchTutorials = async () => {
     setLoading(true);
-    const res = await fetch('/api/tutorials');
+    const res = await fetch('/api/tutorials', {
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        Pragma: 'no-cache',
+      },
+    });
     const data = await res.json();
     setTutorials(data.tutorials || []);
     setLoading(false);
@@ -316,23 +322,23 @@ export default function TutorialEditModal({ isOpen, onClose }: TutorialEditModal
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Course</label>
-                  <input type="text" name="course" value={form.course} onChange={handleFormChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#931cf5] focus:ring-[#931cf5]" required />
+                  <input type="text" name="course" value={form.course || ''} onChange={handleFormChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#931cf5] focus:ring-[#931cf5]" required />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Date</label>
-                  <input type="date" name="date" value={form.date} onChange={handleFormChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#931cf5] focus:ring-[#931cf5]" required />
+                  <input type="date" name="date" value={form.date || ''} onChange={handleFormChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#931cf5] focus:ring-[#931cf5]" required />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Time</label>
-                  <input type="text" name="time" value={form.time} onChange={handleFormChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#931cf5] focus:ring-[#931cf5]" required />
+                  <input type="text" name="time" value={form.time || ''} onChange={handleFormChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#931cf5] focus:ring-[#931cf5]" required />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">TA Name</label>
-                  <input type="text" name="taName" value={form.taName} onChange={handleFormChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#931cf5] focus:ring-[#931cf5]" required />
+                  <input type="text" name="taName" value={form.taName || ''} onChange={handleFormChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#931cf5] focus:ring-[#931cf5]" required />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Location</label>
-                  <input type="text" name="location" value={form.location} onChange={handleFormChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#931cf5] focus:ring-[#931cf5]" required />
+                  <input type="text" name="location" value={form.location || ''} onChange={handleFormChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#931cf5] focus:ring-[#931cf5]" required />
                 </div>
                 <div>
                   <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
@@ -342,7 +348,7 @@ export default function TutorialEditModal({ isOpen, onClose }: TutorialEditModal
                     <input
                       type="text"
                       name="zoomLink"
-                      value={form.zoomLink}
+                      value={form.zoomLink || ''}
                       onChange={handleFormChange}
                       className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#931cf5] focus:ring-[#931cf5]"
                       placeholder="Zoom Link"

@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import s3 from '@/app/utils/s3Client';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+
 interface Tutorial {
   id: string;
   course: string;
@@ -19,6 +24,26 @@ interface Tutorial {
 const BUCKET_NAME = process.env.AWS_BUCKET_NAME as string;
 const KEY = 'data/tutorials.json';
 
+function normalizeTutorial(raw: Partial<Tutorial>): Tutorial {
+  return {
+    id: raw.id || Date.now().toString(),
+    course: raw.course || 'TBA',
+    date: raw.date || '',
+    time: raw.time || '',
+    taName: raw.taName || 'TBA',
+    location: raw.location || 'TBA',
+    zoomLink: raw.zoomLink,
+    willRecord: Boolean(raw.willRecord),
+    willPostNotes: Boolean(raw.willPostNotes),
+    additionalResources: Array.isArray(raw.additionalResources)
+      ? raw.additionalResources
+      : typeof raw.additionalResources === 'string'
+        ? raw.additionalResources.split(',').map(r => r.trim()).filter(Boolean)
+        : [],
+    type: raw.type && raw.type.toLowerCase() === 'non-academic' ? 'non-academic' : 'academic',
+  } satisfies Tutorial;
+}
+
 async function readTutorials(): Promise<Tutorial[]> {
   try {
     const { Body } = await s3.send(new GetObjectCommand({
@@ -28,7 +53,12 @@ async function readTutorials(): Promise<Tutorial[]> {
     if (!Body) return [];
     const json = await Body.transformToString();
     const parsed = JSON.parse(json);
-    return Array.isArray(parsed.tutorials) ? parsed.tutorials as Tutorial[] : [];
+    const tutorialsData = Array.isArray(parsed)
+      ? parsed
+      : Array.isArray(parsed?.tutorials)
+        ? parsed.tutorials
+        : [];
+    return tutorialsData.map(t => normalizeTutorial(t));
   } catch {
     return [];
   }
@@ -38,7 +68,7 @@ async function writeTutorials(tutorials: Tutorial[]) {
   await s3.send(new PutObjectCommand({
     Bucket: BUCKET_NAME,
     Key: KEY,
-    Body: JSON.stringify({ tutorials }, null, 2),
+    Body: JSON.stringify({ tutorials: tutorials.map(t => normalizeTutorial(t)) }, null, 2),
     ContentType: 'application/json',
   }));
 }
@@ -46,7 +76,11 @@ async function writeTutorials(tutorials: Tutorial[]) {
 export async function GET() {
   try {
     const tutorials = await readTutorials();
-    return NextResponse.json({ tutorials });
+    const response = NextResponse.json({ tutorials });
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    return response;
   } catch (error) {
     console.error('Error reading tutorials:', error);
     return NextResponse.json({ tutorials: [], error: 'Failed to fetch tutorials' }, { status: 500 });
@@ -57,7 +91,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const tutorials = await readTutorials();
-    const newTutorial: Tutorial = { ...body, id: Date.now().toString(), type: body.type || 'academic' };
+    const newTutorial = normalizeTutorial({ ...body, id: Date.now().toString() });
     tutorials.push(newTutorial);
     await writeTutorials(tutorials);
     return NextResponse.json({ tutorial: newTutorial }, { status: 201 });
@@ -73,12 +107,10 @@ export async function PUT(request: NextRequest) {
     const { id } = body;
     if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
     let tutorials = await readTutorials();
-    tutorials = tutorials.map((t: unknown) => {
-      const tut = t as Tutorial;
-      return tut.id === id ? { ...tut, ...body, type: body.type || tut.type || 'academic' } : tut;
-    });
+    tutorials = tutorials.map((t: Tutorial) => (t.id === id ? normalizeTutorial({ ...t, ...body, id }) : t));
     await writeTutorials(tutorials);
-    return NextResponse.json({ tutorial: body });
+    const updated = tutorials.find(t => t.id === id);
+    return NextResponse.json({ tutorial: updated });
   } catch (error) {
     console.error('Error updating tutorial:', error);
     return NextResponse.json({ error: 'Failed to update tutorial' }, { status: 500 });
@@ -91,10 +123,7 @@ export async function DELETE(request: NextRequest) {
     const { id } = body;
     if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
     let tutorials = await readTutorials();
-    tutorials = tutorials.filter((t: unknown) => {
-      const tut = t as Tutorial;
-      return tut.id !== id;
-    });
+    tutorials = tutorials.filter((t: Tutorial) => t.id !== id);
     await writeTutorials(tutorials);
     return NextResponse.json({ success: true });
   } catch (error) {

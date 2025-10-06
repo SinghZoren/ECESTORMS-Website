@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { IoChevronDown, IoClose } from 'react-icons/io5';
@@ -15,6 +15,10 @@ export default function Navbar() {
   const router = useRouter();
   const isHomePage = pathname === '/';
   const [ReactDOM, setReactDOM] = useState<typeof import('react-dom') | null>(null);
+
+  if (pathname === '/slides') {
+    return null;
+  }
 
   useEffect(() => {
     const handleScroll = () => {

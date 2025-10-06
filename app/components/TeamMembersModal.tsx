@@ -708,7 +708,7 @@ export default function TeamMembersModal({
                       </label>
                       <input
                         type="text"
-                        value={member.name}
+                        value={member.name || ''}
                         onChange={(e) => handleMemberChange(member.id, 'name', e.target.value)}
                         className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#931cf5] focus:border-transparent"
                         placeholder="Name"
@@ -722,7 +722,7 @@ export default function TeamMembersModal({
                         </label>
                         <input
                           type="text"
-                          value={member.position}
+                          value={member.position || ''}
                           onChange={(e) => handleMemberChange(member.id, 'position', e.target.value)}
                           className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#931cf5] focus:border-transparent"
                           placeholder="Position"

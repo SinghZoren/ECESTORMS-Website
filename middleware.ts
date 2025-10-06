@@ -7,8 +7,6 @@ if (!secret) {
   throw new Error('JWT_SECRET is not set in environment variables.');
 }
 
-const secretKey = new TextEncoder().encode(secret);
-
 export async function middleware(req: NextRequest) {
   const token = req.cookies.get('auth_token')?.value;
 
@@ -17,7 +15,8 @@ export async function middleware(req: NextRequest) {
   }
 
   try {
-    await jwtVerify(token, secretKey);
+    const secretKey = new TextEncoder().encode(secret);
+    await jwtVerify(token, secretKey, { algorithms: ['HS256'] });
     return NextResponse.next();
   } catch (error) {
     console.error('JWT Verification Error:', error);

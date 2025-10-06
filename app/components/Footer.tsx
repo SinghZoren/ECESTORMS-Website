@@ -6,6 +6,10 @@ import { MdEmail } from 'react-icons/md';
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
+  if (typeof window !== 'undefined' && window.location.pathname === '/slides') {
+    return null;
+  }
+
   return (
     <footer className="w-full bg-white border-t border-gray-200 py-8 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

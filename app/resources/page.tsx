@@ -44,7 +44,13 @@ export default function Resources() {
   const fetchTutorials = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/tutorials');
+      const res = await fetch('/api/tutorials', {
+        cache: 'no-store',
+        headers: {
+          'Pragma': 'no-cache',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+        },
+      });
       const data = await res.json();
       setTutorialEvents(data.tutorials || []);
     } catch {

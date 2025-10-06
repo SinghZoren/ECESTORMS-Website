@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Home from '../home/page';
 import Calendar from '../calendar/page';
@@ -13,10 +13,20 @@ import OurTeam from '../our-team/page';
 import OfficeHours from '../office-hours/page';
 import Partners from '../partners/page';
 import Admin from '../admin/page';
+import SlidesShow from '../slides/SlidesShow';
 
 export default function ContentSwitcher() {
   const pathname = usePathname();
-  
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted || !pathname) {
+    return null;
+  }
+
   const getContent = (): ReactNode => {
     switch (pathname) {
       case '/':
@@ -41,6 +51,8 @@ export default function ContentSwitcher() {
         return <Partners />;
       case '/admin':
         return <Admin />;
+      case '/slides':
+        return <SlidesShow />;
       default:
         return <Home />;
     }
