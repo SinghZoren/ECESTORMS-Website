@@ -33,7 +33,7 @@ export const config = {
     '/api/updatePastEvents',
     '/api/updateShopItems',
     '/api/conferenceVisibility',
-    '/api/upload', // Assuming this is a protected route for resource manager
-    '/api/tutorials' // Assuming this is a protected route for tutorials
+    '/api/upload',
+    '/api/tutorials/:path*',
   ],
-}; 
+};
