@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -66,6 +66,7 @@ export default function CircuitTransition({ children }: CircuitTransitionProps) 
   const [isMounted, setIsMounted] = useState(false);
   const [pageKey, setPageKey] = useState(pathname);
   const [showOverlay, setShowOverlay] = useState(false);
+  const previousPathRef = useRef(pathname);
 
   useEffect(() => {
     setIsMounted(true);
@@ -73,23 +74,25 @@ export default function CircuitTransition({ children }: CircuitTransitionProps) 
 
   useEffect(() => {
     if (!isMounted) return;
-    if (pathname === pageKey) return;
+    if (pathname === previousPathRef.current) return;
 
     setShowOverlay(true);
 
-    const updateTimer = setTimeout(() => {
+    const updateTimer = window.setTimeout(() => {
       setPageKey(pathname);
-    }, 180);
+    }, 200);
 
-    const hideTimer = setTimeout(() => {
+    const hideTimer = window.setTimeout(() => {
       setShowOverlay(false);
     }, 650);
 
+    previousPathRef.current = pathname;
+
     return () => {
-      clearTimeout(updateTimer);
-      clearTimeout(hideTimer);
+      window.clearTimeout(updateTimer);
+      window.clearTimeout(hideTimer);
     };
-  }, [pathname, pageKey, isMounted]);
+  }, [pathname, isMounted]);
 
   if (!isMounted) {
     return <>{children}</>;
@@ -120,14 +123,14 @@ export default function CircuitTransition({ children }: CircuitTransitionProps) 
             animate="animate"
             exit="exit"
           >
-            <motion.div variants={logoVariants} initial="initial" animate="animate" exit="exit" className="flex items-center justify-center">
-              <Image
-                src="/images/logo.svg"
-                alt="ECESTORMS logo"
-                width={160}
-                height={160}
-                priority
-              />
+            <motion.div
+              variants={logoVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="flex items-center justify-center"
+            >
+              <Image src="/images/logo.svg" alt="ECESTORMS logo" width={160} height={160} priority />
             </motion.div>
           </motion.div>
         )}

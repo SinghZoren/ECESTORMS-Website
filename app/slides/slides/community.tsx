@@ -58,7 +58,7 @@ const communitySlide: SlideDefinition = {
           {[{
               icon: FaHeart,
               label: 'Academic Momentum',
-              subtitle: 'Peer-led study halls and exam prep support.'
+              subtitle: 'study halls and exam prep support.'
             },
             {
               icon: FaGraduationCap,

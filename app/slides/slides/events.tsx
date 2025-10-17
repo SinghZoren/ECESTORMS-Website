@@ -131,7 +131,6 @@ function EventsContent() {
         )}
 
         {error && <p className="mt-6 text-center text-xs text-white/60">{error}</p>}
-
       </div>
     </div>
   );
